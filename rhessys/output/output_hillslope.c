@@ -64,6 +64,9 @@ void	output_hillslope(				int basinID,
 	double aarea;
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
+	double aPET, asublimation, acanopysubl, aheight, awoodc, alai_red;
+	double agsurf, apotential_exfil, arootzoneS, ags, aga, asoil_potential_evaporation; //NREN 20200202
+	double asoil_exfiltration_sat_zone, asoil_exfiltration_unsat_zone;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -103,6 +106,21 @@ void	output_hillslope(				int basinID,
 	aunsat_stor_flux =0.0;
 	asnowpack_flux =0.0;
 	arz_stor_flux =0.0;
+	aPET = 0.0; //add new output 20191129 NREN
+	asublimation = 0.0;
+	acanopysubl = 0.0;
+	aheight = 0.0;
+	awoodc = 0.0;
+	alai_red = 0.0;
+
+	agsurf = 0.0;
+	apotential_exfil = 0.0;
+	arootzoneS = 0.0;
+	ags = 0.0;
+	aga = 0.0;
+	asoil_potential_evaporation = 0.0;
+	asoil_exfiltration_sat_zone = 0.0;
+	asoil_exfiltration_unsat_zone = 0.0;
 
 
 
@@ -125,6 +143,9 @@ void	output_hillslope(				int basinID,
 			aprecip += (zone[0].rain+zone[0].snow) * patch[0].area;
 			aevap_surface += patch[0].evaporation_surf * patch[0].area;
 			asoil_evap += (patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone) * patch[0].area;//soil evap is a little different
+			asoil_exfiltration_sat_zone += patch[0].exfiltration_sat_zone * patch[0].area;
+			asoil_exfiltration_unsat_zone += patch[0].exfiltration_unsat_zone * patch[0].area;
+
 			arz_stor += patch[0].rz_storage * patch[0].area;
 
 			adetention_stor += patch[0].detention_store * patch[0].area ;
@@ -132,14 +153,14 @@ void	output_hillslope(				int basinID,
 
 			alitter_stor += (patch[0].litter.rain_stored)* patch[0].area;
 
- 		//	adetention_stor_flux += (patch[0].detention_store - patch[0].preday_detention_store)* patch[0].area;
-		//	acanopy_stor_flux +=  (patch[0].delta_rain_stored + patch[0].delta_snow_stored) * patch[0].area;
-         //   arz_stor_flux += (patch[0].rz_storage -patch[0].preday_rz_storage ) * patch[0].area;
-		//	asat_deficit_flux += (patch[0].sat_deficit - patch[0].preday_sat_deficit)*patch[0].area;
+			/* add more gs ga gsurf rootzone.S potential exfiltration NREN 20200202 */
 
-		//	asnowpack_flux += patch[0].delta_snowpack * patch[0].area; // why delta_snowpack = snowpack.water_depth - snowpack.water_equivalent_depth - preday_snowpack
+			agsurf += patch[0].gsurf*patch[0].area;
+			apotential_exfil += patch[0].potential_exfiltration*patch[0].area;
+			arootzoneS += patch[0].rootzone.S*patch[0].area;
+			asoil_potential_evaporation += patch[0].soil_potential_evaporation * patch[0].area;
 
-            //aunsat_stor_preday += patch[0].preday_unsat_storage * patch[0].area;
+
 			/* determine actual amount in upper 20cm */
 			if (patch[0].sat_deficit_z > 0.020)
 				u20 = patch[0].unsat_storage * 0.020/patch[0].sat_deficit_z;
@@ -153,6 +174,8 @@ void	output_hillslope(				int basinID,
 			abase_flow += patch[0].base_flow * patch[0].area;
 			areturn_flow += patch[0].return_flow * patch[0].area;
 			aevaporation += patch[0].evaporation * patch[0].area;
+			aPET += (patch[0].PET) * patch[0].area; //output pet
+			asublimation += patch[0].snowpack.sublimation * patch[0].area; //output snow sublimation
 			aarea += patch[0].area;
 			asnowpack += patch[0].snowpack.water_equivalent_depth  *  patch[0].area;
 			atranspiration += (patch[0].transpiration_sat_zone
@@ -168,6 +191,32 @@ void	output_hillslope(				int basinID,
 					alai += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
 						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai
 						* patch[0].area;
+                    alai_red += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+						* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai_when_red
+						* patch[0].area;
+                    acanopysubl += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+                        * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].sublimation //output snow sublmiation
+                        * patch[0].area;
+                    aheight += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height
+							* patch[0].area; //output height
+                    awoodc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction	* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_crootc
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_crootc
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_store
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_store
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_store
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_transfer
+						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cpool)
+							* patch[0].area; //output plant carbon
+                    ags += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].gs
+							* patch[0].area; //output gs NREN 20200202
+                    aga += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
+							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].ga
+							* patch[0].area; //output ga 20200202
 				}
 			}
 		}
@@ -202,20 +251,29 @@ void	output_hillslope(				int basinID,
 
 	adetention_stor /=aarea;
 	acanopy_stor /=aarea;
-
 	alitter_stor /=aarea;
 
-	//adetention_stor_flux /=aarea;
-	//acanopy_stor_flux /=aarea;
-  //  arz_stor_flux /=aarea;
-//	asat_deficit_flux /=aarea;
-	//asnowpack_flux /=aarea;
+    /* add new output */
+    aPET /=aarea;
+    asublimation /=aarea;
+    acanopysubl /=aarea;
+    aheight /=aarea;
+    awoodc /=aarea;
+    alai_red /=aarea;
 
-   // aunsat_stor_preday = aunsat_storage;
-  //  aunsat_stor_flux = aunsat_storage - aunsat_stor_preday;
+    //new NREN 20200202
+    agsurf /= aarea;
+    apotential_exfil /= aarea;
+    arootzoneS /= aarea;
+    ags /= aarea;
+    aga /= aarea;
+   asoil_potential_evaporation /=aarea;
+    asoil_exfiltration_sat_zone /= aarea;
+    asoil_exfiltration_unsat_zone /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+
+	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -241,24 +299,29 @@ void	output_hillslope(				int basinID,
 
 		        /* NREN add more */
 		aprecip*1000.0,
-		aevap_surface *1000.0,
+		aevap_surface *1000.0, //evap including canopy sublimation
 		asoil_evap *1000.0,
 		arz_stor *1000.0,
-		//arz_stor_flux *1000.0,
 		adetention_stor*1000.0,
 		acanopy_stor *1000.0,
-		//adetention_stor_flux *1000.0,
-		//acanopy_stor_flux*1000.0,
-
 		alitter_stor *1000.0,
+		hillslope[0].area,
+		// add more output
+		aPET*1000.0,
+		asublimation*1000.0, // this snowpack ground sublimitation
+		acanopysubl*1000.0, // this is canopy snow sublimation
+		aheight, //what is the unit
+		awoodc,
+		alai_red,
 
-        //asat_deficit_flux*1000.0,
-        //aunsat_stor_flux*1000.0,
-        //asnowpack_flux *1000.0,
-
-
-
-		hillslope[0].area
-		);
+		//more 2020
+		agsurf,
+		apotential_exfil*1000,
+		asoil_potential_evaporation*1000,
+		arootzoneS,
+		ags,
+		aga,
+		asoil_exfiltration_sat_zone*1000,
+		asoil_exfiltration_unsat_zone*1000);
 	return;
 } /*end output_hillslope*/

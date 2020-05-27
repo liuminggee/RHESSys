@@ -643,7 +643,7 @@ void	canopy_stratum_daily_F(
 		&(dum),
 		-1*stratum[0].defaults[0][0].epc.ext_coef,
 		stratum[0].gap_fraction,
-		stratum[0].epv.proj_pai, //DNOT Change here 20181101
+		stratum[0].epv.proj_pai, //DNOT Change here 20181101 this is for psn
 		//stratum[0].epv.proj_pai_when_red, //NREN 20180804 20181030 Ning Ren
 		basin[0].theta_noon,
 		PAR_reflectance,
@@ -2038,7 +2038,9 @@ void	canopy_stratum_daily_F(
            leaf_year_delay = world[0].defaults[0].beetle[0].leaf_year_delay;
            year_delay = world[0].defaults[0].beetle[0].year_delay;  // this is the snag delay time
 
-        if (julday(clim_event.edate) + 365*2.5 < julday(current_date)) { // what does this mean? to make sure the attack happens 3 years before
+        // this is to make sure if you have multiple attack, the current date is only updating the red needle and snag that corresponding the correct output break sequency
+        // so here instead of hard coded as 2.5 years or 180 days, we need to figure out a better way that
+        if (julday(clim_event.edate) + 0.8*leaf_year_delay*365 < julday(current_date)) { // what does this mean? to make sure the attack happens half year before the attack
 
        for (inx=0; inx < world[0].defaults[0].beetle[0].num_snag_sequence; inx=inx+24){ // here 300 is hard coded here, should figure out some other method.
 
@@ -2067,7 +2069,8 @@ void	canopy_stratum_daily_F(
                   {
 
                    if (inx ==0) {
-                   // printf(" \n updating the leaf pool1 the inx is %d \n", inx);
+                      if(stratum[0].ID == 7788) {
+                   printf(" \n updating the leaf pool1 the inx is %d \n", inx); } // end if at stratum.ID
                     stratum[0].cs.redneedlec = stratum[0].redneedle_sequence.seq[inx].Cvalue;// there is getting the wrong index of value or call stratum first they call the daily so no value?
                     stratum[0].ns.redneedlen = stratum[0].redneedle_sequence.seq[inx].Nvalue;
                     stratum[0].cs.delay_redneedlec -= stratum[0].redneedle_sequence.seq[inx].Cvalue; //move out the delayed snag pool to ready to decay pool (decaying pool )
@@ -2076,7 +2079,8 @@ void	canopy_stratum_daily_F(
 
                     }
                     else if (inx >0) {
-                  //  printf(" updating the leaf pool 2, the inx is %d \n", inx);
+                        if (stratum[0].ID == 7788) {
+                    printf(" updating the leaf pool 2, the inx is %d \n", inx);}
                     stratum[0].cs.redneedlec += stratum[0].redneedle_sequence.seq[inx].Cvalue;
                     stratum[0].ns.redneedlen += stratum[0].redneedle_sequence.seq[inx].Nvalue;
                     stratum[0].cs.delay_redneedlec -= stratum[0].redneedle_sequence.seq[inx].Cvalue; //move out the delayed snag pool to ready to decay pool (decaying pool )
@@ -2090,7 +2094,8 @@ void	canopy_stratum_daily_F(
                    {
 
               if (inx ==0) {
-                  //  printf(" updating the snag pool the inx is %d\n", inx);
+                  if (stratum[0].ID == 7788) {
+                    printf(" updating the snag pool the inx is %d\n", inx); }
                     stratum[0].cs.snagc = stratum[0].snag_sequence.seq[inx].Cvalue;// there is getting the wrong index of value or call stratum first they call the daily so no value?
                     stratum[0].ns.snagn = stratum[0].snag_sequence.seq[inx].Nvalue; // here need to change
                     stratum[0].cs.delay_snagc -= stratum[0].snag_sequence.seq[inx].Cvalue; //move the delayed(Wating ) snag pool to ready to decay (decaying pool)
@@ -2098,11 +2103,13 @@ void	canopy_stratum_daily_F(
 
                     }
               else if (inx >0) {
+                    if (stratum[0].ID == 7788) {
+                printf("updating the snag pool2 the inx is %d\n", inx); }//why??                                                       }
                 stratum[0].cs.snagc += stratum[0].snag_sequence.seq[inx].Cvalue;
                 stratum[0].ns.snagn += stratum[0].snag_sequence.seq[inx].Nvalue;
                 stratum[0].cs.delay_snagc -= stratum[0].snag_sequence.seq[inx].Cvalue; //move the delayed(Wating ) snag pool to ready to decay (decaying pool)
                 stratum[0].ns.delay_snagn -= stratum[0].snag_sequence.seq[inx].Nvalue;  //NREN 20180728
-              //  printf("updating the snag pool2 the inx is %d\n", inx); //why??
+              
                              /*first move the snag _sequences to the dacay pool */
                 }
                 break;
