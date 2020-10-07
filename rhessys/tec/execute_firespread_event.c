@@ -323,7 +323,8 @@ void execute_firespread_event(
 
 					compute_fire_effects(
 						patch,
-						pspread);
+						pspread,
+						command_line);
 				}
 
 			}
