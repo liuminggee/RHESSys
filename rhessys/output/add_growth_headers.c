@@ -93,7 +93,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -104,6 +104,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"pai_b",
 		"gpsn",
 		"plant_resp",
+                "leaf_resp",
 		"soil_resp",
 		"nitrate",
 		"sminn",
@@ -147,6 +148,20 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"overstory_stemc",
 		"overstory_biomassc",
 		"overstory_height",
+        //fire
+        "burn",
+        "litterc_burned",
+        "cwdc_to_atoms",
+        "overstory_biomassc_consumed",
+        "overstory_leafc_consumed",
+        "overstory_stemc_consumed",
+        "overstory_biomassc_mortality",
+        "overstory_leafc_mortality",
+        "overstory_stemc_mortality",
+        "understory_biomassc_consumed",
+        "understory_leafc_consumed",
+        "understory_stemc_consumed",
+
 		"total_snagc",
 		"total_snagn",
 		"total_redneedlec",
@@ -337,7 +352,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].daily;
 	fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -377,7 +392,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"mresp",
 		"gresp",
 		"psn_to_cpool","age","root_depth","gwseasonday","lfseasonday","gsi", "nlimit",
-		"fleaf","froot","fwood","Nuptake","smin2pl","retrans2pl","mort_fract");
+		"fleaf","froot","fwood","Nuptake","smin2pl","retrans2pl","mort_fract",
+		"assim_sunlit", "assim_shade", "trans_sunlit", "trans_shade", "leafc_age1", "leafc_age2", "proj_lai_sunlit","proj_lai_shade");
 
   /*--------------------------------------------------------------*/
 	/* Shadow	Daily 			                                   				*/
@@ -441,8 +457,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
          "cwdn",
          "psn","cpool", "mortfract","height","rootdepth");
 	}
-	
-	
+
+
 	if (command_line[0].f !=NULL) {
 	  /*--------------------------------------------------------------*/
 	  /*	Yearly 							*/
@@ -466,8 +482,8 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
            "cwdn",
            "psn","cpool", "mortfract","height","rootdepth");
 	}
-	
-	
+
+
 
 
 	return;
