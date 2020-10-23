@@ -236,7 +236,7 @@ void compute_fire_effects(
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed); // + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
 					//new outputs
 					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
@@ -343,7 +343,7 @@ void compute_fire_effects(
 				//canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
                 /* Determine the amount of carbon consumed in the understory subtarget canopy */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed); // + litter_c_consumed;
+					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
 					//new outputs
 					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
@@ -562,11 +562,11 @@ void compute_fire_effects(
             for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
             for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 
-			/* Calculates metrics for targer canopy */
+			// Calculates metrics for targer canopy
 			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
-			/* Calculates metrics for next lowest canopy (subtarget canopy) */
+			// Calculates metrics for next lowest canopy (subtarget canopy)
 			if (patch[0].num_layers > (layer+1)){
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
 				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
