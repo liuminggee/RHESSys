@@ -318,8 +318,10 @@ void execute_firespread_event(
 				}
 
 				*/
+
 				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
 				{
+                    //printf("calling WMFire: pspread is %lf \n, burn is %lf \n", pspread, world[0].fire_grid[i][j].burn);
 
 					compute_fire_effects(
 						patch,

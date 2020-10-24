@@ -157,11 +157,26 @@ void compute_fire_effects(
                 canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
                 canopy_target[0].fe.canopy_subtarget_rootc = canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc + canopy_subtarget[0].cs.frootc;
 
-			} else {
-				canopy_target[0].fe.canopy_subtarget_height = 0;
-				canopy_target[0].fe.canopy_subtarget_biomassc = 0;
+                // add the over story NREN why do i need overstory
+                canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
+                    canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
+                    canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
+                    canopy_target[0].cs.frootc + canopy_target[0].cs.cpool;
 
-            // add the over story NREN
+
+                canopy_target[0].fe.canopy_target_leafc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc;
+                canopy_target[0].fe.canopy_target_stemc = canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc;
+                canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
+
+
+			} else {
+				canopy_target[0].fe.canopy_subtarget_height = 0.0;
+				canopy_target[0].fe.canopy_subtarget_biomassc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
+
+            // add the over story NREN why do i need overstory why not put it in previous section too
                 canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
                     canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
                     canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
@@ -580,9 +595,26 @@ void compute_fire_effects(
                 canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
                 canopy_target[0].fe.canopy_subtarget_rootc = canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc + canopy_subtarget[0].cs.frootc;
 
+                            // add the over story NREN
+            canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
+                    canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
+                    canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc +
+                    canopy_target[0].cs.frootc + canopy_target[0].cs.cpool;
+
+
+            canopy_target[0].fe.canopy_target_leafc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc;
+            canopy_target[0].fe.canopy_target_stemc = canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc;
+            canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
+
+
+
+
                 } else {
 				canopy_target[0].fe.canopy_subtarget_height = 0;
 				canopy_target[0].fe.canopy_subtarget_biomassc = 0;
+				canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
+				canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
 
             // add the over story NREN
             canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
