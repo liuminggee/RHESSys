@@ -148,10 +148,14 @@ void compute_fire_effects(
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
 				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
 
-				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc +
+				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc + // for output
 						canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
 						canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
 						canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
+
+  				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc + // for calculating the overstory pburn
+						canopy_subtarget[0].cs.live_stemc +
+						canopy_subtarget[0].cs.dead_stemc;
 
                 canopy_target[0].fe.canopy_subtarget_leafc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc;
                 canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
@@ -171,6 +175,7 @@ void compute_fire_effects(
 
 			} else {
 				canopy_target[0].fe.canopy_subtarget_height = 0.0;
+				canopy_target[0].fe.canopy_subtarget_c = 0.0;
 				canopy_target[0].fe.canopy_subtarget_biomassc = 0.0;
 				canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
 				canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
@@ -251,8 +256,8 @@ void compute_fire_effects(
 					canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
 					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
-
+					canopy_target[0].fe.understory_biomassc_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+                    canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 					//new outputs
 					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 					canopy_target[0].fe.understory_stemc_consumed = canopy_target[0].fe.canopy_subtarget_stemc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
@@ -267,7 +272,7 @@ void compute_fire_effects(
                     // litter
                         canopy_target[0].fe.acc_year.litter_c_consumed += litter_c_consumed; //should be here so not double counts
                     // understory
-                        canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;// including litter
+                        canopy_target[0].fe.acc_year.understory_biomassc_consumed +=  canopy_target[0].fe.understory_biomassc_consumed;// including litter
                         canopy_target[0].fe.acc_year.understory_leafc_consumed += canopy_target[0].fe.understory_leafc_consumed;
                         canopy_target[0].fe.acc_year.understory_stemc_consumed += canopy_target[0].fe.understory_stemc_consumed;
                         canopy_target[0].fe.acc_year.understory_rootc_consumed += canopy_target[0].fe.understory_rootc_consumed;
@@ -374,7 +379,7 @@ void compute_fire_effects(
                     // litter
                         canopy_target[0].fe.acc_year.litter_c_consumed += litter_c_consumed; //should be here so not double counts
                     // understory
-                        canopy_target[0].fe.acc_year.understory_c_consumed +=  canopy_target[0].fe.understory_c_consumed;// including litter
+                        canopy_target[0].fe.acc_year.understory_biomassc_consumed +=  canopy_target[0].fe.understory_biomassc_consumed;// including litter
                         canopy_target[0].fe.acc_year.understory_leafc_consumed += canopy_target[0].fe.understory_leafc_consumed;
                         canopy_target[0].fe.acc_year.understory_stemc_consumed += canopy_target[0].fe.understory_stemc_consumed;
                         canopy_target[0].fe.acc_year.understory_rootc_consumed += canopy_target[0].fe.understory_rootc_consumed;

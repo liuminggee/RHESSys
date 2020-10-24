@@ -320,7 +320,7 @@ void	output_growth_basin(
                                  strata->fe.overstory_stemc_mortality * p_over;
                         /* fire burn understory */
                         aunderstory_biomassc_consumed += strata->cover_fraction * patch[0].area *
-                                 strata->fe.understory_c_consumed * p_over; //p_over to make sure overstory only calculated once
+                                 strata->fe.understory_biomassc_consumed * p_over; //p_over to make sure overstory only calculated once
                         aunderstory_leafc_consumed += strata->cover_fraction * patch[0].area *
                                  strata->fe.understory_leafc_consumed * p_over;// p_over correct don't use p_under, since this fe is saved all in overstory
                         aunderstory_stemc_consumed += strata->cover_fraction * patch[0].area *
@@ -337,7 +337,7 @@ void	output_growth_basin(
                         strata[0].fe.overstory_leafc_mortality = 0.0;
                         strata[0].fe.overstory_stemc_mortality = 0.0;
                         /* fire burn understory */
-                        strata[0].fe.understory_c_consumed = 0.0; //p_over to make sure overstory only calculated once
+                        strata[0].fe.understory_biomassc_consumed = 0.0; //p_over to make sure overstory only calculated once
                         strata[0].fe.understory_leafc_consumed = 0.0;
                         strata[0].fe.understory_stemc_consumed = 0.0; // here is correct too, so make zero after output the zero layer all saved there
                         /* cwd burned */

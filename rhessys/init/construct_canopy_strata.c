@@ -572,8 +572,10 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].fe.canopy_subtarget_prop_mort_consumed = 0.0;
 	canopy_strata[0].fe.canopy_subtarget_prop_c_consumed = 0.0;
 	canopy_strata[0].fe.canopy_subtarget_biomassc = 0.0;
+	canopy_strata[0].fe.canopy_subtarget_c = 0.0;
 
 	canopy_strata[0].fe.understory_c_consumed = 0.0;
+	canopy_strata[0].fe.understory_biomassc_consumed = 0.0;
 	canopy_strata[0].fe.understory_leafc_consumed = 0.0;
 	canopy_strata[0].fe.understory_stemc_consumed = 0.0;
     canopy_strata[0].fe.understory_rootc_consumed = 0.0;
@@ -607,9 +609,11 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].fe.acc_year.canopy_subtarget_prop_mort = 0.0;
 	canopy_strata[0].fe.acc_year.canopy_subtarget_prop_mort_consumed = 0.0;
 	canopy_strata[0].fe.acc_year.canopy_subtarget_prop_c_consumed = 0.0;
-	//canopy_strata[0].fe.acc_year.canopy_subtarget_c = 0.0;
+	canopy_strata[0].fe.acc_year.canopy_subtarget_c = 0.0;
 
 	canopy_strata[0].fe.acc_year.litter_c_consumed = 0.0;
+
+	canopy_strata[0].fe.acc_year.understory_biomassc_consumed = 0.0;
 	canopy_strata[0].fe.acc_year.understory_c_consumed = 0.0;
 	canopy_strata[0].fe.acc_year.understory_leafc_consumed = 0.0;
 	canopy_strata[0].fe.acc_year.understory_stemc_consumed = 0.0;
