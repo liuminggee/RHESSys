@@ -704,16 +704,28 @@ void		patch_daily_F(
     	if (patch[0].base_stations != NULL) {       // this means in the world file you need to modify the patch num_basestations=1 and also specify another basestationID
 		inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
 
-               //
-		if (inx > -999) {
+		if (inx > -999) { // here control the inx just 24 each, because other inx may smaller than -999
 
 			clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+
+            if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
+                 printf("\n checking beetle attack squence before while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event year is %d \n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year);}
+
 			while (julday(clim_event.edate) < julday(current_date)) {
 				patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx += 1;
 				inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
 				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
+
+				if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
+                 printf("\n checking beetle attack squence in while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event year is %d \n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year);}
+
 				}
-			if ((clim_event.edate.year != 0) && (clim_event.value > 1e-6)&&( julday(clim_event.edate) == julday(current_date)) ) {
+            if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
+                 printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event year is %d \n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year);}
+			if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				attack_mortality = clim_event.value;
               //initialize the snage_sequences c and n
              /*  if (inx ==0) {  // here 300 is hard coded, it is means most 300/24 12.5 events
