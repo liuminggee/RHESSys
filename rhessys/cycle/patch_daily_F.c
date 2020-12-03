@@ -722,6 +722,11 @@ void		patch_daily_F(
                              patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);//}
 
 				}
+
+				// sometime the chcking overshoot the inx;
+				int inx2 = floor(inx/24)*24;
+				inx = inx2;
+
             if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
                  printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
                              patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
