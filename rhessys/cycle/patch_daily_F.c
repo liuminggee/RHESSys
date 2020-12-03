@@ -706,6 +706,8 @@ void		patch_daily_F(
 
 		if (inx > -999) { // here control the inx just 24 each, because other inx may smaller than -999
 
+            int inx2 = floor(inx/24)*24;
+            inx = inx2;
 			clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
 
             if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
@@ -724,8 +726,9 @@ void		patch_daily_F(
 				}
 
 				// sometime the chcking overshoot the inx;
-				int inx2 = floor(inx/24)*24;
+				inx2 = floor(inx/24)*24;
 				inx = inx2;
+				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
 
             if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
                  printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
