@@ -709,23 +709,23 @@ void		patch_daily_F(
 			clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
 
             if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
-                 printf("\n checking beetle attack squence before while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event year is %d \n",
-                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year);}
+                 printf("\n checking beetle attack squence before while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
 
 			while (julday(clim_event.edate) < julday(current_date)) {
 				patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx += 1;
 				inx = patch[0].base_stations[0][0].dated_input[0].beetle_attack.inx;
 				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
 
-				if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
-                 printf("\n checking beetle attack squence in while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event year is %d \n",
-                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year);}
+				//if (patch[0].ID == 7788){
+                 printf("\n checking beetle attack squence in while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);//}
 
 				}
             if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
-                 printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event year is %d \n",
-                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year);}
-			if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && ( julday(clim_event.edate) == julday(current_date)) ) {
+                 printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
+                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
+			if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && (clim_event.value <= 1) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				attack_mortality = clim_event.value;
               //initialize the snage_sequences c and n
              /*  if (inx ==0) {  // here 300 is hard coded, it is means most 300/24 12.5 events
