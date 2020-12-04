@@ -264,7 +264,17 @@ struct  default_object
         struct  spinup_default            *spinup;
         };
 
+/*----------------------------------------------------------*/
+/*      Define target object                                */
+/*----------------------------------------------------------*/
+       struct target_object {
+              double lai;
+              double total_stemc;
+              double height;
+              double age;
+              int    met;
 
+       };
 /*----------------------------------------------------------*/
 /*      Define the world object.                            */
 /*----------------------------------------------------------*/
@@ -1619,6 +1629,7 @@ struct spinup_default {
         int ID;
         double tolerance;   // percent as fraction of 1
         double max_years;   /* years */
+        int    target_type; // to specify which layers of LAI is used, 1 is use stratum LAI and 2 is use patch LAI
         };
 
 struct spinup_object
@@ -1850,6 +1861,7 @@ struct patch_object
         struct  accumulate_patch_object acc_year;
         struct  rooting_zone_object     rootzone;
         struct  zone_object             *zone; /* parent zone */
+        struct  target_object   target; /* this target is only for use LAI as target to spin up REN 20201203*/
 
 
 /*----------------------------------------------------------*/
@@ -2930,16 +2942,7 @@ struct  stratum_default
 	double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
 };
 
-/*----------------------------------------------------------*/
-/*      Define target object                                */
-/*----------------------------------------------------------*/
-       struct target_object {
-              double lai;
-              double total_stemc;
-              double height;
-              double age;
-              int    met;
-       };
+
 /*----------------------------------------------------------*/
 /*      Define accumulator object                           */
 /*----------------------------------------------------------*/

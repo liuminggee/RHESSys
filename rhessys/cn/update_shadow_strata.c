@@ -22,6 +22,7 @@
 
 void	update_shadow_strata(
 							   struct	world_object		      *world,
+							   struct   patch_object              *patch,
 							   struct canopy_strata_object 	*stratum,
                  struct canopy_strata_object  *shadow_strata,
 							   struct command_line_object	  *command_line,
@@ -41,6 +42,11 @@ void	update_shadow_strata(
 	/*	then check if targets have been met. If so, set target.met flag to 1 	*/
 	/*------------------------------------------------------------------------*/
 
+
+    struct canopy_strata_object *canopy_target;
+	struct canopy_strata_object *canopy_subtarget;
+	int c;
+	int layer;
  // printf("\ntarget met: %d", stratum[0].target.met);
 
   if(stratum[0].target.met != 1){
@@ -98,6 +104,28 @@ void	update_shadow_strata(
     shadow_strata[0].epv.min_vwc = stratum[0].epv.min_vwc;
   }
 
+  /* use patch level LAI as target instead of only use overstory LAI NREN 20201203 */
+   if (world[0].defaults[0].spinup[0].target_type == 2) {
+    if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) {
+
+        // prevent the patch reach target too soon because of understory fast grow at the beginning
+
+        for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+            for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
+                 canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+                if ((layer+1) < patch[0].num_layers ){
+                  canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
+                   }
+                   if (canopy_target[0].epv.proj_lai > canopy_subtarget[0].epv.proj_lai) { // only if overstory is larger than understory
+
+                        stratum[0].target.met = 1;
+                        } //if
+            } // for c
+      }//for layer
+    } // if patchi lai
+   } //if world
+  else if (world[0].defaults[0].spinup[0].target_type == 1){ //default is one
+
   if (stratum[0].epv.proj_lai >= (stratum[0].target.lai - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.lai)) {
     if ((stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc) >= (stratum[0].target.total_stemc - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.total_stemc)) {
       if (stratum[0].epv.height >= (stratum[0].target.height - world[0].defaults[0].spinup[0].tolerance * stratum[0].target.height)) {
@@ -107,6 +135,7 @@ void	update_shadow_strata(
       }
     }
   }
+}
 
  if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month ==9 && current_date.day==30){
     stratum[0].target.met = 1;

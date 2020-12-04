@@ -243,14 +243,14 @@ void	canopy_stratum_daily_F(
 
   void	update_shadow_strata(
 	  struct	world_object		      *world,
+	  struct    patch_object              *patch,
 	  struct canopy_strata_object 	*stratum,
-    struct canopy_strata_object   *shadow_strata,
+      struct canopy_strata_object   *shadow_strata,
 	  struct command_line_object	  *command_line,
 	  struct date 			            current_date);
 
 
    void compute_snag_decay(
-
 					  struct cstate_struct *cs,
 					  struct nstate_struct *ns,
 					  struct cdayflux_patch_struct *cdf, //daily carbon flux
@@ -1975,7 +1975,7 @@ void	canopy_stratum_daily_F(
 	/*	have been met                                                       	*/
 	/*------------------------------------------------------------------------*/
 	if(command_line[0].vegspinup_flag > 0){
-    update_shadow_strata(world, stratum, shadow_strata, command_line, current_date);
+    update_shadow_strata(world, patch, stratum, shadow_strata, command_line, current_date);
   }
 
    /***********************************************************************/
@@ -2108,7 +2108,7 @@ void	canopy_stratum_daily_F(
                 stratum[0].ns.snagn += stratum[0].snag_sequence.seq[inx].Nvalue;
                 stratum[0].cs.delay_snagc -= stratum[0].snag_sequence.seq[inx].Cvalue; //move the delayed(Wating ) snag pool to ready to decay (decaying pool)
                 stratum[0].ns.delay_snagn -= stratum[0].snag_sequence.seq[inx].Nvalue;  //NREN 20180728
-              
+
                              /*first move the snag _sequences to the dacay pool */
                 }
                 break;
