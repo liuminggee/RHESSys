@@ -41,6 +41,7 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 	/*	Local function definition.					                				*/
 	/*--------------------------------------------------------------*/
 	struct canopy_strata_object *find_stratum(int, int, int, int, int, struct world_object *);
+	struct patch_object *find_patch( int, int, int,struct basin_object *);
 
 	void *alloc(size_t, char *, char *);
   struct target_read {
@@ -103,7 +104,7 @@ void *construct_spinup_thresholds(char *spinup_thresholds_filename,
 
     strata = find_stratum(stratum_ID, patch_ID, zone_ID, hill_ID, basin_ID, world);
     /* search patch for lai target NREN 20201203*/
-    patch = find_patch(patch_ID, zone_ID, hill_ID, basin_ID, world);
+    patch = find_patch(patch_ID, zone_ID, hill_ID, world[0].basins[0]);
 
 	  if (strata == NULL) {
 		  fprintf(stderr,	"FATAL ERROR: Could not find strata %d \n", stratum_ID);
