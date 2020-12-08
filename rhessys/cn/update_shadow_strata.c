@@ -109,21 +109,25 @@ void	update_shadow_strata(
     if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) {
 
         // prevent the patch reach target too soon because of understory fast grow at the beginning
-        printf("\n meet the patch before check over-under ratio target:%d \n, patch LAI is %lf, target LAI is %lf", patch[0].ID, patch[0].lai, patch[0].target.lai);
+        printf("\n for patch before check over-under ratio target: ID is: %d, patch LAI is %lf, target LAI is %lf \n", patch[0].ID, patch[0].lai, patch[0].target.lai);
         for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
             for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
                  canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+                 canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])]; //initialize the understory too
                 if ((layer+1) < patch[0].num_layers ){
                   canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
                    }
-                   if (canopy_target[0].epv.proj_lai > canopy_subtarget[0].epv.proj_lai) { // only if overstory is larger than understory
+                else {
+                    canopy_subtarget[0].epv.proj_lai = 0;
+                    }
+                   if (canopy_target[0].epv.proj_lai >= canopy_subtarget[0].epv.proj_lai) { // only if overstory is larger than understory
 
                         stratum[0].target.met = 1;
                        // printf("\n patch target meet1 for stratum: %d, target.met %d \n", stratum[0].ID, stratum[0].target.met);
                         } //if
             } // for c
       }//for layer
-      printf("\n patch target meet2 after check over-under ratio for stratum: %d, target.met %d \n", stratum[0].ID, stratum[0].target.met);
+      printf("\n patch target meet2 after check over-under ratio for stratumID is: %d, target.met %d \n", stratum[0].ID, stratum[0].target.met);
     } // if patchi lai
    } //if world
   else if (world[0].defaults[0].spinup[0].target_type == 1){ //default is one
@@ -141,7 +145,7 @@ void	update_shadow_strata(
 
  if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month ==9 && current_date.day==30 && stratum[0].target.met != 1){
     stratum[0].target.met = 1;
-    printf("\n exceeded max years for patch:%d, simluated LAI is %lf, target LAI is %lf, simulate patch LAI is %lf  \n", stratum[0].ID, stratum[0].epv.proj_lai, stratum[0].target.lai, patch[0].lai);
+    printf("\n exceeded max years for stratumID:%d, simluated LAI is %lf, target LAI is %lf, simulate patch LAI is %lf  \n", stratum[0].ID, stratum[0].epv.proj_lai, stratum[0].target.lai, patch[0].lai);
   }
 
  }//52 if target not meet
