@@ -24,7 +24,7 @@ void	update_shadow_strata(
 							   struct	world_object		      *world,
 							   struct   patch_object              *patch,
 							   struct canopy_strata_object 	*stratum,
-                 struct canopy_strata_object  *shadow_strata,
+                                struct canopy_strata_object  *shadow_strata,
 							   struct command_line_object	  *command_line,
 							   struct date 			            current_date)
 {
@@ -102,14 +102,14 @@ void	update_shadow_strata(
     shadow_strata[0].epv.wstress_days = stratum[0].epv.wstress_days;
     shadow_strata[0].epv.max_fparabs = stratum[0].epv.max_fparabs;
     shadow_strata[0].epv.min_vwc = stratum[0].epv.min_vwc;
-  }
+  //}
 
   /* use patch level LAI as target instead of only use overstory LAI NREN 20201203 */
    if (world[0].defaults[0].spinup[0].target_type == 2) {
     if (patch[0].lai >= patch[0].target.lai *(1 - world[0].defaults[0].spinup[0].tolerance)) {
 
         // prevent the patch reach target too soon because of understory fast grow at the beginning
-
+        printf("\n meet the patch before check over-under ratio target:%d \n, patch LAI is %lf, target LAI is %lf", patch[0].ID, patch[0].lai, patch[0].target.lai);
         for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
             for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
                  canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
@@ -119,9 +119,11 @@ void	update_shadow_strata(
                    if (canopy_target[0].epv.proj_lai > canopy_subtarget[0].epv.proj_lai) { // only if overstory is larger than understory
 
                         stratum[0].target.met = 1;
+                       // printf("\n patch target meet1 for stratum: %d, target.met %d \n", stratum[0].ID, stratum[0].target.met);
                         } //if
             } // for c
       }//for layer
+      printf("\n patch target meet2 after check over-under ratio for stratum: %d, target.met %d \n", stratum[0].ID, stratum[0].target.met);
     } // if patchi lai
    } //if world
   else if (world[0].defaults[0].spinup[0].target_type == 1){ //default is one
@@ -137,10 +139,11 @@ void	update_shadow_strata(
   }
 }
 
- if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month ==9 && current_date.day==30){
+ if((current_date.year - command_line[0].start_date.year > world[0].defaults[0].spinup[0].max_years) && current_date.month ==9 && current_date.day==30 && stratum[0].target.met != 1){
     stratum[0].target.met = 1;
-    printf("\nexceeded max years for patch:%d", stratum[0].ID);
+    printf("\n exceeded max years for patch:%d, simluated LAI is %lf, target LAI is %lf, simulate patch LAI is %lf  \n", stratum[0].ID, stratum[0].epv.proj_lai, stratum[0].target.lai, patch[0].lai);
   }
 
+ }//52 if target not meet
 	return;
 } /*end update_shadow_strata.c*/
