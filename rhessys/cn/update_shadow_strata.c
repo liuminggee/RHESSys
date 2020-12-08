@@ -127,7 +127,7 @@ void	update_shadow_strata(
                         } //if
             } // for c
       }//for layer
-      printf("\n patch target meet2 after check over-under ratio for stratumID is: %d, target.met %d \n", stratum[0].ID, stratum[0].target.met);
+      printf("\n patch target meet2 after check over-under ratio for stratumID is: %d, simulate patch LAI is %lf, target.met %d \n", stratum[0].ID, stratum[0].epv.proj_lai, stratum[0].target.met);
     } // if patchi lai
    } //if world
   else if (world[0].defaults[0].spinup[0].target_type == 1){ //default is one
