@@ -123,7 +123,7 @@ void	update_shadow_strata(
                    if (canopy_target[0].epv.proj_lai >= canopy_subtarget[0].epv.proj_lai) { // only if overstory is larger than understory
 
                         stratum[0].target.met = 1;
-                       // printf("\n patch target meet1 for stratum: %d, target.met %d \n", stratum[0].ID, stratum[0].target.met);
+                        printf("\n patch target meet1 for stratum: %d, canopy_target LAI %lf, canopy_subtarget LAI %lf \n", stratum[0].ID, canopy_target[0].epv.proj_lai, canopy_subtarget[0].epv.proj_lai );
                         } //if
             } // for c
       }//for layer
