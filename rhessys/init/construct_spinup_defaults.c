@@ -88,6 +88,9 @@ struct spinup_default *construct_spinup_defaults(
 
                 /* add one paramter to control the target type, type = 1 is use stratum LAI and type = 2 use patch LAI*/
                 default_object_list[i].target_type = getIntParam(&paramCnt, &paramPtr, "target_type", "%ld", 1, 1);
+
+                /* add one paramter to control make sure the target met stratum is overstory to prevent early reach of target*/
+                default_object_list[i].max_ID = getIntParam(&paramCnt, &paramPtr, "max_ID", "%ld", 100000, 1);
                 /*--------------------------------------------------------------*/
                 /*              Close the ith default file.                     */
                 /*--------------------------------------------------------------*/
