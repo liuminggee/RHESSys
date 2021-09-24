@@ -28,20 +28,20 @@
 #include <stdio.h>
 #include "rhessys.h"
 
-double	leaf_conductance_CO2_curve(	double CO2, double coef_CO2) 	
+double	leaf_conductance_CO2_curve(	double CO2, double coef_CO2)
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration									*/
 	/*--------------------------------------------------------------*/
 	/*--------------------------------------------------------------*/
-	/*	Local variable definition.	
+	/*	Local variable definition.
 	/*--------------------------------------------------------------*/
 	double m_CO2;
 	/*--------------------------------------------------------------*/
 	/*	Estimate multiplier on stomatal_conductance_max to get	*/
 	/*	mean stratum conductance reduction			*/
 	/*--------------------------------------------------------------*/
-	m_CO2 = (1 - (1 - coef_CO2)*(CO2/350-1));
+	m_CO2 = (1 - (1 - coef_CO2)*(CO2/350-1)); //by default coef_CO2 is 1 so m_CO2 is always zero
 	m_CO2 = min(1.0, m_CO2);
 	m_CO2 = max(0.0, m_CO2);
 

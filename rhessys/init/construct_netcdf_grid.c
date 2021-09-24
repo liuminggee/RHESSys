@@ -338,7 +338,7 @@ struct base_station_object *construct_netcdf_grid (
                     else
                         base_station[0].daily_clim[0].tmin[j] =  (double)tempdata[j];
                 } else if (var == CLM_RAIN) {
-                    base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult;
+                    base_station[0].daily_clim[0].rain[j] = (double)tempdata[j] * base_station_ncheader[0].precip_mult; //for build drought *0.8
 
                     //T.N Jul 2017: warning for NA precip values
                     //Adopted by N.R. 2019/05/30
