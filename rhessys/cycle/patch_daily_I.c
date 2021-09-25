@@ -156,7 +156,8 @@ void		patch_daily_I(
 		struct  litter_c_object *,
 		struct  litter_n_object *,
 		struct  cdayflux_patch_struct *,
-		struct  ndayflux_patch_struct *);
+		struct  ndayflux_patch_struct *,
+		struct	patch_object *, double);
 
 	void    sort_patch_layers(struct patch_object *);
 
@@ -179,11 +180,15 @@ void		patch_daily_I(
 	int	layer, inx;
 	int	stratum;
 	double	cnt, count, theta;
+	double et;
 
 	double  edible_leafc, grazing_mean_nc, grazing_Closs;
 	struct  canopy_strata_object *strata;
 	struct  dated_sequence	clim_event;
 
+    et = patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone + //transpiration output_basin 199
+            patch[0].evaporation + patch[0].evaporation_surf + // canopy evap + surf evaporation
+            patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone; //soil_evap
 
 	/*--------------------------------------------------------------*/
 	/*	zero out daily fluxes					*/
@@ -536,7 +541,7 @@ void		patch_daily_I(
 			&(patch[0].litter_cs),
 			&(patch[0].litter_ns),
 			&(patch[0].cdf),
-			&(patch[0].ndf)
+			&(patch[0].ndf), patch, et
 			) != 0){
 			fprintf(stderr,"fATAL ERROR: in compute_potential_decomp() ... Exiting\n");
 			exit(EXIT_FAILURE);

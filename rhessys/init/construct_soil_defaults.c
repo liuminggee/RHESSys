@@ -226,6 +226,7 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].DOC_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DOC_adsorption_rate", "%lf", 0.000023, 1);
 		default_object_list[i].DON_adsorption_rate = 	getDoubleParam(&paramCnt, &paramPtr, "DON_adsorption_rate", "%lf", 0.000001, 1);
 		default_object_list[i].interval_size = 		getDoubleParam(&paramCnt, &paramPtr, "interval_size", "%lf", INTERVAL_SIZE, 1);
+		default_object_list[i].decom_model = getIntParam(&paramCnt, &paramPtr, "decom_model", "%d", 1, 1); // 1 is default, 2 is FireBGC 3 is LandClim
 
 		/*--------------------------------------------------------------*/
 		/* sensitivity adjustment of vertical drainage  soil paramters	*/
