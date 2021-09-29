@@ -149,7 +149,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
     /*et = patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone + //transpiration output_basin 199
             patch[0].evaporation + patch[0].evaporation_surf + // canopy evap + surf evaporation
             patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone; //soil_evap */
-    printf("\n [et (mm) %lf] \n", et*1000);
+    //printf("\n [et (mm) %lf] \n", et*1000);
     //p_lignin = 42;
     double et_year = et*365*1000 ;// this is convert daily to year and m to m, and is problematic since landclim is yearly step
     if(p_lignin > ZERO)
@@ -160,7 +160,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
     else {rate_landclim_daily = 0.0;}
 
     if (rate_landclim_daily < ZERO || isinf(rate_landclim_daily) || isnan(rate_landclim_daily)) rate_landclim_daily = 0.0;
-     printf("\n decomposition landclim [rate %lf], [et(mm) %lf] [p_lignin %lf]\n", rate_landclim_daily, et*1000, p_lignin);
+     //printf("\n decomposition landclim [rate %lf], [et(mm) %lf] [p_lignin %lf]\n", rate_landclim_daily, et*1000, p_lignin);
     } // end if line 140
     else if (patch[0].soil_defaults[0][0].decom_model == 2)
     {
@@ -175,6 +175,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
         w_scalar_bgc = 0.0;
     }
 
+    cs_litr->t_scalar = t_scalar;
+	cs_litr->w_scalar = w_scalar_bgc;
 
 	rate_scalar = w_scalar_bgc * t_scalar; // use same temperature scalar as rhessys
     } //end if line 158

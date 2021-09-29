@@ -380,7 +380,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
 		check = fprintf(outfile,
-						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 						"day",
 						"month",
 						"year",
@@ -425,7 +425,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"Kstarsoil","Kdowndirsurf","Kdowndifsurf","exfil_unsat",
 						"snow_Rnet","snow_QLE","snow_QH","snow_Qrain","snow_Qmelt",
 						"LEcanopy",
-						"SED","snow_age");
+						"SED","snow_age", "psi", "t_scalar", "w_scalar");
 
 	/*--------------------------------------------------------------*/
 	/*	Monthly							*/
