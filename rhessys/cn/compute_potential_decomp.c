@@ -175,7 +175,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
         w_scalar_bgc = 0.0;
     }
 
-    cs_litr->t_scalar = t_scalar;
+    cs_litr->t_scalar = t_scalar; //these two scalar is used in other cwd_decay too so must track,but for landclim need to consider carefully
 	cs_litr->w_scalar = w_scalar_bgc;
 
 	rate_scalar = w_scalar_bgc * t_scalar; // use same temperature scalar as rhessys
