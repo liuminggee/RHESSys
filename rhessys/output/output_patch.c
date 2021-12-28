@@ -70,7 +70,7 @@ void	output_patch(
 		}
 	}
 
-	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	check = fprintf(outfile,"%d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 					current_date.day,
 					current_date.month,
 					current_date.year,
@@ -131,8 +131,10 @@ void	output_patch(
 					patch[0].snowpack.Q_melt/86.4,
 					patch[0].LE_canopy,
 					patch[0].snowpack.energy_deficit,
-					patch[0].snowpack.surface_age, patch[0].psi, patch[0].litter_cs.t_scalar, patch[0].litter_cs.w_scalar);
-
+					patch[0].snowpack.surface_age, patch[0].psi, patch[0].litter_cs.t_scalar, patch[0].litter_cs.w_scalar,
+					patch[0].litter_cs.rate_scalar, patch[0].litter_cs.litr_decomp, patch[0].litter_cs.rate_landclim_year, patch[0].litter_cs.rate_landclim_daily,
+					patch[0].acc_year.et_decom_mean, patch[0].Tsoil);
+// output patch.psi
 
 	if (check <= 0) {
 		fprintf(stdout, "\nWARNING: output error has occured in output_patch, file");

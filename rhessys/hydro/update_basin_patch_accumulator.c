@@ -23,7 +23,7 @@
 /*											*/
 /*	PROGRAMMER NOTES								*/
 /*											*/
-/*											*/	
+/*											*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
@@ -42,7 +42,7 @@ void update_basin_patch_accumulator(
 	int b,h,p,z,c,s;
 	/*----------------------------------------------------------------------*/
 	/* initializations		                                           */
-	/*----------------------------------------------------------------------*/	
+	/*----------------------------------------------------------------------*/
 
 	/*---------------------------------------------------------------------*/
 	/*update accumulator variables                                            */
@@ -228,13 +228,28 @@ void update_basin_patch_accumulator(
 							+ patch[0].exfiltration_unsat_zone
 							+ patch[0].exfiltration_sat_zone
 							+ patch[0].evaporation_surf
-							+ +patch[0].transpiration_sat_zone
+							+ patch[0].transpiration_sat_zone
 							+ patch[0].evaporation);
 					patch[0].acc_year.et += tmp;
+					// for calculating decomposition
+
+					patch[0].acc_year.num_days += 1;
+                if (patch[0].acc_year.num_days <=365) {
+                    patch[0].acc_year.et_decom += tmp;
+					patch[0].acc_year.et_decom_mean = patch[0].acc_year.et_decom/patch[0].acc_year.num_days;
+					//printf("[num_days %d], \n", patch[0].acc_year.num_days );
+					}
+				else {
+                    patch[0].acc_year.et_decom_mean = (364 * patch[0].acc_year.et_decom_mean + tmp) / 365; //give more important ratio to ET
+                                                                    }
 
 					tmp = (patch[0].transpiration_unsat_zone
 							+ patch[0].transpiration_sat_zone);
 					patch[0].acc_year.trans += tmp;
+
+					//if(current_date.month == 9 & current_date.day == 1)
+					//printf("\n The [acc_year.et %lf], [acc_year.trans %lf], [PET %lf], \n", patch[0].acc_year.et*1000, patch[0].acc_year.trans*1000, patch[0].acc_year.PET*1000);
+
 					patch[0].acc_year.day7trans = (tmp / 14
 							+ 13 / 14 * patch[0].acc_year.day7trans);
 					patch[0].acc_year.day7pet = (patch[0].PET + patch[0].PE)
@@ -299,7 +314,7 @@ void update_basin_patch_accumulator(
 						patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
 
 					patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
-		} /* end if */		
+		} /* end if */
 	} /* end of p*/
 	} /* end of z*/
 	} /* end of h*/

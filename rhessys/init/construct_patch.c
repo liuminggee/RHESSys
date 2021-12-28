@@ -267,6 +267,9 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.maxtrans = 0.0;
 	patch[0].acc_year.day7trans = 0.0;
 	patch[0].acc_year.et = 0.0;
+	patch[0].acc_year.num_days = 0.0; //for calculating decomposition
+	patch[0].acc_year.et_decom = 0.0;
+	patch[0].acc_year.et_decom_mean = 0.0; // for calculating decomposition
 	patch[0].acc_year.snowpack = 0.0;
 	patch[0].acc_year.theta = 0.0;
 	patch[0].acc_year.streamflow = 0.0;
