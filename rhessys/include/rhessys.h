@@ -421,6 +421,10 @@ struct accumulate_patch_object
    double snowin;
    double Qin_total;
    double Qout_total;
+   //for caculating decomposition
+   int num_days;
+   double et_decom_mean;
+   double et_decom;
 };
 
 
@@ -1514,6 +1518,10 @@ struct  litter_c_object
     double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
     double t_scalar;    /* (DIM) tempertaure scalar for decomposition */
     double w_scalar;    /* (DIM) tempertaure scalar for decomposition */
+    double rate_scalar;
+    double litr_decomp;
+    double rate_landclim_year;
+    double rate_landclim_daily;
         };
 
 struct  litter_n_object
