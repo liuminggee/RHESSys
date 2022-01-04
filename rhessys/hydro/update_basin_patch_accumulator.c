@@ -171,7 +171,7 @@ void update_basin_patch_accumulator(
 
 				}
 				if ((command_line[0].output_flags.yearly == 1)
-						&& (command_line[0].p != NULL )) {
+						&& (command_line[0].p != NULL ) || command_line[0].grow_flag > 0) {// Here change condition for calculating ET for landclim model
 					patch[0].acc_year.length += 1;
 					if ((patch[0].sat_deficit - patch[0].unsat_storage)
 							> command_line[0].thresholds[SATDEF])
@@ -237,10 +237,11 @@ void update_basin_patch_accumulator(
                 if (patch[0].acc_year.num_days <=365) {
                     patch[0].acc_year.et_decom += tmp;
 					patch[0].acc_year.et_decom_mean = patch[0].acc_year.et_decom/patch[0].acc_year.num_days;
-					//printf("[num_days %d], \n", patch[0].acc_year.num_days );
+					//printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
 					}
 				else {
                     patch[0].acc_year.et_decom_mean = (364 * patch[0].acc_year.et_decom_mean + tmp) / 365; //give more important ratio to ET
+                   // printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
                                                                     }
 
 					tmp = (patch[0].transpiration_unsat_zone

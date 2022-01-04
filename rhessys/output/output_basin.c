@@ -81,6 +81,7 @@ void	output_basin(			int routing_flag,
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
+	double alitr_decomp, adecom_daily;
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
@@ -212,6 +213,8 @@ void	output_basin(			int routing_flag,
 				alitter_store += patch[0].litter.rain_stored * patch[0].area;
 				adetention_store += patch[0].detention_store*patch[0].area;
 				aacctrans += patch[0].acc_year_trans * patch[0].area;
+				alitr_decomp += patch[0].litter_cs.litr_decomp * patch[0].area;   //debug
+				adecom_daily += patch[0].litter_cs.rate_landclim_daily  * patch[0].area;
 				atranspiration += (patch[0].transpiration_sat_zone
 					+ patch[0].transpiration_unsat_zone)  *  patch[0].area;
 				alitrc += (patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c
@@ -363,6 +366,8 @@ void	output_basin(			int routing_flag,
 	abase_flow /= aarea;
 	asat_area /= aarea;
 	aacctrans /= aarea;
+	alitr_decomp /= aarea;
+	adecom_daily /= aarea;
 
 	agpsn /= aarea;
 	aresp /= aarea;
@@ -428,7 +433,7 @@ void	output_basin(			int routing_flag,
 	var_acctrans /= aarea;
 
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		date.day,
 		date.month,
 		date.year,
@@ -503,7 +508,7 @@ void	output_basin(			int routing_flag,
 		aLE_snow,
 		acLstar,
 		acdrip*1000,
-		acga*1000
+		acga*1000, alitr_decomp, adecom_daily
 		);
 	return;
 } /*end output_basin*/

@@ -157,13 +157,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	else if(patch[0].soil_defaults[0][0].decom_model == 3) // 3 landclim
     {
     /*---------------below are different decomposition models, FireBGC and landClim*/
-    // for LandClim model Meentemeyer 1978
-    //p_lignin = (cs_litr->litr4c / (cs_litr->litr1c + cs_litr->litr2c + cs_litr->litr3c + cs_litr->litr4c))*100;//0-100 this is yearly
-   // printf( "\n [p_lignin %lf], litr1c %lf, litr2c %lf, litr3c %lf, litr4c %lf", p_lignin,cs_litr->litr1c,cs_litr->litr2c, cs_litr->litr3c, cs_litr->litr4c );
-    //what is the unit of AET mm/year
-    //printf("\n [et (mm) %lf] \n", et*1000);
-    //p_lignin = 42;
-   // double et_year = et*1000 ;// et_year is actually daily mean, this is convert daily to  m to mm, and is problematic since landclim is yearly step
+
     et = patch[0].acc_year.et_decom_mean;
     double et_year = et*365*1000;
 
@@ -181,8 +175,7 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 
     if (rate_landclim_daily < ZERO || isinf(rate_landclim_daily) || isnan(rate_landclim_daily))
         rate_landclim_daily = 0.000001; // give something to start with
-    // if (patch[0].acc_year.num_days <7050 && et_year<500)
-     //  rate_landclim_daily = sqrt(rate_landclim_daily);
+
     // printf("\n decomposition landclim [rate_landclim_daily %lf], [et_year(mm) %lf] [p_lignin %lf]\n", rate_landclim_daily, et_year, p_lignin);
         /*-----------------------must track the water scalar for compute_cwd_decay.c --*/
     a=0.68; b=2.5; c=0.0012; d=2.84;
@@ -292,11 +285,12 @@ int compute_potential_decomp(double tsoil, double maxpsi,
         rate_scalar = cs_litr->w_scalar * cs_litr->t_scalar; // this is rhessyd default
         // how to assign the daily decomposition rate of landclim to different pool
         // another solution is scale up based rate_landclim_daily/(kl1_base*rate_scalar + kl2_base*rate_scalar + kl4_base*rate_scalar)
-      kl1 = rate_scalar * kl1_base; //(kl1_base + kl2_base + kl4_base + ks1_base + ks2_base + ks3_base + ks4_base); //cs_litr->litr1c/(cs_litr->litr1c + cs_litr->litr2c + cs_litr->litr3c + cs_litr->litr4c);//TODO do I include litr3c since it didn't go to soil
-      kl2 = rate_scalar * kl2_base; //(kl1_base + kl2_base + kl4_base + ks1_base + ks2_base + ks3_base + ks4_base);//cs_litr->litr2c/(cs_litr->litr1c + cs_litr->litr2c + cs_litr->litr3c + cs_litr->litr4c);
-      kl4 = rate_scalar * kl4_base; //(kl1_base + kl2_base + kl4_base + ks1_base + ks2_base + ks3_base + ks4_base);//cs_litr->litr4c/(cs_litr->litr1c + cs_litr->litr2c + cs_litr->litr3c + cs_litr->litr4c);
+      kl1 = rate_scalar * kl1_base;
+      kl2 = rate_scalar * kl2_base;
+      kl4 = rate_scalar * kl4_base;
       //printf("\n [kl1 %lf] \n", kl1);
       litr_decomp = kl1*p_l1*0.01 + kl2*p_l2*0.01 + kl4*p_lignin*0.01;
+      cs_litr->litr_decomp = litr_decomp;
       if(litr_decomp > ZERO)
       {
         rate_scalar2 = rate_landclim_daily / litr_decomp;
@@ -310,14 +304,15 @@ int compute_potential_decomp(double tsoil, double maxpsi,
       kl2 = rate_scalar * kl2_base*rate_scalar2;
       kl4 = rate_scalar * kl4_base*rate_scalar2;
 
-      ks1 = rate_scalar * ks1_base*rate_scalar2; //(kl1_base + kl2_base + kl4_base + ks1_base + ks2_base + ks3_base + ks4_base); //TODO how to calculate the soil decom together with litter or seperate
-      ks2 = rate_scalar * ks2_base*rate_scalar2; //(kl1_base + kl2_base + kl4_base + ks1_base + ks2_base + ks3_base + ks4_base);
-      ks3 = rate_scalar * ks3_base*rate_scalar2; //(kl1_base + kl2_base + kl4_base + ks1_base + ks2_base + ks3_base + ks4_base);
-      ks4 = rate_scalar * ks4_base*rate_scalar2; //(kl1_base + kl2_base + kl4_base + ks1_base + ks2_base + ks3_base + ks4_base);
+     // soil use default
+      ks1 = rate_scalar * ks1_base;// *rate_scalar2;
+      ks2 = rate_scalar * ks2_base;// *rate_scalar2;
+      ks3 = rate_scalar * ks3_base;// *rate_scalar2;
+      ks4 = rate_scalar * ks4_base;// *rate_scalar2;
 
       cs_litr->rate_landclim_year = rate_landclim;
       cs_litr->rate_landclim_daily = rate_landclim_daily;
-      cs_litr->litr_decomp = kl1*p_l1*0.01 + kl2*p_l2*0.01 + kl4*p_lignin*0.01; // this is for output the same same as R code, p unit is 0-100 not 0-1
+      //cs_litr->litr_decomp = kl1*p_l1*0.01 + kl2*p_l2*0.01 + kl4*p_lignin*0.01; // this is for output the same same as R code, p unit is 0-100 not 0-1
     //cs_litr->litr_decomp = kl1+ kl2 + kl4;
     }
 
