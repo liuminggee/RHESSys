@@ -79,6 +79,7 @@ void	output_growth_basin(
 	double alitterc_burned, aoverstory_biomassc_consumed, aoverstory_leafc_consumed, aoverstory_stemc_consumed;
 	double acwdc_to_atoms, aoverstory_biomassc_mortality, aoverstory_leafc_mortality, aoverstory_stemc_mortality;
 	double aunderstory_biomassc_consumed, aunderstory_leafc_consumed, aunderstory_stemc_consumed, aburn;
+	double alitr1_hr, alitr2_hr, alitr3_hr, alitr4_hr;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -148,6 +149,7 @@ void	output_growth_basin(
     aoverstory_biomassc_consumed = 0.0; aoverstory_leafc_consumed = 0.0, aoverstory_stemc_consumed = 0.0;
 	aoverstory_biomassc_mortality = 0.0, aoverstory_leafc_mortality = 0.0, aoverstory_stemc_mortality = 0.0;
 	aunderstory_biomassc_consumed = 0.0, aunderstory_leafc_consumed = 0.0, aunderstory_stemc_consumed = 0.0;
+	alitr1_hr = 0.0, alitr2_hr = 0.0, alitr3_hr = 0.0, alitr4_hr = 0.0;
 
 	for (h=0; h < basin[0].num_hillslopes; h++){
 		hillslope = basin[0].hillslopes[h];
@@ -209,6 +211,11 @@ void	output_growth_basin(
 					patch[0].cdf.soil2c_hr +
 					patch[0].cdf.soil3c_hr +
 					patch[0].cdf.soil4c_hr) * patch[0].area;
+				// output litter respiration for each pool
+				alitr1_hr += patch[0].cdf.litr1c_hr * patch[0].area;
+				alitr2_hr += patch[0].cdf.litr2c_hr * patch[0].area;
+				alitr3_hr += patch[0].cdf.litr3c_hr * patch[0].area;
+				alitr4_hr += patch[0].cdf.litr4c_hr * patch[0].area;
 
 				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
@@ -479,8 +486,13 @@ void	output_growth_basin(
 	aunderstory_npp = aunderstory_gpsn - aunderstory_resp;
 	apro_abc_litr /= aarea;
 
+	alitr1_hr /= aarea;
+	alitr2_hr /= aarea;
+	alitr3_hr /= aarea;
+	alitr4_hr /= aarea;
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+
+	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -561,7 +573,7 @@ void	output_growth_basin(
 		aunderstory_resp,
 		aunderstory_rootdepth,
 		aunderstory_npp,
-		apro_abc_litr
+		apro_abc_litr, alitr1_hr, alitr2_hr, alitr3_hr, alitr4_hr
 		);
 	/*------------------------------------------*/
 	/*printf("\n Basin %d Output %4d %3d %3d \n",*/
