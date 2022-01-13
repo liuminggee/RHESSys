@@ -194,7 +194,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].daily;
 
-	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+	fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 		"day",
 		"month",
 		"year",
@@ -235,7 +235,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"nuptake",
 		"grazingC",
 		"StreamNO3_from_surface",
-		"StreamNO3_from_sub");
+		"StreamNO3_from_sub", "litr_decomp", "decom_landclim_daily");
 	}
 
 	/*--------------------------------------------------------------*/

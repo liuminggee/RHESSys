@@ -37,7 +37,7 @@ void	output_growth_hillslope(              int  basinID,
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
 	/*------------------------------------------------------*/
-	
+
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
@@ -68,6 +68,7 @@ void	output_growth_hillslope(              int  basinID,
 	struct	patch_object  *patch;
 	struct	zone_object	*zone;
 	struct  canopy_strata_object    *strata;
+    double alitr_decomp, adecom_daily;
 
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
@@ -110,6 +111,9 @@ void	output_growth_hillslope(              int  basinID,
 	acloss = 0.0;
 	streamNO3_from_surface = 0.0;
 	streamNO3_from_sub = 0.0;
+	alitr_decomp = 0.0;
+    adecom_daily = 0.0;
+
 	for (z=0; z< hillslope[0].num_zones; z++){
 			zone = hillslope[0].zones[z];
 			for (p=0; p< zone[0].num_patches; p++){
@@ -138,21 +142,23 @@ void	output_growth_hillslope(              int  basinID,
 				streamNO3_from_sub += patch[0].streamNO3_from_sub * patch[0].area;
 				acarbon_balance += (patch[0].carbon_balance) * patch[0].area;
 				anitrogen_balance += (patch[0].nitrogen_balance) * patch[0].area;
-				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;	
+				adenitrif += (patch[0].ndf.denitrif) * patch[0].area;
 				anitrif += (patch[0].ndf.sminn_to_nitrate) * patch[0].area;
 				aDON += (patch[0].soil_ns.DON) * patch[0].area;
 				aDOC += (patch[0].soil_cs.DOC) * patch[0].area;
 				anfix += (patch[0].ndf.nfix_to_sminn) * patch[0].area;
 				acloss += (patch[0].grazing_Closs) * patch[0].area;
 				anuptake += (patch[0].ndf.sminn_to_npool) * patch[0].area,
+                alitr_decomp += patch[0].litter_cs.litr_decomp * patch[0].area;   //debug
+				adecom_daily += patch[0].litter_cs.rate_landclim_daily  * patch[0].area;
 
 				asoilhr += (
-					patch[0].cdf.litr1c_hr + 
-					patch[0].cdf.litr2c_hr + 
-					patch[0].cdf.litr4c_hr + 
-					patch[0].cdf.soil1c_hr + 
-					patch[0].cdf.soil2c_hr + 
-					patch[0].cdf.soil3c_hr + 
+					patch[0].cdf.litr1c_hr +
+					patch[0].cdf.litr2c_hr +
+					patch[0].cdf.litr4c_hr +
+					patch[0].cdf.soil1c_hr +
+					patch[0].cdf.soil2c_hr +
+					patch[0].cdf.soil3c_hr +
 					patch[0].cdf.soil4c_hr) * patch[0].area;
 
 				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
@@ -231,7 +237,7 @@ void	output_growth_hillslope(              int  basinID,
 		hstreamflow_NO3 = hillslope[0].streamflow_NO3 ;
 		hstreamflow_DON = hillslope[0].streamflow_DON ;
 		hstreamflow_DOC = hillslope[0].streamflow_DOC ; */
-		
+
 	agpsn /= aarea ;
 	aresp /= aarea ;
 	alai /= aarea ;
@@ -247,7 +253,7 @@ void	output_growth_hillslope(              int  basinID,
 	awoodn /= aarea;
 	alitrc /= aarea;
 	asoilc /= aarea;
-	asoilhr /= aarea;	
+	asoilhr /= aarea;
 	alitrn /= aarea;
 	asoiln /= aarea;
 	asminn /= aarea;
@@ -268,9 +274,11 @@ void	output_growth_hillslope(              int  basinID,
 	anfix /= aarea;
 	acloss /= aarea;
 	anuptake /= aarea;
+    alitr_decomp /= aarea;//debug
+	adecom_daily /= aarea;
 
 
-	fprintf(outfile,"%ld %ld %ld %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+	fprintf(outfile,"%ld %ld %ld %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -311,10 +319,12 @@ void	output_growth_hillslope(              int  basinID,
 		anuptake * 1000.0,
 		acloss * 1000.0,
 		streamNO3_from_surface * 1000.0,
-		streamNO3_from_sub * 1000.0
+		streamNO3_from_sub * 1000.0,
+		alitr_decomp,
+		adecom_daily
 		);
 	/*------------------------------------------*/
-	/*printf("\n Hill %d Output %4d %3d %3d \n",*/ 
+	/*printf("\n Hill %d Output %4d %3d %3d \n",*/
 	/*	hillslope[0].ID, date.year, date.month, date.day);*/
 	/*------------------------------------------*/
 	return;
