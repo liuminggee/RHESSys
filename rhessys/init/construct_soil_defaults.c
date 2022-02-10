@@ -139,7 +139,10 @@ struct soil_default *construct_soil_defaults(
 		default_object_list[i].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 1);
 		default_object_list[i].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.28, 1);
 		default_object_list[i].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1);
-		default_object_list[i].N_decay_rate = 		getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1);
+		default_object_list[i].N_decay_rate = 	getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1);
+		 // this is for controling co2 effect on stomatal conductance
+        default_object_list[i].m_CO2_effect = getIntParam(&paramCnt, &paramPtr, "m_CO2_effect", "%d", 0, 1); //default is off
+        printf("\n The CO2 effect on plants conductance is : %d", default_object_list[i].m_CO2_effect);
 		/*
 		if (command_line[0].tmp_value > ZERO)
 			default_object_list[i].N_decay_rate *= command_line[0].tmp_value;

@@ -1228,6 +1228,7 @@ struct	soil_default
 	double  understory_height_thresh;       /* Defines upper limit of understory (m) */
 	struct soil_class	soil_type;
 	int decom_model; /* 1 is rhessys default, 2 is FireBGCv2 and 3 is LandClim*/
+	int m_CO2_effect; // should include CO2
 	};
 
 

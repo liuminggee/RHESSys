@@ -56,7 +56,7 @@ double	compute_vascular_stratum_conductance(
 											 double	LWP_slp,
 											 double	LWP_intercpt,
 											 double	stomatal_conductance_max,
-											 double	topt,     
+											 double	topt,
 											 double	tcoef,
 											 double	tmax,
 											 double	vpd_open,
@@ -70,9 +70,9 @@ double	compute_vascular_stratum_conductance(
 											 double CO2,
 											 double coef_CO2,
 											 int ID,
-											 struct	canopy_strata_object *stratum, 
+											 struct	canopy_strata_object *stratum,
 											 struct patch_object *patch)
-											 
+
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function declaration				*/
@@ -80,7 +80,7 @@ double	compute_vascular_stratum_conductance(
 	double	leaf_conductance_APAR_curve(	double,
 		double);
 
-	double	leaf_conductance_CO2_curve(double, double);
+	double	leaf_conductance_CO2_curve(double, double, int);
 
 	double	leaf_conductance_LWP_curve(int,	double,
 		double,
@@ -108,14 +108,14 @@ double	compute_vascular_stratum_conductance(
 	double	m_tmin;
 	double	m_vpd;
 	double	stomatal_conductance, wilting_point;
-	
+
 	wilting_point = 0.0;
-	
+
 	/* wilting point as volumetric water content, so needs to be multiplied by rz depth to get water depth */
-	wilting_point = exp(-1.0*log(-1.0*100.0*LWP_stom_closure/patch[0].soil_defaults[0][0].psi_air_entry) 
+	wilting_point = exp(-1.0*log(-1.0*100.0*LWP_stom_closure/patch[0].soil_defaults[0][0].psi_air_entry)
 						* patch[0].soil_defaults[0][0].pore_size_index);
 	wilting_point *= (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
-		
+
 	/*--------------------------------------------------------------*/
 	/*	incident PAR multiplier					*/
 	/*--------------------------------------------------------------*/
@@ -123,7 +123,7 @@ double	compute_vascular_stratum_conductance(
 	/*--------------------------------------------------------------*/
 	/*	CO2 multiplier						*/
 	/*--------------------------------------------------------------*/
-	m_CO2 = leaf_conductance_CO2_curve(CO2, coef_CO2); 
+	m_CO2 = leaf_conductance_CO2_curve(CO2, coef_CO2, patch[0].soil_defaults[0][0].m_CO2_effect);
 	/*--------------------------------------------------------------*/
 	/*	soil-LWP multiplier					*/
 	/*--------------------------------------------------------------*/
@@ -179,17 +179,17 @@ double	compute_vascular_stratum_conductance(
 	stratum_conductance = max(stratum_conductance,0.0000001);
 
 
-	stratum[0].mult_conductance.APAR = m_APAR;			
-	stratum[0].mult_conductance.tavg = m_tavg;			
-	stratum[0].mult_conductance.LWP = m_LWP;			
-	stratum[0].mult_conductance.CO2 = m_CO2;			
-	stratum[0].mult_conductance.tmin = m_tmin;			
+	stratum[0].mult_conductance.APAR = m_APAR;
+	stratum[0].mult_conductance.tavg = m_tavg;
+	stratum[0].mult_conductance.LWP = m_LWP;
+	stratum[0].mult_conductance.CO2 = m_CO2;
+	stratum[0].mult_conductance.tmin = m_tmin;
 	stratum[0].mult_conductance.vpd = m_vpd;
-	
+
 	if ( verbose_flag == -5 ){
 		printf("\nVAS STRAT CONDUCT END: m_APAR=%lf m_tavg=%lf m_LWP=%lf m_CO2=%lf m_tmin=%lf m_vpd=%lf m_final=%lf lai=%lf frac=%lf glmax=%lf gl=%lf pchWP=%lf stratWP=%lf",
 			   m_APAR,
-			   m_tavg, 
+			   m_tavg,
 			   m_LWP,
 			   m_CO2,
 			   m_tmin,
@@ -202,7 +202,7 @@ double	compute_vascular_stratum_conductance(
 			   patch[0].wilting_point,
 			   wilting_point);
 	}
-	
-	
+
+
 	return(stratum_conductance);
 } /*end compute_vascular_stratum_conductance*/
