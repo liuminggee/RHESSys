@@ -272,7 +272,12 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Daily 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
-	check = fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    check = fprintf(outfile,
+#ifndef LIU_BURN_ALL_AT_ONCE
+                    "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#else
+                    "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#endif
 		"day",
 		"month",
 		"year",
@@ -282,6 +287,11 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 		"patchID",
 		"lai",
 		"plantc",
+#ifdef LIU_BURN_ALL_AT_ONCE
+        "tot_leafc",
+        "tot_frootc",
+        "tot_woodc",
+#endif
 		"plantn",
 		"net_psn",
 		"plant_resp",
@@ -329,12 +339,16 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s\n",
+    fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"year",
 		"basinID",
 		"hillID",
 		"zoneID",
 		"patchID",
+        "leaf_c",
+        "leaf_n",
+        "plant_c",
+        "plant_n",
 		"litter_c",
 		"soil_c",
 		"litter_n",

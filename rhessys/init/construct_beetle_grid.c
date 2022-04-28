@@ -131,7 +131,7 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 	 	printf("allocate the beetle grid\n");
 
 		// then initialize values: e.g., 0's
-         #pragma omp parallel for                                                //160628LML
+         //100821LML #pragma omp parallel for                                                //160628LML
          for(int i=0;i<grid_dimX;i++){
             for(int j=0;j<grid_dimY;j++){
 				beetle_grid[j][i].occupied_area=0;

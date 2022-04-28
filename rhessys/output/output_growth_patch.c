@@ -126,7 +126,11 @@ void	output_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
+#ifdef LIU_BURN_ALL_AT_ONCE
 		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#else
+        "%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#endif
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -136,6 +140,11 @@ void	output_growth_patch(
 		patch[0].ID,
 		alai,
 		aleafc+afrootc+awoodc,
+#ifdef LIU_BURN_ALL_AT_ONCE
+        aleafc,
+        afrootc,
+        awoodc,
+#endif
 		aleafn+afrootn+awoodn,
 		apsn*1000,
 		aresp*1000,

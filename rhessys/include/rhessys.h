@@ -222,9 +222,10 @@ int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 /*      Define types                                        */
 /*----------------------------------------------------------*/
 typedef short bool;
+#ifndef __cplusplus
 static const short true = 1;
 static const short false = 0;
-
+#endif
 /*----------------------------------------------------------*/
 /*      Define a calendar date object.                      */
 /*----------------------------------------------------------*/
@@ -1238,7 +1239,7 @@ struct	soil_default
 struct  innundation_object
         {
         double  critical_depth;         /* m */
-        double  gamma;
+        double  gamma;                                      /*110321LML m**2; it is patach_area X sum((boundary_length * slope)/total_boundary_length) of each downstream neignboring */
         int     num_neighbours;
         struct  neighbour_object *neighbours;
         };
@@ -1247,7 +1248,7 @@ struct  innundation_object
 /*----------------------------------------------------------*/
 struct  neighbour_object
         {
-        double gamma;           /* m**2 / day */
+        double gamma;           /* m**2 / day */             /*110321LML unitless: the fraction of flow into this patch (calculated as: (its_boundary_length * slope)/sum((boundary_length * slope)_of_this_upper_stream_patch)*/
         struct  patch_object *patch;
         };
 /*----------------------------------------------------------*/
@@ -1919,6 +1920,9 @@ struct patch_object
 /*----------------------------------------------------------*/
 
         double  burn;                           /* 0-1 % burned */
+#ifdef LIU_BURN_ALL_AT_ONCE
+        int    fire_effect_processed;           /* 0 (not processed) or 1 (processed) */
+#endif
         double  litterc_burned;                  /* kgC/m2 total litter carbon consumed by fire ; from fire effect model*/
         double  overstory_burn;                 /* 0-1 % save the overstory burned for burn the beetle-caused snag burn NREN 20190914 */
         double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
@@ -2180,6 +2184,16 @@ struct  command_line_object
         int             version_flag;
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
+#ifdef LIU_BURN_ALL_AT_ONCE
+        int             burn_on_flag;
+        int             fire_mortality_flag;
+        double          fire_overstory_mortality_rate;
+        double          fire_understory_mortality_rate;
+        double          fire_consumption_rate_coef;
+        int             fire_spin_flag;
+        int             fire_spin_period;                                       //years per spin (weather start from first year)
+        int             fire_spins;                                             //number of spins
+#endif
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
         char    surface_routing_filename[FILEPATH_LEN];
@@ -2872,8 +2886,8 @@ struct  fire_effects_object {
 
 	double  canopy_target_height;
 	double  canopy_target_height_u_prop;
-	double  canopy_target_prop_mort;
-	double  canopy_target_prop_mort_consumed;
+        double  canopy_target_prop_mort;                                        //(fraction)
+        double  canopy_target_prop_mort_consumed;                               //(fraction)
 	double  canopy_target_prop_mort_u_component;
 	double  canopy_target_prop_mort_o_component;
 	double  canopy_target_prop_c_consumed;
@@ -3052,7 +3066,7 @@ struct  canopy_strata_hourly_object
 /*----------------------------------------------------------*/
 struct mortality_struct
 {
-        double mort_cpool;
+        double mort_cpool;                                                      //(fraction) being consumed by wildfire or biomass moved to litter pool. LML add note
         double mort_leafc;
         double mort_deadleafc;
         double mort_livestemc;

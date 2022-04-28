@@ -22,14 +22,18 @@ QMAKE_LFLAGS += -fopenmp
 
 TEMPLATE = app
 INCLUDEPATH += ../../../../rhessys/include \
-               /usr/include
+               ../../../../../boost_1_66_0                                      #put parrallel with RHESSys
 
 DEFINES += NO_UPDATE_160419 \
            LIU_NETCDF_READER \
            CHECK_NCCLIM_DATA \
            FIND_STATION_BASED_ON_ID \
            LIU_EXTEND_CLIM_VAR \
-           LIU_EXTEND_CLIM_VAR_AND_USE_SWRAD
+           LIU_EXTEND_CLIM_VAR_AND_USE_SWRAD \
+           RUN_WITH_SPINUP_PERIOD_USING_RANDOM_CLIMATE_YEAR_DATA \
+           FIND_STATION_BASED_ON_ID \
+           LIU_EXTEND_CLIM_VAR \
+           LIU_BURN_ALL_AT_ONCE
 
 
 SOURCES += \
@@ -353,7 +357,24 @@ SOURCES += \
     ../../../../rhessys/hydro/compute_vapor_pressure_deficit.c \
     ../../../../rhessys/output/output_basin.c \
     ../../../../rhessys/cn/compute_fire_effects.c \
-    ../../../../rhessys/cn/update_litter_soil_mortality.c
+    ../../../../rhessys/cn/update_litter_soil_mortality.c \
+    ../../../../rhessys/cn/compute_redneedle_decay.c \
+    ../../../../rhessys/cn/update_deadroot_decay.c \
+    ../../../../rhessys/util/find_patch_in_hillslope.c \
+    ../../../../rhessys/init/UTM.c \
+    ../../../../rhessys/util/wateryearday.c \
+    ../../../../rhessys/init/climate_grid_interpolation.c \
+    ../../../../rhessys/cn/compute_beetle_effects.c \
+    ../../../../rhessys/init/destroy_beetle_defaults.c \
+    ../../../../rhessys/init/construct_beetle_defaults.c \
+    ../../../../rhessys/init/construct_beetle_grid.c \
+    ../../../../rhessys/init/assign_neighbours_in_hillslope.c \
+    ../../../../rhessys/cn/compute_snag_decay.c \
+    ../../../../rhessys/output/output_yearly_fire.c \
+    ../../../../rhessys/output/output_yearly_growth_fire.c \
+    ../../../../rhessys/tec/execute_beetlespread_event.c \
+    ../../../../rhessys/output/output_fire.c \
+    ../../../../rhessys/cn/update_beetle_attack_mortality.c
 
 OTHER_FILES += \
     ../../../../rhessys/cycle/patch_daily_F.c,v

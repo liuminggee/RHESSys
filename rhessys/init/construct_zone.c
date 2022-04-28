@@ -275,7 +275,8 @@ struct zone_object *construct_zone(
 							  base_station_ncheader[0].netcdf_x_varname,
                               (float)zone[0].y,
                               (float)zone[0].x,
-                              base_station_ncheader[0].resolution_meter,
+                              //100721LML base_station_ncheader[0].resolution_meter,
+                              base_station_ncheader[0].resolution_dd,
 							  &(base_y),
 							  &(base_x));
 			if ( command_line[0].verbose_flag == -3 ){
@@ -287,7 +288,17 @@ struct zone_object *construct_zone(
 			}
 #endif
 			/* Assign base station based on closest found coordinates */
+
+
+            //printf("num_world_base_stations:%d\n",*num_world_base_stations);
+
+
 			if (*num_world_base_stations > 0) {
+
+
+                //if (zone[0].ID == 87726)
+                //    printf("Testing 87726...\n");
+
 				zone[0].base_stations[0] =	assign_base_station_xy(
 																   base_x,
 																   base_y,
@@ -302,6 +313,12 @@ struct zone_object *construct_zone(
                                         ,basestation_id
                                         #endif
                                         );
+                //notfound = 0;
+
+
+                printf("Zone_ID:%d\tBaseStation_ID:%d\n",zone[0].ID,zone[0].base_stations[0]->ID);
+
+
 			}
 			else notfound = 1;
 			/* If station is not already in list, add it */
@@ -384,6 +401,7 @@ struct zone_object *construct_zone(
 	zone[0].metv.dayl_ravg = 38000;
 
 
+    printf("        Zone_ID:%d\n",zone[0].ID);
 
 	/*--------------------------------------------------------------*/
 	/*	Construct the intervals in this zone.						*/

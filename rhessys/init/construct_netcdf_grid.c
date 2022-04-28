@@ -163,16 +163,16 @@ struct base_station_object *construct_netcdf_grid (
         base_station[0].daily_clim = (struct daily_clim_object *)
                 alloc(1*sizeof(struct daily_clim_object),"daily_clim","construct_netcdf_grid" );
         //duration.day is a long that was passed into construct_ascii as a date struct
-        base_station[0].daily_clim[0].tmax = (double *) alloc(duration->day * sizeof(double),"tmax", "construct_netcdf_grid");
-        base_station[0].daily_clim[0].tmin = (double *) alloc(duration->day * sizeof(double),"tmin", "construct_netcdf_grid");
-        base_station[0].daily_clim[0].rain = (double *) alloc(duration->day * sizeof(double),"rain", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].tmax = (double *) alloc((duration->day + 1) * sizeof(double),"tmax", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].tmin = (double *) alloc((duration->day + 1) * sizeof(double),"tmin", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].rain = (double *) alloc((duration->day + 1) * sizeof(double),"rain", "construct_netcdf_grid");
 #ifdef LIU_EXTEND_CLIM_VAR
-        base_station[0].daily_clim[0].relative_humidity_max = (double *) alloc(duration->day * sizeof(double),"relative_humidity_max", "construct_netcdf_grid");
-        base_station[0].daily_clim[0].relative_humidity_min = (double *) alloc(duration->day * sizeof(double),"relative_humidity_min", "construct_netcdf_grid");
-        base_station[0].daily_clim[0].relative_humidity     = (double *) alloc(duration->day * sizeof(double),"relative_humidity", "construct_netcdf_grid");
-        base_station[0].daily_clim[0].specific_humidity     = (double *) alloc(duration->day * sizeof(double),"specific_humidity", "construct_netcdf_grid");
-        base_station[0].daily_clim[0].surface_shortwave_rad = (double *) alloc(duration->day * sizeof(double),"surface_shortwave_rad", "construct_netcdf_grid");
-        base_station[0].daily_clim[0].wind                  = (double *) alloc(duration->day * sizeof(double),"wind", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].relative_humidity_max = (double *) alloc((duration->day + 1) * sizeof(double),"relative_humidity_max", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].relative_humidity_min = (double *) alloc((duration->day + 1) * sizeof(double),"relative_humidity_min", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].relative_humidity     = (double *) alloc((duration->day + 1) * sizeof(double),"relative_humidity", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].specific_humidity     = (double *) alloc((duration->day + 1) * sizeof(double),"specific_humidity", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].surface_shortwave_rad = (double *) alloc((duration->day + 1) * sizeof(double),"surface_shortwave_rad", "construct_netcdf_grid");
+        base_station[0].daily_clim[0].wind                  = (double *) alloc((duration->day + 1) * sizeof(double),"wind", "construct_netcdf_grid");
 #else
         base_station[0].daily_clim[0].relative_humidity = NULL;
         base_station[0].daily_clim[0].wind              = NULL;
@@ -209,7 +209,7 @@ struct base_station_object *construct_netcdf_grid (
         /*Check if any flags are set in the optional clim sequence struct*/
         if ( daily_flags.daytime_rain_duration == 1 ) {
                 base_station[0].daily_clim[0].daytime_rain_duration = (double *)
-                        alloc(duration->day * sizeof(double),"day_rain_dur", "construct_netcdf_grid");
+                        alloc((duration->day + 1) * sizeof(double),"day_rain_dur", "construct_netcdf_grid");
 
         }
 
@@ -270,7 +270,7 @@ struct base_station_object *construct_netcdf_grid (
                         base_station_ncheader[0].leap_year);
 
         //if( command_line[0].clim_repeat_flag ) {
-                tempdata = (float *) alloc(duration->day * sizeof(float),"tempdata","construct_netcdf_grid");
+                tempdata = (float *) alloc((duration->day + 1) * sizeof(float),"tempdata","construct_netcdf_grid");
         //}
         /* printf("net_y:%f net_x:%f\n",base_station[0].net_y,base_station[0].net_x);
            printf("tmax filename:%s varname:%s sdist:%f instartday:%d dura:%d\n",base_station[0].netcdf_tmax_filename, base_station[0].netcdf_tmax_varname,base_station[0].sdist,instartday,duration.day); */

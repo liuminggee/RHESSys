@@ -93,8 +93,14 @@ void		hillslope_daily_F(
 	double slow_store, fast_store,scale;
 	struct patch_object *patch;
 	
-	
+#pragma omp parallel for
 	for ( zone=0 ; zone<hillslope[0].num_zones; zone++ ){
+
+
+        //printf("omp_in_parallel?:%d Total_processes:%d this process:%d\n",
+        //       omp_in_parallel(),omp_get_num_threads(), omp_get_thread_num());
+
+
 		zone_daily_F(	day,
 			world,
 			basin,

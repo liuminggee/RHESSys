@@ -224,11 +224,22 @@ void	execute_tec(
 	/*--------------------------------------------------------------*/
 	current_date = world[0].start_date;
 	next_date = current_date;
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+    int spins_index = 0;                                                    //which spin
+    int spin_year_index = 0;                                                //which year index within this spin
+#endif
+
+
 	while ( cal_date_lt(current_date,world[0].end_date)){
 		/*--------------------------------------------------------------*/
 		/*		Perform the tec event.									*/
 		/*--------------------------------------------------------------*/
 		handle_event(event,command_line,current_date,world);
+#ifdef LIU_BURN_ALL_AT_ONCE
+        printf("Event: year:%d mon:%d day:%d command:%s\n",event[0].cal_date.year,
+                event[0].cal_date.month,event[0].cal_date.day,event[0].command);
+#endif
 		/*--------------------------------------------------------------*/
 		/*		read the next tec file entry.							*/
 		/*		if we are not at the end of the tec file.				*/
@@ -407,7 +418,11 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/* if fire spread is called - initiate fire spread routine 	*/
 				/*--------------------------------------------------------------*/
-				if (command_line[0].firespread_flag == 1) {
+                if (command_line[0].firespread_flag == 1)
+                {
+#ifdef LIU_BURN_ALL_AT_ONCE
+                    if (command_line[0].burn_on_flag == 1)
+#endif
 					execute_firespread_event(
 						world,
 						command_line,
@@ -457,6 +472,24 @@ void	execute_tec(
                 printf("\nYear %d\n", current_date.year);
 				year = year + 1;
 				current_date.year= next_date.year;
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+                if (command_line[0].fire_spin_flag != 0) {
+                    if(spins_index < command_line[0].fire_spins) {
+                        if (spin_year_index < command_line[0].fire_spin_period) {
+                            spin_year_index++;
+                        } else {
+                            spins_index++;
+                            spin_year_index = 0;
+                            current_date = world[0].start_date;
+                            next_date.year = current_date.year;
+                            day = 0;
+                        }
+                        printf("Spins:%d Spin_year:%d\n",spins_index,spin_year_index);
+                    }
+                }
+#endif
+
 			}  /*end if*/
 			} /*end while*/
 		} /*end while*/

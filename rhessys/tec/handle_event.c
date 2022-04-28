@@ -163,6 +163,14 @@ void	handle_event(
 	else if ( !strcmp(event[0].command,"print_hourly_growth_off")){
 		command_line[0].output_flags.hourly_growth = 0;
 	}
+#ifdef LIU_BURN_ALL_AT_ONCE
+    else if ( !strcmp(event[0].command,"burn_on")){
+        command_line[0].burn_on_flag = 1;
+    }
+    else if ( !strcmp(event[0].command,"burn_off")){
+        command_line[0].burn_on_flag = 0;
+    }
+#endif
 	else if ( !strcmp(event[0].command,"output_current_state") ){
 		execute_state_output_event(world, current_date,
 			world[0].end_date,command_line);

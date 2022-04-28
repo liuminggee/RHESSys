@@ -125,7 +125,9 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 	{
 		for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
 		{
+#ifndef LIU_BURN_ALL_AT_ONCE
 			if (fireGrid_[i][j].ign_available==1)
+#endif
 			{
 				IgnitionCells ic = {i, j}; // the cell indices give the current row and column for this pixel available for ignition
 				ignCells_.push_back(ic);		// 0 indicates that the pixel has not been burned
@@ -171,11 +173,15 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 /********************************************************************************/
 void LandScape::drawNumIgn(double lambda,GenerateRandom& rng)	// to be called in main, to replace RandomScar mk: ? RandomScar?
 {
+#ifndef LIU_BURN_ALL_AT_ONCE
 	double tmpN;
 	tmpN=poisdev(lambda,rng);
     if(def_.fire_verbose==1)
 	cout<<"\n random 1 the drawnum ignition random number tmpN is" << tmpN << "\n\n"; //Ning Ren 20180920
 	n_cur_ign_=round(tmpN);
+#else
+    n_cur_ign_ = 100;                                                           //Start fire quikly
+#endif
 	return ;
 }
 
@@ -231,7 +237,13 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 			if(def_.fire_verbose==1)
 				cout<<"in burn before testIgnition: \n\n";
 			int ign;
+#ifndef LIU_BURN_ALL_AT_ONCE
 			ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
+#else
+            ign = 1;
+#endif
+
+
 			if(def_.fire_verbose==1)
 				cout<<"in burn after testIgnition: "<<ign<<"\n\n";
 			int stop = 0;
@@ -249,7 +261,7 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 				// continue to propagate the fire until one of the stopping conditions is met.
 				//  where an iteration is a set of burned cells, beginning with one burned cell
 				//  and its neighbors.  the next iteration will be the set of new burned cells and
-				//  these are tested.  the next iteration will be the set of cells burned from the previous iteration
+                //  these are tested.  ttestIgnitionhe next iteration will be the set of cells burned from the previous iteration
 
 				while(stop==0)
 				{
@@ -339,9 +351,13 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 			if(test_burn==1&&fireGrid_[new_row][new_col].burn==0) // only test if it is not already burned, and not beyond the border
 			{
 				test_once=test_once+1;
-
+#ifndef LIU_BURN_ALL_AT_ONCE
 				cur_pBurn=calc_pSpreadTest(firstBurned_[x].rowId, firstBurned_[x].colId, new_row, new_col, fire_dir[i]); // mk: calculate the spread probability for this combination of idx/idy and new_idx/new_idy
 				burned = IsBurned(rng, cur_pBurn); // mk: need to merge IsBurned with BurnTest
+#else
+                                cur_pBurn = 1.0;
+                                burned = 1;
+#endif
 				if(burned==1)	// if 1 is returned, then burn the cell and update the new linked list of burned cells
 				{
 					calc_FireEffects(new_row, new_col,iter,cur_pBurn);

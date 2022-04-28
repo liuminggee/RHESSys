@@ -141,13 +141,15 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,i,j);
 				if(tmpPatchID>=0){ // then find the corresponding patch and allocate it--only one patch per grid cell!
 				//	printf("numPatches 0: %d\n",fire_grid[j][i].num_patches);
-			//		printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,j,i);
-					fire_grid[i][j].num_patches=1;
-					//printf("numPatches 1: %d\n",fire_grid[j][i].num_patches);
-					fire_grid[i][j].patches=(struct patch_object **) malloc(fire_grid[i][j].num_patches*sizeof(struct patch_object *));
-					fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
-					fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
-					//printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
+                    //printf("Current patch id: %d, X: %d  Y: %d\n",tmpPatchID,j,i);
+
+                    //110821LML moved to if found in world file
+                    //fire_grid[i][j].num_patches=1;
+                    ////printf("numPatches 1: %d\n",fire_grid[j][i].num_patches);
+                    //fire_grid[i][j].patches=(struct patch_object **) malloc(fire_grid[i][j].num_patches*sizeof(struct patch_object *));
+                    //fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
+                    //fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
+                    ////printf("allocated patch array, how about the world %d?\n",world[0].num_basin_files);
 
                     found = 0; //NREN jump out the loop once found
 					for (b=0; b< world[0].num_basin_files; ++b) {
@@ -156,10 +158,17 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 								tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
 								for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
 									patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p]; //zone object has linked list to point to patch families to point to patches
-				//					printf("is my world ok? %d\n",&patch[0].ID);
+                                    //printf("is my world ok? %d\n",patch[0].ID);
 									if(patch[0].ID==tmpPatchID)
 									{
-				//						printf("now filling in array--found a match!\n");
+
+                                        //110821LML moved here
+                                        fire_grid[i][j].num_patches=1;
+                                        fire_grid[i][j].patches=(struct patch_object **) malloc(fire_grid[i][j].num_patches*sizeof(struct patch_object *));
+                                        fire_grid[i][j].prop_patch_in_grid=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
+                                        fire_grid[i][j].prop_grid_in_patch=(double *) malloc(fire_grid[i][j].num_patches*sizeof(double));
+
+                                        //printf("now filling in array--found a match for patch:%d row:%d col:%d!\n",tmpPatchID,i,j);
 										fire_grid[i][j].patches[0]=patch; // assign the current patch to this grid cell
 										//printf("patch1\n");
 										fire_grid[i][j].occupied_area=cell_res*cell_res; // this grid cell is 100% occupied
@@ -168,10 +177,11 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 										//printf("patch3\n");
 										fire_grid[i][j].prop_patch_in_grid[0]=1;// the whole cell is occupied this patch
 										//printf("array filled\n");
+                                        found = 1;
 
 										if(def.include_wui==0)
 											break; //? or keep loop to help point to wui patches as well// break would speed this up a little bit
-                                            found=1; //REN
+                                            //found=1; //REN
 										// if we have found the correct patch, stop looking
 									}
 									/*if(patch[0].wuiID>=0&&def.include_wui==1) // then see if this pixel is within salience distance of this wui patch, and if it is add this patch to the pixel linked list
@@ -247,7 +257,8 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
                                 break;
 						}// h=0 hillslope
 					}
-				}
+                    //if (found == 0) printf("Can't find patch:%d in world file!\n",tmpPatchID);
+                }
 
 			}
 		}

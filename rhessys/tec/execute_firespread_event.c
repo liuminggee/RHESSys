@@ -294,13 +294,33 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
 
 	// if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+    double total_pspread = 0;                                                   //No real meaning, just for counting
+#endif
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
+
+
+            //if(patch_fire_grid[i][j].num_patches > 0)
+            //    printf("i:%d j:%d num_patches:%d",i,j,patch_fire_grid[i][j].num_patches);
+
+
 			for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
 				patch = world[0].patch_fire_grid[i][j].patches[p];
 
 				patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
+
+
+
+                //if(patch_fire_grid[i][j].num_patches > 0)
+                //    printf("\tp:%d prop_grid_in_patch:%f\n",p,world[0].patch_fire_grid[i][j].prop_grid_in_patch[p]);
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+                total_pspread += pspread;
+                pspread = 1.0;                                                  //Handle the patch once for all pixels since they share same C&N pools
+#endif
 // so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
 				/* (if pspread>0&world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*0.0001>=400) // also need a flag with the fire size to trigger event, because fire > 400 ha
 				{
@@ -323,15 +343,27 @@ void execute_firespread_event(
 				{
                     //printf("calling WMFire: pspread is %lf \n, burn is %lf \n", pspread, world[0].fire_grid[i][j].burn);
 
+
+                    //printf("row:%d col:%d patch_ID:%d\n",i,j,patch->ID);
+#ifdef LIU_BURN_ALL_AT_ONCE
+                    if (!patch->fire_effect_processed) {
+#endif
 					compute_fire_effects(
 						patch,
 						pspread,
 						command_line);
-				}
-
+#ifdef LIU_BURN_ALL_AT_ONCE
+                        patch->fire_effect_processed = 1;
+                    }
+#endif
+                }
 			}
 		}
 	}
+#ifdef LIU_BURN_ALL_AT_ONCE
+    if (total_pspread > 0.1)
+        printf("Has burn event! total_pspread:%f\n",total_pspread);
+#endif
 	return;
 } /*end execute_firespread_event.c*/
 

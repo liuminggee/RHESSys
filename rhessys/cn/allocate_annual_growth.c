@@ -440,6 +440,17 @@ int allocate_annual_growth(				int id,
 	/*	we allow only a certain amount of resprouting based on 	*/
 	/*	a stratum default file parameterization 		*/
 	/*--------------------------------------------------------------*/
+
+
+
+    //printf("strata_ID:%d\tcover_fraction:%lf\tleafc_store_to_leafc_transfer:%lf\tleafc:%f\n",
+    //       id,cover_fraction,cdf->leafc_store_to_leafc_transfer,cs->leafc);
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+     epc.min_leaf_carbon = 0.05;
+     epc.resprout_leaf_carbon = 0.05;
+#endif
+
 	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
 		if (cs->num_resprout < epc.max_years_resprout) {
 
@@ -476,6 +487,8 @@ int allocate_annual_growth(				int id,
 			cdf->livestemc_store_to_livestemc_transfer = cs->livestemc_store;
 			ndf->livestemn_store_to_livestemn_transfer = ns->livestemn_store;
 
+            //211019LML Should move the carbon to litter pool before initialize to zero!!!
+#ifndef LIU_BURN_ALL_AT_ONCE
 			cs->live_stemc = 0.0;
 			cs->dead_stemc = 0.0;
 			cs->live_crootc = 0.0;
@@ -498,6 +511,7 @@ int allocate_annual_growth(				int id,
 			ns->deadstemn_transfer =  0.0;
 			ns->livecrootn_transfer =  0.0;
 			ns->deadcrootn_transfer =  0.0;
+#endif
 
 			cdf->livestemc_store_to_livestemc_transfer = 0.0;
 			cdf->deadstemc_store_to_deadstemc_transfer = 0.0;

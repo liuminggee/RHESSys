@@ -411,6 +411,7 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	if (command_line[0].noredist_flag == 0) {
 	d=0;
+        #pragma omp parallel for private(j,neigh,Qin)
 	for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
 		neigh = patch[0].innundation_list[d].neighbours[j].patch;  
 		/*--------------------------------------------------------------*/
@@ -449,6 +450,7 @@ void  update_drainage_land(
 			  d++;}
 		}
 	else d=0;
+        #pragma omp parallel for private(j,neigh,Qin,infiltration)
 	for (j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
 
 		neigh = patch[0].surface_innundation_list[d].neighbours[j].patch;

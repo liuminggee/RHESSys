@@ -131,7 +131,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
 
-  #pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
+  #pragma omp parallel for private(i,patch),reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
   for (i = 0; i < hillslope->route_list->num_patches; i++) {
 		patch = hillslope->route_list->list[i];
 		patch[0].streamflow = 0.0;
@@ -226,7 +226,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				-1.0 * patch[0].sat_deficit);
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;*/
 
-    #pragma omp parallel for
+    //100821LML #pragma omp parallel for
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
 		      	patch[0].hourly_subsur2stream_flow = 0;
@@ -262,7 +262,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-    #pragma omp parallel for
+        #pragma omp parallel for private(i,patch,excess,Nout,innundation_depth,d,neigh,NO3_out,NH4_out,DON_out,DOC_out,add_field_capacity,infiltration,rz_drainage,unsat_drainage)
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
 			patch = hillslope->route_list->list[i];
 
@@ -379,8 +379,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 								+ patch[0].hourly_sur2stream_flow;
 
 			if (k == (n_timesteps -1))
-					{
-
+                    {
+                  #pragma omp critical
+                  {
 			      if ((patch[0].sat_deficit
 						- (patch[0].unsat_storage + patch[0].rz_storage))
 						< -1.0 * ZERO) {
@@ -984,13 +985,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				hillslope[0].hillslope_detention_store += patch[0].detention_store
 						* patch[0].area;
 
+                } //section of critical
+
+
+
 				/*---------------------------------------------------------------------*/
 				/*update accumulator variables                                            */
 				/*-----------------------------------------------------------------------*/
 				/* the accumulator is updated in update_hillslope_patch_accumulator.c in hillslope_daily_F.c*/
 
 
-			}
+            } //last timestep
 				/*---------------------------------------------------------------------*/
 				/*update daily output: the patch[0].base_flow and patch[0].return_flow
 				 * is the summation of 24 hours return_flow and base_flow from previous

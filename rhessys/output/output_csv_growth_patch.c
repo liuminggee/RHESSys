@@ -60,7 +60,7 @@ void	output_csv_growth_patch(
 		for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 			strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 			apsn += strata->cover_fraction * strata->cs.net_psn;
-			aleafc += strata->cover_fraction * (strata->cs.leafc_store
+                        aleafc += strata->cover_fraction * (strata->cs.leafc                //211019LML
 				+ strata->cs.leafc_store + strata->cs.leafc_transfer );
 			afrootc += strata->cover_fraction
 				* (strata->cs.frootc + strata->cs.frootc_store
@@ -97,7 +97,11 @@ void	output_csv_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
+#ifndef LIU_BURN_ALL_AT_ONCE
 		"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
+#else
+        "%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
+#endif
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -107,6 +111,11 @@ void	output_csv_growth_patch(
 		patch[0].ID,
 		alai,
 		aleafc+afrootc+awoodc,
+#ifdef LIU_BURN_ALL_AT_ONCE
+        aleafc,
+        afrootc,
+        awoodc,
+#endif
 		apsn*1000.0,
 		aresp*1000.0,
 		asoilhr*1000.0,

@@ -131,6 +131,16 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
+#ifdef LIU_BURN_ALL_AT_ONCE
+        command_line[0].burn_on_flag = 0;
+        command_line[0].fire_mortality_flag = 0;
+        command_line[0].fire_overstory_mortality_rate = 0.0;
+        command_line[0].fire_understory_mortality_rate = 0.0;
+        command_line[0].fire_consumption_rate_coef = 0.0;
+        command_line[0].fire_spin_flag = 0;
+        command_line[0].fire_spin_period = 0;
+        command_line[0].fire_spins = 0;
+#endif
 
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -353,8 +363,46 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].gw_loss_coeff_mult = (double)atof(main_argv[i]);
 				i++;
 			}/* end if */
-
-
+#ifdef LIU_BURN_ALL_AT_ONCE
+            /*-------------------------------------------------*/
+            /*	fire mortality flag and rates	  */
+            /*-------------------------------------------------*/
+            else if ( strcmp(main_argv[i],"-firemort") == 0 ){
+                i++;
+                command_line[0].fire_mortality_flag = 1;
+                if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
+                    fprintf(stderr,"FATAL ERROR: Values for fm coefficients not specified\n");
+                    exit(EXIT_FAILURE);
+                } /*end if*/
+                /*-------------------------------*/
+                /*Read in the loss to gw rate multiplier values		*/
+                /*-------------------------------*/
+                command_line[0].fire_overstory_mortality_rate = (double)atof(main_argv[i]);
+                i++;
+                command_line[0].fire_understory_mortality_rate = (double)atof(main_argv[i]);
+                i++;
+                command_line[0].fire_consumption_rate_coef = (double)atof(main_argv[i]);
+                i++;
+            }/* end if */
+            /*-------------------------------------------------*/
+            /*	spin up before fire runs	  */
+            /*-------------------------------------------------*/
+            else if ( strcmp(main_argv[i],"-firespin") == 0 ){
+                i++;
+                command_line[0].fire_spin_flag = 1;
+                if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
+                    fprintf(stderr,"FATAL ERROR: Values for fm coefficients not specified\n");
+                    exit(EXIT_FAILURE);
+                } /*end if*/
+                /*-------------------------------*/
+                /*Read in the loss to gw rate multiplier values		*/
+                /*-------------------------------*/
+                command_line[0].fire_spin_period = (double)atof(main_argv[i]);
+                i++;
+                command_line[0].fire_spins = (double)atof(main_argv[i]);
+                i++;
+            }/* end if */
+#endif
 			/*-------------------------------------------------*/
 			/* simple addition of temperature increases 		*/
 			/*-------------------------------------------------*/

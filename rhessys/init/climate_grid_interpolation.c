@@ -233,8 +233,8 @@ void climate_interpolation(
                 zone[0].tmax_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
                 zone[0].tmin_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
 
-                if (day == 1)
-            printf("\n WARNING: patch %d, is close the climate station, no need to interpoaltion \n", zone[0].ID);
+                //if (day == 1)
+                //    printf("\n WARNING: patch %d, is close the climate station, no need to interpoaltion \n", zone[0].ID);
         } //end else
     }//end if count>1
 

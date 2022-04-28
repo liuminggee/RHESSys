@@ -124,7 +124,7 @@ struct tec_object	*construct_tec(
 	/*--------------------------------------------------------------*/
 	/*	Read a line of the tec file if it exists.					*/
 	/*--------------------------------------------------------------*/
-	check = fscanf(tecfile[0].tfile,"%d %d %d %d %s\n",
+    check = fscanf(tecfile[0].tfile,"%ld %ld %ld %ld %s\n",
 		&(current_date.year),
 		&(current_date.month),
 		&(current_date.day),
@@ -191,6 +191,10 @@ struct tec_object	*construct_tec(
 			(strcmp(command,"redefine_world_thin_snags") != 0) &&			
 			(strcmp(command,"roads_on") != 0) &&
 			(strcmp(command,"roads_off") != 0) &&
+#ifdef LIU_BURN_ALL_AT_ONCE
+            (strcmp(command,"burn_on") != 0) &&
+            (strcmp(command,"burn_off") != 0) &&
+#endif
 			(strcmp(command,"output_current_state") != 0)  ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_tec bad command %s for date %d %d %d %d\n ",
@@ -202,7 +206,7 @@ struct tec_object	*construct_tec(
 		/*--------------------------------------------------------------*/
 		/*	Read a line of the tec file if it exists.					*/
 		/*--------------------------------------------------------------*/
-		check = fscanf(tecfile[0].tfile,"%d %d %d %d %s\n",
+        check = fscanf(tecfile[0].tfile,"%ld %ld %ld %ld %s\n",
 			&(current_date.year),
 			&(current_date.month),
 			&(current_date.day),
