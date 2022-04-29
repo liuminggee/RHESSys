@@ -431,6 +431,9 @@ int	main( int main_argc, char **main_argv)
 	/*	AN EVENT LOOP WOULD GO HERE.								*/
 	/*--------------------------------------------------------------*/
 	fprintf(stderr,"Beginning Simulation\n");
+#ifdef _OPENMP
+    fprintf(stderr,"max_threads: %d\n", omp_get_max_threads( ));
+#endif
 	execute_tec( tec, command_line, output, growth_output, world );
 	if (command_line[0].verbose_flag > 0 )
 		fprintf(stderr,"FINISHED EXE TEC\n");
