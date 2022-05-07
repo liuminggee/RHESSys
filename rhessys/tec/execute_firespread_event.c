@@ -319,7 +319,9 @@ void execute_firespread_event(
 
 #ifdef LIU_BURN_ALL_AT_ONCE
                 total_pspread += pspread;
-                pspread = 1.0;                                                  //Handle the patch once for all pixels since they share same C&N pools
+                //05062022LML pspread = 1.0;                                                  //Handle the patch once for all pixels since they share same C&N pools
+                pspread = command_line[0].fire_pspread;
+                if (pspread < 0) pspread = 1.0;
 #endif
 // so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
 				/* (if pspread>0&world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*0.0001>=400) // also need a flag with the fire size to trigger event, because fire > 400 ha

@@ -134,9 +134,18 @@ struct	command_line_object	*construct_command_line(
 #ifdef LIU_BURN_ALL_AT_ONCE
         command_line[0].burn_on_flag = 0;
         command_line[0].fire_mortality_flag = 0;
-        command_line[0].fire_overstory_mortality_rate = 0.0;
-        command_line[0].fire_understory_mortality_rate = 0.0;
-        command_line[0].fire_consumption_rate_coef = 0.0;
+        command_line[0].fire_pspread = -9999;
+        command_line[0].fire_overstory_mortality_rate = -9999.0;
+        command_line[0].fire_understory_mortality_rate = -9999.0;
+        command_line[0].fire_pc_ku_mort = -9999.0;                              //Primary canopy
+        command_line[0].fire_pc_kcons = -9999.0;
+        command_line[0].fire_pc_ko_mort1 = -9999.0;
+        command_line[0].fire_pc_ko_mort2 = -9999.0;
+        command_line[0].fire_sc_ku_mort = -9999.0;                              //Secondary canopy
+        command_line[0].fire_sc_kcons = -9999.0;
+        command_line[0].fire_sc_ko_mort1 = -9999.0;
+        command_line[0].fire_sc_ko_mort2 = -9999.0;
+
         command_line[0].fire_spin_flag = 0;
         command_line[0].fire_spin_period = 0;
         command_line[0].fire_spins = 0;
@@ -377,12 +386,28 @@ struct	command_line_object	*construct_command_line(
                 /*-------------------------------*/
                 /*Read in the loss to gw rate multiplier values		*/
                 /*-------------------------------*/
+                command_line[0].fire_pspread = (double)atof(main_argv[i]);
+                i++;
                 command_line[0].fire_overstory_mortality_rate = (double)atof(main_argv[i]);
                 i++;
                 command_line[0].fire_understory_mortality_rate = (double)atof(main_argv[i]);
                 i++;
-                command_line[0].fire_consumption_rate_coef = (double)atof(main_argv[i]);
+                command_line[0].fire_pc_ku_mort = (double)atof(main_argv[i]);
                 i++;
+                command_line[0].fire_pc_kcons = (double)atof(main_argv[i]);
+                i++;
+                command_line[0].fire_pc_ko_mort1 = (double)atof(main_argv[i]);
+                i++;
+                command_line[0].fire_pc_ko_mort2 = (double)atof(main_argv[i]);
+                i++;
+
+                if (((command_line[0].fire_pspread < 0 && command_line[0].fire_overstory_mortality_rate < 0)) ||
+                    ((command_line[0].fire_pspread >= 0 && command_line[0].fire_overstory_mortality_rate >= 0)))
+                {
+                    fprintf(stderr,"FATAL ERROR: You should either define pspread or mortality, not both\n");
+                    exit(EXIT_FAILURE);
+                }
+
             }/* end if */
             /*-------------------------------------------------*/
             /*	spin up before fire runs	  */

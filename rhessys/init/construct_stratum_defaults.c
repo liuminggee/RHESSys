@@ -300,6 +300,13 @@ struct stratum_default *construct_stratum_defaults(
  		default_object_list[i].consumption = getDoubleParam(&paramCnt, &paramPtr, "consumption", "%lf", 1, 1);
 		default_object_list[i].overstory_mort_k1 = getDoubleParam(&paramCnt, &paramPtr, "overstory_mort_k1", "%lf", -10, 1);
 		default_object_list[i].overstory_mort_k2 = getDoubleParam(&paramCnt, &paramPtr, "overstory_mort_k2", "%lf", 1, 1);
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+        if (command_line[0].fire_pc_ku_mort > -999) default_object_list[i].understory_mort = command_line[0].fire_pc_ku_mort;
+        if (command_line[0].fire_pc_kcons > -999) default_object_list[i].consumption = command_line[0].fire_pc_kcons;
+        if (command_line[0].fire_pc_ko_mort1 > -999) default_object_list[i].overstory_mort_k1 = command_line[0].fire_pc_ko_mort1;
+        if (command_line[0].fire_pc_ko_mort2 > -999) default_object_list[i].overstory_mort_k2 = command_line[0].fire_pc_ko_mort2;
+#endif
 		
 		/*--------------------------------------------------------------*/
 		/* default values for phenology (leaf onset/offset) model parameters */

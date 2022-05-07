@@ -143,17 +143,8 @@ void compute_fire_effects(
 			/* Calculates metrics for targer canopy */
 			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
-                        double default_understory_mort;
-                        double default_fire_consumption_coef;                                    //coef for calculating fire consumption rate
-#ifdef LIU_BURN_ALL_AT_ONCE
-                        default_understory_mort = command_line[0].fire_understory_mortality_rate;
-                        default_fire_consumption_coef = command_line[0].fire_consumption_rate_coef;
-#else
-                        default_understory_mort = canopy_target[0].defaults[0][0].understory_mort;
-                        default_fire_consumption = canopy_target[0].defaults[0][0].consumption;
-#endif
-
-
+            double default_understory_mort = canopy_target[0].defaults[0][0].understory_mort;
+            double default_fire_consumption_coef = canopy_target[0].defaults[0][0].consumption;                                    //coef for calculating fire consumption rate
 			/* Calculates metrics for next lowest canopy (subtarget canopy) */
 			if (patch[0].num_layers > (layer+1)){
 				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
@@ -238,13 +229,13 @@ void compute_fire_effects(
 				} else if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh){
 
 					/* Determine the proportion of carbon mortality in the subtarget canopy */
-					if (canopy_target[0].defaults[0][0].understory_mort <= 0){
+                    if (default_understory_mort <= 0){
 						fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     						exit(EXIT_FAILURE);
-                                        } else if (fabs(canopy_target[0].defaults[0][0].understory_mort - 1) <= 1e-6) {
-						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+                    } else if (fabs(default_understory_mort - 1) <= 1e-6) {
+                        canopy_target[0].fe.canopy_subtarget_prop_mort = default_understory_mort * pspread;
 					} else {
-						canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+                        canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(default_understory_mort,pspread)-1)/(default_understory_mort-1);
 					}
 
 					/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
@@ -255,6 +246,12 @@ void compute_fire_effects(
 
 						canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
 					}
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+                    if (command_line[0].fire_understory_mortality_rate >= 0)
+                        canopy_target[0].fe.canopy_subtarget_prop_mort = command_line[0].fire_understory_mortality_rate;
+#endif
+
 
 					/* Determine the proportion of subtarget canopy mortality consumed */
                                         if (fabs(default_fire_consumption_coef - 1) <= 1e-6) {
@@ -293,10 +290,10 @@ void compute_fire_effects(
 				}
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
-#ifndef LIU_BURN_ALL_AT_ONCE
-                                canopy_target[0].fe.canopy_target_prop_mort = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))));
-#else
-                                canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate * pspread;
+                canopy_target[0].fe.canopy_target_prop_mort = 1 - (1/(1+exp(-(canopy_target[0].defaults[0][0].overstory_mort_k1*(canopy_target[0].fe.understory_c_consumed - canopy_target[0].defaults[0][0].overstory_mort_k2)))));
+#ifdef LIU_BURN_ALL_AT_ONCE
+                if (command_line[0].fire_overstory_mortality_rate >= 0)
+                    canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
 #endif
 				/* Determine the proportion of target canopy mortality consumed */
                                 if (default_fire_consumption_coef < 0){
@@ -325,7 +322,7 @@ void compute_fire_effects(
 				/* This involves computing the mortality/consumption of the target canopy based on pspread. */
 
 				/* Determine the proportion of carbon mortality in the target canopy */
-                                if (default_understory_mort <= 0){
+                if (default_understory_mort <= 0){
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
                                 } else if (fabs(default_understory_mort - 1) <= 1e-6) {
@@ -333,7 +330,10 @@ void compute_fire_effects(
 				} else {
                                     canopy_target[0].fe.canopy_target_prop_mort = (pow(default_understory_mort,pspread)-1)/(default_understory_mort-1);
 				}
-
+#ifdef LIU_BURN_ALL_AT_ONCE
+                if (command_line[0].fire_overstory_mortality_rate >= 0)
+                    canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
+#endif
 				/* Adjust canopy_target_prop_mort to only account for understory component */
 				canopy_target[0].fe.canopy_target_prop_mort_u_component = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_height_u_prop;
 
@@ -345,13 +345,13 @@ void compute_fire_effects(
 				canopy mortality/consumption. */
 
 				/* Determine the proportion of carbon mortality in the subtarget canopy */
-				if (canopy_target[0].defaults[0][0].understory_mort <= 0){
+                if (default_understory_mort <= 0){
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
-                                } else if (fabs(canopy_target[0].defaults[0][0].understory_mort - 1) <= 1e-6) {
-					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].defaults[0][0].understory_mort * pspread;
+                } else if (fabs(default_understory_mort - 1) <= 1e-6) {
+                    canopy_target[0].fe.canopy_subtarget_prop_mort = default_understory_mort * pspread;
 				} else {
-					canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(canopy_target[0].defaults[0][0].understory_mort,pspread)-1)/(canopy_target[0].defaults[0][0].understory_mort-1);
+                    canopy_target[0].fe.canopy_subtarget_prop_mort = (pow(default_understory_mort,pspread)-1)/(default_understory_mort-1);
 				}
 
 				/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
@@ -362,9 +362,12 @@ void compute_fire_effects(
 
 					canopy_target[0].fe.canopy_subtarget_prop_mort = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_height_u_prop;
 				}
-
+#ifdef LIU_BURN_ALL_AT_ONCE
+                if (command_line[0].fire_understory_mortality_rate >= 0)
+                    canopy_target[0].fe.canopy_subtarget_prop_mort = command_line[0].fire_understory_mortality_rate;
+#endif
 				/* Determine the proportion of subtarget canopy mortality consumed */
-                                if (fabs(default_fire_consumption_coef - 1) <= 1e-6) {
+                if (fabs(default_fire_consumption_coef - 1) <= 1e-6) {
                                     canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = default_fire_consumption_coef * canopy_target[0].fe.canopy_subtarget_prop_mort;
 				} else {
                                     canopy_target[0].fe.canopy_subtarget_prop_mort_consumed = (pow(default_fire_consumption_coef,canopy_target[0].fe.canopy_subtarget_prop_mort)-1)/(default_fire_consumption_coef-1);
@@ -426,21 +429,21 @@ void compute_fire_effects(
 			} else if (canopy_target[0].fe.canopy_target_height < patch[0].soil_defaults[0][0].understory_height_thresh) { //line 282
 
 				/* Determine the proportion of carbon mortality in the target canopy */
-                                if (default_understory_mort <= 0){
-#ifndef LIU_BURN_ALL_AT_ONCE
-					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
+                if (default_understory_mort <= 0){
+                    fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].understory_mort must be greater than 0.\n");
     					exit(EXIT_FAILURE);
-#else
-                                        default_understory_mort = 1e-12;
-#endif
-                                } else if (fabs(default_understory_mort - 1) <= 1e-6) {
+                } else if (fabs(default_understory_mort - 1) <= 1e-6) {
                                     canopy_target[0].fe.canopy_target_prop_mort = default_understory_mort * pspread;
 				} else {
                                     canopy_target[0].fe.canopy_target_prop_mort = (pow(default_understory_mort,pspread)-1)/(default_understory_mort-1);
 				}
+#ifdef LIU_BURN_ALL_AT_ONCE
+                if (command_line[0].fire_overstory_mortality_rate >= 0)
+                    canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
+#endif
 
 				/* Determine the proportion of target canopy mortality consumed */
-                                if (fabs(default_fire_consumption_coef - 1) <= 1e-6) {
+                if (fabs(default_fire_consumption_coef - 1) <= 1e-6) {
                                     canopy_target[0].fe.canopy_target_prop_mort_consumed = default_fire_consumption_coef * canopy_target[0].fe.canopy_target_prop_mort;
 				} else {
                                     canopy_target[0].fe.canopy_target_prop_mort_consumed = (pow(default_fire_consumption_coef,canopy_target[0].fe.canopy_target_prop_mort)-1)/(default_fire_consumption_coef-1);

@@ -682,7 +682,7 @@ if (command_line[0].beetlespread_flag == 1) {
 	/*	Construct the strata in this patch.						*/
 	/*--------------------------------------------------------------*/
 
-    printf("            Patch_ID:%d\n",patch[0].ID);
+    //printf("            Patch_ID:%d\n",patch[0].ID);
 
 	for ( i=0 ; i<patch[0].num_canopy_strata ; i++ ){
 		patch[0].canopy_strata[i] = construct_canopy_strata(

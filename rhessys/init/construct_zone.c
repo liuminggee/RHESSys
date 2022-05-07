@@ -316,7 +316,7 @@ struct zone_object *construct_zone(
                 //notfound = 0;
 
 
-                printf("Zone_ID:%d\tBaseStation_ID:%d\n",zone[0].ID,zone[0].base_stations[0]->ID);
+                //printf("Zone_ID:%d\tBaseStation_ID:%d\n",zone[0].ID,zone[0].base_stations[0]->ID);
 
 
 			}
@@ -401,7 +401,7 @@ struct zone_object *construct_zone(
 	zone[0].metv.dayl_ravg = 38000;
 
 
-    printf("        Zone_ID:%d\n",zone[0].ID);
+    //printf("        Zone_ID:%d\n",zone[0].ID);
 
 	/*--------------------------------------------------------------*/
 	/*	Construct the intervals in this zone.						*/

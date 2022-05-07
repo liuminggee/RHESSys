@@ -2187,9 +2187,18 @@ struct  command_line_object
 #ifdef LIU_BURN_ALL_AT_ONCE
         int             burn_on_flag;
         int             fire_mortality_flag;
+        double          fire_pspread;                                           //0-1
         double          fire_overstory_mortality_rate;
         double          fire_understory_mortality_rate;
-        double          fire_consumption_rate_coef;
+        double          fire_pc_ku_mort;                                        //Primary canopy
+        double          fire_pc_kcons;
+        double          fire_pc_ko_mort1;
+        double          fire_pc_ko_mort2;
+        double          fire_sc_ku_mort;                                        //Secondary canopy
+        double          fire_sc_kcons;
+        double          fire_sc_ko_mort1;
+        double          fire_sc_ko_mort2;
+
         int             fire_spin_flag;
         int             fire_spin_period;                                       //years per spin (weather start from first year)
         int             fire_spins;                                             //number of spins
