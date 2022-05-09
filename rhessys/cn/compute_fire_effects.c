@@ -411,8 +411,13 @@ void compute_fire_effects(
 				/* Combine target canopy mortality from overstory and understory components */
 				canopy_target[0].fe.canopy_target_prop_mort = max(min(canopy_target[0].fe.canopy_target_prop_mort_u_component + canopy_target[0].fe.canopy_target_prop_mort_o_component,1.0),0);
 
+#ifdef LIU_BURN_ALL_AT_ONCE
+                if (command_line[0].fire_overstory_mortality_rate >= 0)
+                    canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
+#endif
+
 				/* Determine the proportion of target canopy mortality consumed */
-                                if (default_fire_consumption_coef < 0){
+                if (default_fire_consumption_coef < 0){
 					fprintf(stderr, "ERROR: canopy_target[0].defaults[0][0].consumption must be greater than 0.\n");
     					exit(EXIT_FAILURE);
                                 } else if (fabs(default_fire_consumption_coef - 1) <= 1e-6) {
