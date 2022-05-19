@@ -56,8 +56,29 @@ void	output_monthly_basin(
   if( patchCount == 0 ) patchCount = 1;
   basin[0].acc_month.length /= patchCount;
 
+#ifdef LIU_TRACKING_BASIN_LITTERC
+  struct cdayflux_patch_struct *cdf = &basin[0].acc_month.cdf;
+  double leafc_to_litrc = cdf->leafc_to_litr1c + cdf->cwdc_to_litr2c + cdf->cwdc_to_litr3c + cdf->cwdc_to_litr4c;
+  double frootc_to_litrc = cdf->frootc_to_litr1c + cdf->frootc_to_litr2c + cdf->frootc_to_litr3c + cdf->frootc_to_litr4c;
+  double cwdc_to_litrc = cdf->cwdc_to_litr2c + cdf->cwdc_to_litr3c + cdf->cwdc_to_litr4c;
+  double stemc_to_litrc = cdf->stemc_to_litr1c;
+  double mort_to_litrc = cdf->m_leafc_to_litr1c + cdf->m_leafc_to_litr2c + cdf->m_leafc_to_litr3c + cdf->m_leafc_to_litr4c
+                         + cdf->m_frootc_to_litr1c + cdf->m_frootc_to_litr2c + cdf->m_frootc_to_litr3c + cdf->m_frootc_to_litr4c
+                         + cdf->m_leafc_store_to_litr1c + cdf->m_frootc_store_to_litr1c + cdf->m_livestemc_store_to_litr1c + cdf->m_deadstemc_store_to_litr1c + cdf->m_livecrootc_store_to_litr1c + cdf->m_deadcrootc_store_to_litr1c
+                         + cdf->m_leafc_transfer_to_litr1c + cdf->m_frootc_transfer_to_litr1c + cdf->m_livestemc_transfer_to_litr1c + cdf->m_deadstemc_transfer_to_litr1c + cdf->m_livecrootc_transfer_to_litr1c + cdf->m_deadcrootc_transfer_to_litr1c
+                         + cdf->m_gresp_store_to_litr1c + cdf->m_gresp_transfer_to_litr1c;
+  double do_litrc_loss = cdf->do_litr1c_loss + cdf->do_litr2c_loss + cdf->do_litr3c_loss + cdf->do_litr4c_loss;
+  double m_litrc_to_atmos = cdf->m_litr1c_to_atmos + cdf->m_litr2c_to_atmos + cdf->m_litr3c_to_atmos + cdf->m_litr4c_to_atmos;
+  double litrc_to_atmos = cdf->litterc_to_atmos;
+  double litrc_to_soilc = cdf->litterc_to_soilc;
+#endif
+
 	check = fprintf(outfile,
+#ifndef LIU_TRACKING_BASIN_LITTERC
 		"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#else
+        "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#endif
 		current_date.month,
 		current_date.year,
 		basin[0].ID,
@@ -72,6 +93,18 @@ void	output_monthly_basin(
 		basin[0].acc_month.nitrif * 1000.0,
 		basin[0].acc_month.mineralized * 1000.0,
 		basin[0].acc_month.uptake * 1000.0
+#ifdef LIU_TRACKING_BASIN_LITTERC
+        ,
+        leafc_to_litrc,
+        frootc_to_litrc,
+        cwdc_to_litrc,
+        stemc_to_litrc,
+        mort_to_litrc,
+        do_litrc_loss,
+        m_litrc_to_atmos,
+        litrc_to_atmos,
+        litrc_to_soilc
+#endif
 		);
 	if (check <= 0) {
 		fprintf(stdout,
@@ -92,5 +125,8 @@ void	output_monthly_basin(
 	basin[0].acc_month.nitrif = 0.0;
 	basin[0].acc_month.mineralized = 0.0;
 	basin[0].acc_month.uptake = 0.0;
+#ifdef LIU_TRACKING_BASIN_LITTERC
+    memset(&basin[0].acc_month.cdf, 0, sizeof(struct cdayflux_patch_struct));
+#endif
 	return;
 } /*end output_monthly_basin*/

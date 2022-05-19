@@ -313,6 +313,9 @@ struct basin_object *construct_basin(
   basin[0].acc_year.PET = 0.0;
   basin[0].acc_year.psn = 0.0;
   basin[0].acc_year.num_threshold = 0;
+#ifdef LIU_TRACKING_BASIN_LITTERC
+  memset(&basin[0].acc_month.cdf, 0, sizeof(struct cdayflux_patch_struct));
+#endif
 
   /*--------------------------------------------------------------*/
   /*	Sort sub-hierarchy in the basin by elevation				*/

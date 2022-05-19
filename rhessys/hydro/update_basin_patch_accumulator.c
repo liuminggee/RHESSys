@@ -27,7 +27,9 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
-
+#ifdef LIU_TRACKING_BASIN_LITTERC
+int acumulate_carbon_flux(struct cdayflux_patch_struct *target, struct cdayflux_patch_struct *source, double scale);
+#endif
 void update_basin_patch_accumulator(
 			struct command_line_object 	*command_line,
 			struct basin_object 		*basin,
@@ -93,6 +95,11 @@ void update_basin_patch_accumulator(
 					basin[0].acc_month.lai += patch[0].lai * scale;
 					basin[0].acc_month.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach) * scale;
+
+#ifdef LIU_TRACKING_BASIN_LITTERC
+                    acumulate_carbon_flux(&basin[0].acc_month.cdf,&patch[0].cdf,scale);
+#endif
+
 				}
 
 				if ((command_line[0].output_flags.yearly == 1)
@@ -323,3 +330,103 @@ void update_basin_patch_accumulator(
 
 	return;
 } /* end of update_basin_patch_accumulator.c */
+
+#ifdef LIU_TRACKING_BASIN_LITTERC
+int acumulate_carbon_flux(struct cdayflux_patch_struct *target, struct cdayflux_patch_struct *source, double scale)
+{
+    target->do_litr1c_loss += scale * source->do_litr1c_loss;
+    target->do_litr2c_loss += scale * source->do_litr2c_loss;
+    target->do_litr3c_loss += scale * source->do_litr3c_loss;
+    target->do_litr4c_loss += scale * source->do_litr4c_loss;
+
+    target->do_soil1c_loss += scale * source->do_soil1c_loss;
+    target->do_soil2c_loss += scale * source->do_soil2c_loss;
+    target->do_soil3c_loss += scale * source->do_soil3c_loss;
+    target->do_soil4c_loss += scale * source->do_soil4c_loss;
+    target->total_DOC_loss += scale * source->total_DOC_loss;
+    target->DOC_to_gw += scale * source->DOC_to_gw;
+
+
+    target->plitr1c_loss += scale * source->plitr1c_loss;
+    target->plitr2c_loss += scale * source->plitr2c_loss;
+    target->plitr3c_loss += scale * source->plitr3c_loss;
+    target->plitr4c_loss += scale * source->plitr4c_loss;
+    target->psoil1c_loss += scale * source->psoil1c_loss;
+    target->psoil2c_loss += scale * source->psoil2c_loss;
+    target->psoil3c_loss += scale * source->psoil3c_loss;
+    target->psoil4c_loss += scale * source->psoil4c_loss;
+    target->kl4 += scale * source->kl4;
+
+    target->leafc_to_litr1c += scale * source->leafc_to_litr1c;
+    target->leafc_to_litr2c += scale * source->leafc_to_litr2c;
+    target->leafc_to_litr3c += scale * source->leafc_to_litr3c;
+    target->leafc_to_litr4c += scale * source->leafc_to_litr4c;
+    target->frootc_to_litr1c += scale * source->frootc_to_litr1c;
+    target->frootc_to_litr2c += scale * source->frootc_to_litr2c;
+    target->frootc_to_litr3c += scale * source->frootc_to_litr3c;
+    target->frootc_to_litr4c += scale * source->frootc_to_litr4c;
+    target->litr1c_to_soil1c += scale * source->litr1c_to_soil1c;
+    target->litr2c_to_soil2c += scale * source->litr2c_to_soil2c;
+    target->litr3c_to_litr2c += scale * source->litr3c_to_litr2c;
+    target->litr4c_to_soil3c += scale * source->litr4c_to_soil3c;
+    target->soil1c_to_soil2c += scale * source->soil1c_to_soil2c;
+    target->soil2c_to_soil3c += scale * source->soil2c_to_soil3c;
+    target->soil3c_to_soil4c += scale * source->soil3c_to_soil4c;
+    target->cwdc_to_litr2c += scale * source->cwdc_to_litr2c;
+    target->cwdc_to_litr3c += scale * source->cwdc_to_litr3c;
+    target->cwdc_to_litr4c += scale * source->cwdc_to_litr4c;
+    target->stemc_to_litr1c += scale * source->stemc_to_litr1c;
+    target->stemc_to_cwdc += scale * source->stemc_to_cwdc;
+    target->rootc_to_cwdc += scale * source->rootc_to_cwdc;
+
+    target->snagc_to_cwdc += scale * source->snagc_to_cwdc;
+    target->litr1c_hr += scale * source->litr1c_hr;
+    target->litr2c_hr += scale * source->litr2c_hr;
+    target->litr3c_hr += scale * source->litr3c_hr;
+    target->litr4c_hr += scale * source->litr4c_hr;
+    target->soil1c_hr += scale * source->soil1c_hr;
+    target->soil2c_hr += scale * source->soil2c_hr;
+    target->soil3c_hr += scale * source->soil3c_hr;
+    target->soil4c_hr += scale * source->soil4c_hr;
+
+    target->m_leafc_to_litr1c += scale * source->m_leafc_to_litr1c;
+    target->m_leafc_to_litr2c += scale * source->m_leafc_to_litr2c;
+    target->m_leafc_to_litr3c += scale * source->m_leafc_to_litr3c;
+    target->m_leafc_to_litr4c += scale * source->m_leafc_to_litr4c;
+    target->m_frootc_to_litr1c += scale * source->m_frootc_to_litr1c;
+    target->m_frootc_to_litr2c += scale * source->m_frootc_to_litr2c;
+    target->m_frootc_to_litr3c += scale * source->m_frootc_to_litr3c;
+    target->m_frootc_to_litr4c += scale * source->m_frootc_to_litr4c;
+
+    target->m_leafc_store_to_litr1c += scale * source->m_leafc_store_to_litr1c;
+    target->m_frootc_store_to_litr1c += scale * source->m_frootc_store_to_litr1c;
+    target->m_livestemc_store_to_litr1c += scale * source->m_livestemc_store_to_litr1c;
+    target->m_deadstemc_store_to_litr1c += scale * source->m_deadstemc_store_to_litr1c;
+    target->m_livecrootc_store_to_litr1c += scale * source->m_livecrootc_store_to_litr1c;
+    target->m_deadcrootc_store_to_litr1c += scale * source->m_deadcrootc_store_to_litr1c;
+
+    target->m_leafc_transfer_to_litr1c += scale * source->m_leafc_transfer_to_litr1c;
+    target->m_frootc_transfer_to_litr1c += scale * source->m_frootc_transfer_to_litr1c;
+    target->m_livestemc_transfer_to_litr1c += scale * source->m_livestemc_transfer_to_litr1c;
+    target->m_deadstemc_transfer_to_litr1c += scale * source->m_deadstemc_transfer_to_litr1c;
+    target->m_livecrootc_transfer_to_litr1c += scale * source->m_livecrootc_transfer_to_litr1c;
+    target->m_deadcrootc_transfer_to_litr1c += scale * source->m_deadcrootc_transfer_to_litr1c;
+
+    target->m_gresp_store_to_litr1c += scale * source->m_gresp_store_to_litr1c;
+    target->m_gresp_transfer_to_litr1c += scale * source->m_gresp_transfer_to_litr1c;
+
+    target->m_litr1c_to_atmos += scale * source->m_litr1c_to_atmos;
+    target->m_litr2c_to_atmos += scale * source->m_litr2c_to_atmos;
+    target->m_litr3c_to_atmos += scale * source->m_litr3c_to_atmos;
+    target->m_litr4c_to_atmos += scale * source->m_litr4c_to_atmos;
+    target->m_soil1c_to_atmos += scale * source->m_soil1c_to_atmos;
+    target->m_soil2c_to_atmos += scale * source->m_soil2c_to_atmos;
+    target->m_soil3c_to_atmos += scale * source->m_soil3c_to_atmos;
+    target->m_soil4c_to_atmos += scale * source->m_soil4c_to_atmos;
+
+    target->litterc_to_atmos += scale * source->litterc_to_atmos;
+    target->litterc_to_soilc += scale * source->litterc_to_soilc;
+    return 0;
+
+}
+#endif

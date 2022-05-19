@@ -170,7 +170,11 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].monthly;
 	check = fprintf(outfile,
+#ifndef LIU_TRACKING_BASIN_LITTERC
 		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#else
+        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#endif
 		"month",
 		"year",
 		"basinID",
@@ -184,7 +188,20 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"lai",
 		"nitrif",
 		"mineralized",
-		"uptake");
+        "uptake"
+#ifdef LIU_TRACKING_BASIN_LITTERC
+        ,
+        "leafc_to_litrc",
+        "frootc_to_litrc",
+        "cwdc_to_litrc",
+        "stemc_to_litrc",
+        "mort_to_litrc",
+        "do_litrc_loss",
+        "m_litrc_to_atmos",
+        "litrc_to_atmos",
+        "litrc_to_soilc"
+#endif
+        );
 	/*--------------------------------------------------------------*/
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
