@@ -489,6 +489,12 @@ struct canopy_strata_object *construct_canopy_strata(
 		* pow((canopy_strata[0].cs.leafc + canopy_strata[0].cs.dead_leafc),
 		canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
 
+    //if (canopy_strata[0].epv.height > 50) printf("Height:%f StemC:%f coef:%f exp:%f\n",
+    //                                             canopy_strata[0].epv.height,
+    //        canopy_strata[0].cs.live_stemc+canopy_strata[0].cs.dead_stemc,
+    //        canopy_strata[0].defaults[0][0].epc.height_to_stem_coef,
+    //        canopy_strata[0].defaults[0][0].epc.height_to_stem_exp);
+
 	/*--------------------------------------------------------------*/
 	/*	calculate all sided  and project pai from max projected lai	*/
 	/*--------------------------------------------------------------*/

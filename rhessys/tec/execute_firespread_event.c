@@ -286,8 +286,10 @@ void execute_firespread_event(
 	if(world[0].defaults[0].fire[0].fire_verbose == 3) { //NREN 20190912
 	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);}
 // needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
-	world[0].fire_grid=WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
- 	if(world[0].defaults[0].fire[0].fire_verbose == 3) {
+#ifndef LIU_BURN_ALL_AT_ONCE
+    world[0].fire_grid=WMFire(command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
+#endif
+    if(world[0].defaults[0].fire[0].fire_verbose == 3) {
  	printf("Finished calling WMFire\n"); }
 	/*--------------------------------------------------------------*/
 	/* update biomass after fire					*/
@@ -308,7 +310,7 @@ void execute_firespread_event(
 
 			for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
 				patch = world[0].patch_fire_grid[i][j].patches[p];
-
+#ifndef LIU_BURN_ALL_AT_ONCE
 				patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 
@@ -317,11 +319,11 @@ void execute_firespread_event(
                 //if(patch_fire_grid[i][j].num_patches > 0)
                 //    printf("\tp:%d prop_grid_in_patch:%f\n",p,world[0].patch_fire_grid[i][j].prop_grid_in_patch[p]);
 
-#ifdef LIU_BURN_ALL_AT_ONCE
+#else
                 total_pspread += pspread;
                 //05062022LML pspread = 1.0;                                                  //Handle the patch once for all pixels since they share same C&N pools
-                pspread = command_line[0].fire_pspread;
-                if (pspread < 0) pspread = 1.0;
+                pspread = command_line[0].fire_pspread * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p]; //05182022LML
+                if (pspread < 0) pspread = world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 #endif
 // so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
 				/* (if pspread>0&world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*0.0001>=400) // also need a flag with the fire size to trigger event, because fire > 400 ha
@@ -347,17 +349,18 @@ void execute_firespread_event(
 
 
                     //printf("row:%d col:%d patch_ID:%d\n",i,j,patch->ID);
-#ifdef LIU_BURN_ALL_AT_ONCE
-                    if (!patch->fire_effect_processed) {
-#endif
+//#ifdef LIU_BURN_ALL_AT_ONCE
+//                    //05182022LML might be wrong since each patch might be in different fire gridcells
+//                    if (!patch->fire_effect_processed) {
+//#endif
 					compute_fire_effects(
 						patch,
 						pspread,
 						command_line);
-#ifdef LIU_BURN_ALL_AT_ONCE
-                        patch->fire_effect_processed = 1;
-                    }
-#endif
+//#ifdef LIU_BURN_ALL_AT_ONCE
+//                        patch->fire_effect_processed = 1;
+//                    }
+//#endif
                 }
 			}
 		}

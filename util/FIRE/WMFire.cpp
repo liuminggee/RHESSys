@@ -173,15 +173,15 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
 /********************************************************************************/
 void LandScape::drawNumIgn(double lambda,GenerateRandom& rng)	// to be called in main, to replace RandomScar mk: ? RandomScar?
 {
-#ifndef LIU_BURN_ALL_AT_ONCE
+//#ifndef LIU_BURN_ALL_AT_ONCE
 	double tmpN;
 	tmpN=poisdev(lambda,rng);
     if(def_.fire_verbose==1)
 	cout<<"\n random 1 the drawnum ignition random number tmpN is" << tmpN << "\n\n"; //Ning Ren 20180920
 	n_cur_ign_=round(tmpN);
-#else
-    n_cur_ign_ = 100;                                                           //Start fire quikly
-#endif
+//#else
+//    n_cur_ign_ = 100;                                                           //Start fire quikly
+//#endif
 	return ;
 }
 
@@ -237,11 +237,11 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 			if(def_.fire_verbose==1)
 				cout<<"in burn before testIgnition: \n\n";
 			int ign;
-#ifndef LIU_BURN_ALL_AT_ONCE
+//#ifndef LIU_BURN_ALL_AT_ONCE
 			ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
-#else
-            ign = 1;
-#endif
+//#else
+//            ign = 1;
+//#endif
 
 
 			if(def_.fire_verbose==1)
