@@ -51,7 +51,7 @@ using boost::shared_ptr;
 // WMFire is used by models that pass values defined in the rhessys_fire.h file.
 // The calling model passes a 2D grid of fire_objects, of size nrow X ncol
 //					world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year
-struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def)
+struct fire_object **WMFire(char *output_prefix, double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def)
 {   if(def.fire_verbose == 3) //NREN 20190912
 	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: \n"<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
 	if(def.fire_verbose == 1)
@@ -101,7 +101,7 @@ struct fire_object **WMFire(double cell_res,  int nrow, int ncol, long year, lon
 		cout<<"\nafter landscape initialize current fire\n\n";
 	landscape.Burn(randomNG); // run the current fire ---- draw drandom burn random 3
 	if(def.fire_write>0)
-		landscape.writeFire(month,year,def);
+        landscape.writeFire(output_prefix,month,year,def);
 	if(def.fire_verbose==1)
 		cout<<"\nafter burn landscape\n\n";
 	return landscape.FireGrids();  // return the updated fire grid
@@ -794,9 +794,10 @@ void LandScape::calc_FireEffects(int new_row,int new_col, int iter, double cur_p
 /***************write the fire grid******************************************/
 /* with the date written to the file								*/
 /***************************************************************************/
-void LandScape::writeFire(long month, long year,struct fire_default def)
+void LandScape::writeFire(char *output_prefix, long month, long year,struct fire_default def)
 {
 //	char const* outFile;
+    std::string prefix(output_prefix);                                          //05192022LML Write to same folder as other outputs
 	std::string curFile;
 	std::string curPropFile;
 	std::string curFailedIterFile;
@@ -811,20 +812,20 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	outYear<<year;
 	curYear=outYear.str();
 
-	curFile.assign("FireSpreadIterGridYear");
+    curFile.assign(prefix + "FireSpreadIterGridYear");
 	curFile.append(curYear);
 	curFile.append("Month");
 	curFile.append(curMonth);
 	curFile.append(".txt");
 
-	curFailedIterFile.assign("FireFailedIterGridYear");
+    curFailedIterFile.assign(prefix + "FireFailedIterGridYear");
 	curFailedIterFile.append(curYear);
 	curFailedIterFile.append("Month");
 	curFailedIterFile.append(curMonth);
 	curFailedIterFile.append(".txt");
 
 
-	curPropFile.assign("FireSpreadPropGridYear");
+    curPropFile.assign(prefix + "FireSpreadPropGridYear");
 	curPropFile.append(curYear);
 	curPropFile.append("Month");
 	curPropFile.append(curMonth);
@@ -863,7 +864,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 
 	if(def_.fire_write>2)
 	{
-		curFile.assign("LoadGridYear");
+        curFile.assign(prefix + "LoadGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -884,7 +885,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-		curFile.assign("SoilMoistGridYear");
+        curFile.assign(prefix + "SoilMoistGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -906,7 +907,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		soilMoistOut.close();
 
 
-		curFile.assign("VegLoadGridYear");
+        curFile.assign(prefix + "VegLoadGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -925,7 +926,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		fireOut.close();
 
 
-		curFile.assign("RelDefGridYear");
+        curFile.assign(prefix + "RelDefGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -957,7 +958,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-		curFile.assign("PETGridYear");
+        curFile.assign(prefix + "PETGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -975,7 +976,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-		curFile.assign("ETGridYear");
+        curFile.assign(prefix + "ETGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -993,7 +994,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-		curFile.assign("UnderPETGridYear");
+        curFile.assign(prefix + "UnderPETGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -1011,7 +1012,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-		curFile.assign("UnderETGridYear");
+        curFile.assign(prefix + "TRANSGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -1030,7 +1031,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		}
 		fireOut.close();
 
-		curFile.assign("TRANSGridYear");
+        curFile.assign(prefix + "UnderETGridYear");
 		curFile.append(curYear);
 		curFile.append("Month");
 		curFile.append(curMonth);
@@ -1050,7 +1051,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 		fireOut.close();
 		if(def_.fire_write>3)
 		{
-			curFile.assign("PSlopeGridYear");
+            curFile.assign(prefix + "PSlopeGridYear");
 			curFile.append(curYear);
 			curFile.append("Month");
 			curFile.append(curMonth);
@@ -1068,7 +1069,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			}
 			fireOut.close();
 
-			curFile.assign("PDefGridYear");
+            curFile.assign(prefix + "PDefGridYear");
 			curFile.append(curYear);
 			curFile.append("Month");
 			curFile.append(curMonth);
@@ -1086,7 +1087,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			}
 			fireOut.close();
 
-			curFile.assign("PLoadGridYear");
+            curFile.assign(prefix + "PLoadGridYear");
 			curFile.append(curYear);
 			curFile.append("Month");
 			curFile.append(curMonth);
@@ -1104,7 +1105,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 			}
 			fireOut.close();
 
-			curFile.assign("PWindGridYear");
+            curFile.assign(prefix + "PWindGridYear");
 			curFile.append(curYear);
 			curFile.append("Month");
 			curFile.append(curMonth);
@@ -1138,7 +1139,7 @@ void LandScape::writeFire(long month, long year,struct fire_default def)
 	if(def_.fire_write>0)
 	{
 		ofstream sizeOut;
-		sizeOut.open("FireSizes.txt", ofstream::app);
+        sizeOut.open(prefix + "FireSizes.txt", ofstream::app);
 		//sizeOut.open("FireSizes.txt", ofstream::out | ofstream::app);
 		sizeOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\t"<<n_cur_ign_<<"\n";
 		sizeOut.close();
