@@ -218,6 +218,9 @@ int get_netcdf_var(char *, char *, char *, char *, float, float, float, float *)
 int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 #endif
 
+//05202022LML compare double
+int close_enough(double a, double b);
+
 /*----------------------------------------------------------*/
 /*      Define types                                        */
 /*----------------------------------------------------------*/

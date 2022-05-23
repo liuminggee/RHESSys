@@ -39,6 +39,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 #include <iostream>
 #include <cstdlib>
 #include <math.h> //NREN 20190227
+#include <iomanip>
+
 
 using std::cout;
 using std::stringstream;
@@ -47,7 +49,11 @@ using std::ifstream;
 using std::ofstream;
 
 using boost::shared_ptr;
-
+int close_enough(double a, double b)
+{
+    if (fabs(a - b) <= DBL_EPSILON * fmax(fabs(a), fabs(b))) return 1;
+    return 0;
+}
 // WMFire is used by models that pass values defined in the rhessys_fire.h file.
 // The calling model passes a 2D grid of fire_objects, of size nrow X ncol
 //					world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year
@@ -179,6 +185,14 @@ void LandScape::drawNumIgn(double lambda,GenerateRandom& rng)	// to be called in
     if(def_.fire_verbose==1)
 	cout<<"\n random 1 the drawnum ignition random number tmpN is" << tmpN << "\n\n"; //Ning Ren 20180920
 	n_cur_ign_=round(tmpN);
+
+
+
+    //n_cur_ign_ = n_ign_;
+    //fprintf(stderr,"n_cur_ign_ = n_ign_    DEBUGGING!!!\n");
+
+
+
 //#else
 //    n_cur_ign_ = 100;                                                           //Start fire quikly
 //#endif
@@ -244,6 +258,12 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 //#endif
 
 
+
+            //ign = 1;
+            //fprintf(stderr,"ign = 1    DEBUGGING!!!\n");
+
+
+
 			if(def_.fire_verbose==1)
 				cout<<"in burn after testIgnition: "<<ign<<"\n\n";
 			int stop = 0;
@@ -296,14 +316,15 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 	int stop;
 	int new_row,new_col; // to track the indices of the x and y arrays neighboring the current cell, to be updated for each new cell
 
-	int add_row[4]={1,-1,0,0};	// to calculate the neighbor indices in the x-direction, orthogonal only
-	int add_col[4]={0,0,1,-1};	// to calculate the neighbor indices in the y-direction, orthogonal only
-	double fire_dir[4]={0,3.1416,4.712,1.5708};  // the orientation of the neighbor pixels, as defined by add_row
+    //05202022LML need burn itself 0:S 1:N 2:E 3:W 4:itself
+    int add_row[5]={1,-1,0,0,0};	// to calculate the neighbor indices in the x-direction, orthogonal only
+    int add_col[5]={0,0,1,-1,0};	// to calculate the neighbor indices in the y-direction, orthogonal only
+    double fire_dir[5]={0,3.1416,4.712,1.5708,-1};  // the orientation of the neighbor pixels, as defined by add_row
 											// and add_col, in rad.  So, the pixel above (row -1) means the fire is moving
 											// from the south, in line with a southerly wind (pi)
 	int i;
 	int test_burn,burned;
-	int currentBorders[4]={0};	// this will keep track of which borders are reached by the fire in the current iteration
+    int currentBorders[4]={0};	// this will keep track of which borders are reached by the fire in the current iteration
 
 	int numBurnedThisIter=0;
 	int test_once=0;
@@ -314,7 +335,7 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 // mk: now this loop will start at zero, and run the length of the firstBurned vector
 	for(size_t x = 0; x < firstBurned_.size(); ++x)
 	{
-		for(i=0;i<4;i++)	// for each cell that was burned the previous iteration, navigate the 4 neighbors
+        for(i=0;i<5;i++)	// for each cell that was burned the previous iteration, navigate the 4 neighbors
 		{
 			test_burn=1;		// this will be set to 0 if the current cell is on any of the borders, or if the neighbor has already been burned
 								// some conditions include whether you are at the border of the landscape, whether the neighboring cell is already burned
@@ -348,12 +369,27 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 				borders_[3]=1;
 			}
 
-			if(test_burn==1&&fireGrid_[new_row][new_col].burn==0) // only test if it is not already burned, and not beyond the border
+            //05202022LML
+            if (! fireGrid_[new_row][new_col].ign_available) test_burn = 0;
+            if(test_burn==1&&close_enough(fireGrid_[new_row][new_col].burn,0)) // only test if it is not already burned, and not beyond the border
 			{
 				test_once=test_once+1;
 #ifndef LIU_BURN_ALL_AT_ONCE
 				cur_pBurn=calc_pSpreadTest(firstBurned_[x].rowId, firstBurned_[x].colId, new_row, new_col, fire_dir[i]); // mk: calculate the spread probability for this combination of idx/idy and new_idx/new_idy
 				burned = IsBurned(rng, cur_pBurn); // mk: need to merge IsBurned with BurnTest
+
+
+
+                //if (! close_enough(cur_pBurn,0)) burned = 1;
+                //fprintf(stderr,"ig_row:%d ig_col:%d row:%d col:%d p:%.3f\nburned = 1     DEBUGGING!!!\n"
+                //        ,firstBurned_[x].rowId,firstBurned_[x].colId,new_row,new_col,cur_pBurn);
+
+
+
+
+
+
+
 #else
                                 cur_pBurn = 1.0;
                                 burned = 1;
@@ -489,7 +525,7 @@ void LandScape::chooseIgnPix(GenerateRandom& rng)
         if(def_.fire_verbose==1)
         cout<<" resampling ignition row and column: "<<temp_row<<"\t"<<temp_col<<"\n";
 
-		vecID=int(floor(rng()*(n_ign_+1))); // n_ign_ just counts how many pixels are available for ignition
+        vecID=int(floor(rng()*n_ign_)); // n_ign_ just counts how many pixels are available for ignition 05202022LML remove "+1" since it should not bigger than n_ign_.
 		temp_row =ignCells_[vecID].rowId;
 		temp_col = ignCells_[vecID].colId;
         }
@@ -551,6 +587,7 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	}
 	k1wind=def_.winddir_k1*windspeed;
 //	p_winddir=def_.winddir_k2+def_.winddir_k1*(1+cos(fire_dir-winddir)); // pSpread due to the orientation of the cells relative to the wind direction
+    if (fire_dir < 0) fire_dir = winddir;                                       //05202022LML no wind effect for local
 	p_winddir=def_.winddir_k2+k1wind *(1+cos(fire_dir-winddir)); // pSpread due to the orientation of the cells relative to the wind direction
 		// still need to figure out wind speed...
 	if(p_winddir>1) // ensure that the slope function stays between 0,1
@@ -640,6 +677,8 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	localFireGrid_[new_row][new_col].pDef=p_moisture;
 	localFireGrid_[new_row][new_col].pWind=p_winddir;
 	localFireGrid_[new_row][new_col].pLoad=p_load;
+
+    fprintf(stderr,"new_row:%d new_col:%d pburn:%.3f\n",new_row,new_col,temp_pBurn);
 
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
 	if(def_.fire_verbose==1)
@@ -798,6 +837,7 @@ void LandScape::writeFire(char *output_prefix, long month, long year,struct fire
 {
 //	char const* outFile;
     std::string prefix(output_prefix);                                          //05192022LML Write to same folder as other outputs
+#ifndef LIU_WMFIRE_OUTPUT
 	std::string curFile;
 	std::string curPropFile;
 	std::string curFailedIterFile;
@@ -1145,7 +1185,65 @@ void LandScape::writeFire(char *output_prefix, long month, long year,struct fire
 		sizeOut.close();
 
 	}
+#else
+    ofstream FOut;
+    static int first_run_for_output = 1;
+    if (first_run_for_output) FOut.open(prefix + "_WMFireGridTable.csv");
+    else FOut.open(prefix + "_WMFireGridTable.csv", ofstream::app);
 
+    if (FOut.is_open()) {
+        if (first_run_for_output == 1) {
+            FOut<<"year,month,row,col,SpreadIter,FailedIter,SpreadProp,LitLoad,SoilMoist,VegLoad,RelDef,PET,ET,TRANS,UnderPET,UnderET,PSlope,PDef,PLoad,PWind"<<std::endl;
+            first_run_for_output = 0;
+        }
+        for(int i=0; i<rows_; i++)
+        {
+            for(int j=0; j<cols_; j++)
+            {
+                struct LocalFireNodes *lfn = &localFireGrid_[i][j];
+                fire_object *fobj = &fireGrid_[i][j];
+                if (fobj->ign_available == 1) {
+                    double RelDef = 0;
+                    if(def_.spread_calc_type<4) {
+                        RelDef = fobj->fuel_moist;
+                    } else {
+                        if(def_.spread_calc_type<7) {
+                            RelDef = fobj->pet - fobj->et;
+                        } else {
+                            if(fobj->pet>0)
+                                RelDef = 1 - fobj->et / fobj->pet;
+                        }
+                    }
+                    if (month >= 6 && month <= 10)
+                        FOut<<year<<","<<month<<","<<i<<","<<j<<","
+                            <<lfn->iter<<","
+                            <<lfn->failedIter<<","
+                            <<std::setprecision(3)<<fobj->burn<<","
+                            <<std::setprecision(3)<<fobj->fuel_litter<<","
+                            <<std::setprecision(3)<<fobj->soil_moist<<","
+                            <<std::setprecision(3)<<fobj->fuel_veg<<","
+                            <<std::setprecision(3)<<RelDef<<","
+                            <<std::setprecision(3)<<fobj->pet<<","
+                            <<std::setprecision(3)<<fobj->et<<","
+                            <<std::setprecision(3)<<fobj->trans<<","
+                            <<std::setprecision(3)<<fobj->understory_pet<<","
+                            <<std::setprecision(3)<<fobj->understory_et<<","
+                            <<std::setprecision(3)<<lfn->pSlope<<","
+                            <<std::setprecision(3)<<lfn->pDef<<","
+                            <<std::setprecision(3)<<lfn->pLoad<<","
+                            <<std::setprecision(3)<<lfn->pWind
+                            <<std::endl;
+                } //if
+            }
+        }
+        FOut.close();
+    } else {
+        FOut<<cur_fire_.update_size<<"\t"<<year<<"\t"<<month<<"\t"<<cur_fire_.winddir<<"\t"<<cur_fire_.windspeed<<"\t"<<n_cur_ign_<<"\n";
+        std::cerr << "Can't open WMFire output:" << (prefix + "_WMFireGridTable.csv") << std::endl;
+        exit(-1);
+    }
+
+#endif
 	return ;
 }
 

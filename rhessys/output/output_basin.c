@@ -248,74 +248,75 @@ void	output_basin(			int routing_flag,
 				}
 				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
-						acrain += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].rain_stored +
-							 patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].snow_stored )
+                        struct  canopy_strata_object *this_strta = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+                        acrain += this_strta->cover_fraction
+                            * (this_strta->rain_stored +
+                             this_strta->snow_stored )
 							* patch[0].area;
-						apsn += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.net_psn
+                        apsn += this_strta->cover_fraction
+                            * this_strta->cs.net_psn
 							* patch[0].area;
-		anppcum += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.nppcum
+                        anppcum += this_strta->cover_fraction
+                            * this_strta->cs.nppcum
 							* patch[0].area;
-						alai += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.proj_lai
+                        alai += this_strta->cover_fraction
+                            * this_strta->epv.proj_lai
 							* patch[0].area;
-						acanopysubl += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].sublimation
+                        acanopysubl += this_strta->cover_fraction
+                            * this_strta->sublimation
 							* patch[0].area;
-						adC13 += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].dC13
+                        adC13 += this_strta->cover_fraction
+                            * this_strta->dC13
 							* patch[0].area;
-						amortality_fract += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.mortality_fract
+                        amortality_fract += this_strta->cover_fraction
+                            * this_strta->cs.mortality_fract
 							* patch[0].area;
-						agpsn += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction * patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.psn_to_cpool
+                        agpsn += this_strta->cover_fraction * this_strta->cdf.psn_to_cpool
 							* patch[0].area;
-						aresp += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.leaf_day_mr + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_leaf_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.leaf_night_mr +	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.livestem_mr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_livestem_gr + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.livecroot_mr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_livecroot_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_deadcroot_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.froot_mr + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_froot_gr
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cdf.cpool_to_gresp_store)	* patch[0].area;
-						ags += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].gs * patch[0].area;
-						arootdepth += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].rootzone.depth)
+                        aresp += this_strta->cover_fraction
+                            * (this_strta->cdf.leaf_day_mr + this_strta->cdf.cpool_leaf_gr
+                           + this_strta->cdf.leaf_night_mr +	this_strta->cdf.livestem_mr
+                           + this_strta->cdf.cpool_livestem_gr + this_strta->cdf.livecroot_mr
+                           + this_strta->cdf.cpool_livecroot_gr
+                           + this_strta->cdf.cpool_deadcroot_gr
+                           + this_strta->cdf.froot_mr + this_strta->cdf.cpool_froot_gr
+                           + this_strta->cdf.cpool_to_gresp_store)	* patch[0].area;
+                        ags += this_strta->cover_fraction
+                            * this_strta->gs * patch[0].area;
+                        arootdepth += this_strta->cover_fraction
+                            * (this_strta->rootzone.depth)
 							* patch[0].area;
-						aleafc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction	* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.leafc_transfer )
+                        aleafc += this_strta->cover_fraction	* (this_strta->cs.leafc
+                            + this_strta->cs.leafc_store + this_strta->cs.leafc_transfer )
 							* patch[0].area;
-						afrootc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction * (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc
-							+ patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.frootc_transfer)
+                        afrootc += this_strta->cover_fraction * (this_strta->cs.frootc
+                            + this_strta->cs.frootc_store + this_strta->cs.frootc_transfer)
 							* patch[0].area;
-						awoodc += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction	* (patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_crootc
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.live_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_crootc
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.dead_stemc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_store
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_store + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_store
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_store
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livecrootc_transfer
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.livestemc_transfer
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadcrootc_transfer
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.deadstemc_transfer
-						   + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cwdc + patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cs.cpool)
+                        awoodc += this_strta->cover_fraction	* (this_strta->cs.live_crootc
+                           + this_strta->cs.live_stemc + this_strta->cs.dead_crootc
+                           + this_strta->cs.dead_stemc + this_strta->cs.livecrootc_store
+                           + this_strta->cs.livestemc_store + this_strta->cs.deadcrootc_store
+                           + this_strta->cs.deadstemc_store
+                           + this_strta->cs.livecrootc_transfer
+                           + this_strta->cs.livestemc_transfer
+                           + this_strta->cs.deadcrootc_transfer
+                           + this_strta->cs.deadstemc_transfer
+                           + this_strta->cs.cwdc + this_strta->cs.cpool)
 							* patch[0].area;
-						acsnow += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].snow_stored )
+                        acsnow += this_strta->cover_fraction
+                            * (	this_strta->snow_stored )
 							* patch[0].area;
-						aheight += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].epv.height
+                        aheight += this_strta->cover_fraction
+                            * this_strta->epv.height
 							* patch[0].area;
-						acLstar += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].Lstar )
+                        acLstar += this_strta->cover_fraction
+                            * (	this_strta->Lstar )
 							* patch[0].area;
-						acdrip += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* (	patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].canopy_drip )
+                        acdrip += this_strta->cover_fraction
+                            * (	this_strta->canopy_drip )
 							* patch[0].area;
-						acga += patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].cover_fraction
-							* patch[0].canopy_strata[(patch[0].layers[layer].strata[c])][0].ga * patch[0].area;
+                        acga += this_strta->cover_fraction
+                            * this_strta->ga * patch[0].area;
 					}
 				}
 				aarea +=  patch[0].area;
