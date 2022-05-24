@@ -67,7 +67,7 @@ double	leaf_conductance_LWP_curve(int curve,
 	else{
 
 	 if (curve == 0) {  /* original Biome BGC approach */ 
-		if (LWP_min_spring == LWP_stom_closure)
+        if (close_enough(LWP_min_spring, LWP_stom_closure))
 			m_LWP = 1.0;
 		else
 			m_LWP = (LWP_predawn - LWP_stom_closure)

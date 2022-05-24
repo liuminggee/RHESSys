@@ -237,7 +237,7 @@ void		zone_daily_F(
 	/*																*/
 	/*	Eq 1. Page 4, "MTCLIM"										*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tday == -999.0 ){
+    if ( close_enough(zone[0].metv.tday, -999.0 )){
 		zone[0].metv.tday = zone[0].defaults[0][0].temcf
 		* (zone[0].metv.tmax - zone[0].metv.tavg) + zone[0].metv.tavg;
 	}
@@ -246,7 +246,7 @@ void		zone_daily_F(
 	/*																*/
 	/*	zcomp.c C Rhessys code										*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tnight == -999.0 ){
+    if ( close_enough(zone[0].metv.tnight, -999.0 )){
 		zone[0].metv.tnight = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
 	}
 	/*--------------------------------------------------------------*/
@@ -256,7 +256,7 @@ void		zone_daily_F(
 	/*	use a min/max to get range in which there is a mix of snow/rain */
 	/*								*/
 	/*--------------------------------------------------------------*/
-	if (zone[0].snow == -999.0 ){
+    if (close_enough(zone[0].snow, -999.0 )){
 		if (zone[0].metv.tavg < zone[0].defaults[0][0].max_snow_temp ){
 			if (zone[0].metv.tavg <= zone[0].defaults[0][0].min_rain_temp){
 				zone[0].snow = zone[0].rain;
@@ -287,8 +287,8 @@ void		zone_daily_F(
 	/*	daylength if rain 0 if not.					*/
 	/*--------------------------------------------------------------*/
 
-	if ( zone[0].rain_duration == -999.0 ){
-		if ( zone[0].rain == 0 || (zone[0].snow != 0 ) ){
+    if ( close_enough(zone[0].rain_duration, -999.0 )){
+        if ( close_enough(zone[0].rain, 0) || !close_enough(zone[0].snow, 0 ) ){
 			zone[0].rain_duration = 0;
 		}
 		else{
@@ -302,7 +302,7 @@ void		zone_daily_F(
 		}
 	}
 	else{
-		if ( zone[0].rain == 0 && zone[0].rain_hourly_total == 0){
+        if ( close_enough(zone[0].rain, 0) && close_enough(zone[0].rain_hourly_total, 0)){
 			zone[0].rain_duration = 0;
 		}
 		else{
@@ -354,14 +354,14 @@ void		zone_daily_F(
 		/*																*/
 		/*	Equation 2a & 2b , Page 5, "MTCLIM" 						*/
 		/*--------------------------------------------------------------*/
-		if ( (zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat) != 0.0 ) {
+        if ( !close_enough(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat, 0.0 )) {
 			zone[0].radrat = (zone[0].Kdown_direct + zone[0].Kdown_diffuse) /
 			(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);
 		}
 		else zone[0].radrat = 1.0;
 		/*zone[0].radrat = 1.0;*/
 		/* EG edit: when radrat equals zero, tmax= -Inf and PSN=Nan */
-		if ( zone[0].radrat == 0.0) {
+        if ( close_enough(zone[0].radrat, 0.0)) {
 			zone[0].radrat = 1.0;
 		}
 
@@ -412,15 +412,15 @@ void		zone_daily_F(
 	/*	We assume the ratio of diffuse to direct PAR is a closed 	*/
 	/*		form equation of the ratio of diffuse to direct Kdown.	*/
 	/*--------------------------------------------------------------*/
-	if ( (zone[0].PAR_direct == -999.0 ) && ( zone[0].PAR_diffuse == -999.0) ){
+    if ( close_enough(zone[0].PAR_direct, -999.0 ) && close_enough( zone[0].PAR_diffuse, -999.0) ){
 		zone[0].PAR_direct = 1000.0 * zone[0].Kdown_direct * RAD2PAR * EPAR;
 		zone[0].PAR_diffuse = 1000.0 *  zone[0].Kdown_diffuse * RAD2PAR * EPAR;
 	}
-	else if ( zone[0].PAR_direct == -999.0 ){
+    else if ( close_enough(zone[0].PAR_direct, -999.0 )){
 		zone[0].PAR_direct = zone[0].PAR_diffuse * (zone[0].Kdown_direct
 			/ zone[0].Kdown_diffuse );
 	}
-	else if ( zone[0].PAR_diffuse == -999.0 ){
+    else if ( close_enough(zone[0].PAR_diffuse, -999.0 )){
 		zone[0].PAR_diffuse = zone[0].PAR_direct * (zone[0].Kdown_diffuse
 			/ zone[0].Kdown_direct );
 	}
@@ -428,12 +428,12 @@ void		zone_daily_F(
 	/*-------------------------------------------------------------------*/
 	/* Vapor pressure deficit - All day									 */
 	/*-------------------------------------------------------------------*/
-	if (  zone[0].metv.vpd == -999.0  ) {
+    if (  close_enough(zone[0].metv.vpd, -999.0  )) {
 		double es = compute_saturation_vapor_pressure(zone[0].metv.tavg);
 		/*--------------------------------------------------------------*/
 		/*	Make use of relative humidity if available.					*/
 		/*--------------------------------------------------------------*/
-		if ( zone[0].relative_humidity == -999.0 ){
+        if ( close_enough(zone[0].relative_humidity, -999.0 )){
 			/*--------------------------------------------------------------*/
 			/*	Assuming that tdewpoint is valid for the whole day.		*/
 			/*								*/
@@ -468,7 +468,7 @@ void		zone_daily_F(
 	/*-------------------------------------------------------------------*/
 	/* Vapor pressure deficit - Day time							     */
 	/*-------------------------------------------------------------------*/
-	if (  zone[0].metv.vpd_day == -999.0  ) {
+    if (  close_enough(zone[0].metv.vpd_day, -999.0  )) {
 		double es = compute_saturation_vapor_pressure(zone[0].metv.tday);
 		// Assume daily dew point saturation vapor pressure > day time es
 		zone[0].metv.vpd_day = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
@@ -476,7 +476,7 @@ void		zone_daily_F(
 	/*-------------------------------------------------------------------*/
 	/* Vapor pressure deficit - Night time							     */
 	/*-------------------------------------------------------------------*/
-	if (  zone[0].metv.vpd_night == -999.0  ) {
+    if (  close_enough(zone[0].metv.vpd_night, -999.0  )) {
 		double es = compute_saturation_vapor_pressure(zone[0].metv.tnight);
 		// Assume daily dew point saturation vapor pressure > night time es
 		zone[0].metv.vpd_night = compute_vapor_pressure_deficit(es, zone[0].e_dewpoint);
@@ -490,7 +490,7 @@ void		zone_daily_F(
 	/* leaving others in as comments in case someone else wants		*/
 	/* to experiment.												*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].Ldown == -999.0){
+    if ( close_enough(zone[0].Ldown, -999.0)){
 		/* Satterlund-Crawford */
 		/*zone[0].Ldown = (zone[0].cloud_fraction
 			+ (1.0 - zone[0].cloud_fraction) * 1.08 * (1.0 - exp(-pow(zone[0].e_dewpoint/100,(zone[0].metv.tavg+273.16)/2016))))
@@ -532,7 +532,7 @@ void		zone_daily_F(
 	/*	Nitrogen Deposition					*/
 	/*	- if not availabe use default value			*/
 	/*--------------------------------------------------------------*/
-	if (zone[0].ndep_NO3 == -999.0){
+    if (close_enough(zone[0].ndep_NO3, -999.0)){
 		zone[0].ndep_NO3 = zone[0].defaults[0][0].ndep_NO3;
 	}
 	/*--------------------------------------------------------------*/
@@ -541,7 +541,7 @@ void		zone_daily_F(
 	/*	We always update a running average for metv.tsoil in		*/
 	/*	case we get a missing value.						*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].metv.tsoil == -999.0 ){
+    if ( close_enough(zone[0].metv.tsoil, -999.0 )){
 		zone[0].metv.tsoil_sum = 0.9 * zone[0].metv.tsoil_sum +
 			0.1 *	zone[0].metv.tavg;
 		zone[0].metv.tsoil = zone[0].metv.tsoil_sum;
@@ -552,13 +552,13 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 	/* 	set LAI scalar to 1.0 is missing 			*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].LAI_scalar == -999.0 ){
+    if ( close_enough(zone[0].LAI_scalar, -999.0 )){
 		zone[0].LAI_scalar = 1.0;
 	}
 	/*--------------------------------------------------------------*/
 	/*	Atmospheric CO2 concentration (ppm)			*/
 	/*--------------------------------------------------------------*/
-	if ( zone[0].CO2 == -999.0 ){
+    if ( close_enough(zone[0].CO2, -999.0 )){
 		zone[0].CO2 = zone[0].defaults[0][0].atm_CO2;
 	}
 	/*--------------------------------------------------------------*/

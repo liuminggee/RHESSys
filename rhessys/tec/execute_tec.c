@@ -358,6 +358,20 @@ void	execute_tec(
 						current_date,
 						outfile);
                                }
+#ifdef LIU_WMFIRE_OUTPUT
+                //05242022LML always print daily basin output
+                if ((command_line[0].output_flags.daily != 1) || (command_line[0].b == NULL)) {
+                    for (int b=0; b < world[0].num_basin_files; ++ b ) {
+                            int basinID = command_line[0].b->basinID;
+                            if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
+                                output_basin(
+                                command_line[0].routing_flag,
+                                world[0].basins[b],
+                                current_date,
+                                outfile->basin->daily);
+                    }
+                }
+#endif
 				/*--------------------------------------------------------------*/
         /*  Output world state in spinup mode if targets met            */
 				/*--------------------------------------------------------------*/

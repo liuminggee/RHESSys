@@ -85,11 +85,11 @@ int resolve_sminn_competition(
 		ns_soil->nlimit = 1;
 		actual_immob = (sum_avail) * (ndf->potential_immob/sum_ndemand);
 		actual_uptake = sum_avail - actual_immob;
-		if (ndf->potential_immob == 0)
+        if (close_enough(ndf->potential_immob, 0))
 			ns_soil->fract_potential_immob = 0.0;
 		else
 			ns_soil->fract_potential_immob = actual_immob/ndf->potential_immob;
-		if (ndf->plant_potential_ndemand == 0) {
+        if (close_enough(ndf->plant_potential_ndemand, 0)) {
 			ns_soil->fract_potential_uptake = 0.0;
 			ndf->plant_avail_uptake = actual_uptake;
 		}

@@ -116,7 +116,7 @@ double	compute_direct_radiative_PAR_fluxes(	int	verbose_flag,
 	unreflected_fraction = ( 1- reflectance_canopy);
 	noon_extinction = extinction_coef*(1-gap_fraction)*proj_pai/cos(theta_noon);
 	
-	if (( noon_extinction == 0 ) || (all_lai < ZERO)) {
+    if ( close_enough(noon_extinction, 0 ) || (all_lai < ZERO)) {
 		noon_transmission = 1;
 		flux_absorbed = 0;
 	}

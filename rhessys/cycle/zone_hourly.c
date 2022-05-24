@@ -111,7 +111,7 @@ void		zone_hourly(
 			/*--------------------------------------------------------------*/
 			/*	.metv.tavg	(degrees C)				*/
 			/*--------------------------------------------------------------*/
-			if ( zone[0].metv.tavg == -999.0 ){
+            if ( close_enough(zone[0].metv.tavg, -999.0 )){
 				zone[0].metv.tavg = (zone[0].metv.tmax + zone[0].metv.tmin)/2.0;
 			}
 
@@ -120,7 +120,7 @@ void		zone_hourly(
 			/*								*/
 			/*	Eq 1. Page 4, "MTCLIM"					*/
 			/*--------------------------------------------------------------*/
-			if ( zone[0].metv.tday == -999.0 ){
+            if ( close_enough(zone[0].metv.tday, -999.0 )){
 				zone[0].metv.tday = zone[0].defaults[0][0].temcf
 					* (zone[0].metv.tmax - zone[0].metv.tavg) + zone[0].metv.tavg;
 			}
@@ -129,7 +129,7 @@ void		zone_hourly(
 			/*								*/
 			/*	zcomp.c C Rhessys code					*/
 			/*--------------------------------------------------------------*/
-			if ( zone[0].metv.tnight == -999.0 ){
+            if ( close_enough(zone[0].metv.tnight, -999.0 )){
 				zone[0].metv.tnight = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
 			}
 			/*--------------------------------------------------------------*/
@@ -139,7 +139,7 @@ void		zone_hourly(
 			/*	use a min/max to get range in which there is a mix of snow/rain */
 			/*								*/
 			/*--------------------------------------------------------------*/
-			if (zone[0].hourly[0].snow == 0 ){
+            if (close_enough(zone[0].hourly[0].snow, 0 )){
 				if (zone[0].metv.tavg < zone[0].defaults[0][0].max_snow_temp ){
 					if (zone[0].metv.tavg <= zone[0].defaults[0][0].min_rain_temp){
 						zone[0].hourly[0].snow = zone[0].hourly[0].rain;

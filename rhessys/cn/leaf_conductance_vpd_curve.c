@@ -54,7 +54,7 @@ double	leaf_conductance_vpd_curve(	double	vpd,
 		m_vpd = 0.0;
 	}
 	else{
-		if (vpd_closed == vpd_open)
+        if (close_enough(vpd_closed, vpd_open))
 			m_vpd = 0;
 		else
 			m_vpd = ( vpd_closed - vpd ) / ( vpd_closed - vpd_open);

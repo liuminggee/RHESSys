@@ -116,7 +116,7 @@ void	basin_daily_F(
 			current_date );
     }
 
-        hillslope = basin[0].hillslopes[0];
+    hillslope = basin[0].hillslopes[0];
 	zone = hillslope[0].zones[0];
 	basin[0].snowpack.surface_age /=  basin[0].area_withsnow;
 	basin[0].snowpack.T /=  basin[0].area_withsnow;

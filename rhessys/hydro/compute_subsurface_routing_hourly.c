@@ -646,7 +646,7 @@ void compute_subsurface_routing_hourly(
 			
 				if (patch[0].rootzone.depth > ZERO) {
 					if ((patch[0].sat_deficit > ZERO)
-							&& (patch[0].rz_storage == 0.0)) {
+                            && close_enough(patch[0].rz_storage, 0.0)) {
 						add_field_capacity = compute_layer_field_capacity(
 								command_line[0].verbose_flag,
 								patch[0].soil_defaults[0][0].theta_psi_curve,
@@ -664,7 +664,7 @@ void compute_subsurface_routing_hourly(
 					}
 				} else {
 					if ((patch[0].sat_deficit > ZERO)
-							&& (patch[0].unsat_storage == 0.0)) {
+                            && close_enough(patch[0].unsat_storage, 0.0)) {
 						add_field_capacity = compute_layer_field_capacity(
 								command_line[0].verbose_flag,
 								patch[0].soil_defaults[0][0].theta_psi_curve,

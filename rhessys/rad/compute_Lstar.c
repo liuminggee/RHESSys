@@ -207,7 +207,7 @@ void	compute_Lstar(int	verbose_flag,
 	}
 	
 	/* Compute canopy Lstar */
-	if (patch[0].overstory_fraction == 0.0) {
+    if (close_enough(patch[0].overstory_fraction, 0.0)) {
 		patch[0].Lstar_canopy_night = patch[0].Lstar_canopy_day = patch[0].Lstar_canopy = 0.0;
 	} else {
 		patch[0].Lstar_canopy_night = (1 - skyview) * (Lup_snow_night + zone[0].Ldown_night - Lup_canopy_night - Ldown_canopy_night);

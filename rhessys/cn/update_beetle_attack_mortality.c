@@ -399,8 +399,8 @@ void update_beetle_attack_mortality(
 	/*two parameters control it, root_alive, and harvest_dead_root, in beetles.def By ning ren 20190908 */
 	/*root_alive =1 is alive =0 is root dead, root_alive ==3 is fine root is dead too, but move to dead_root_beetle pool and then slowly decay to litter pool*/
 	/***************************************************************/
-	if (root_alive == 0.0) { //if the root is dead after attack
-        if(harvest_dead_root == 0.0) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
+    if (close_enough(root_alive, 0.0)) { //if the root is dead after attack
+        if (close_enough(harvest_dead_root, 0.0)) {//if harvest the dead root (1), then the carbon not go to litter pool, if not harvest, litter goto litter pool
 	cs_litr->litr1c    += m_frootc_to_litr1c;
 	cs_litr->litr2c    += m_frootc_to_litr2c;
 	cs_litr->litr3c    += m_frootc_to_litr3c;
@@ -567,8 +567,8 @@ void update_beetle_attack_mortality(
 /****************************************************************/
 	/* Belowground dead n goes to litter and cwd in all cases. */
 	/*   Fine root mortality */
-	if (root_alive == 0.0) {
-        if(harvest_dead_root ==0){
+    if (close_enough(root_alive, 0.0)) {
+        if (close_enough(harvest_dead_root, 0)){
 
 	ns_litr->litr1n    += m_frootn_to_litr1n;
 	ns_litr->litr2n    += m_frootn_to_litr2n;

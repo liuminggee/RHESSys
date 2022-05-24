@@ -59,8 +59,8 @@ void sort_patch_layers( struct patch_object *patch)
 		/*		Check if this height alread exists.		*/
 		/*--------------------------------------------------------------*/
 		j = 0;
-		while( (j<list_bottom) && (patch[0].canopy_strata[i][0].epv.height!=
-			(patch[0].layers[j]).height) ){
+        while( (j<list_bottom) && !close_enough(patch[0].canopy_strata[i][0].epv.height,
+            patch[0].layers[j].height) ){
 			j++;
 		}
 		/*--------------------------------------------------------------*/
@@ -122,8 +122,8 @@ void sort_patch_layers( struct patch_object *patch)
 			/*--------------------------------------------------------------*/
 			/*			check if this stratum has layer i height*/
 			/*--------------------------------------------------------------*/
-			if ( patch[0].canopy_strata[j][0].epv.height
-				==(patch[0].layers[i]).height){
+            if (close_enough(patch[0].canopy_strata[j][0].epv.height,
+                patch[0].layers[i].height)) {
 			/*--------------------------------------------------------------*/
 			/*		Add the stratum index to the layer if it matches*/
 			/*--------------------------------------------------------------*/

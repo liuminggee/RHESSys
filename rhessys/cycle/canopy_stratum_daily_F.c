@@ -698,7 +698,7 @@ void	canopy_stratum_daily_F(
 		/*--------------------------------------------------------------*/
 		/*		Compute by brute force if usrat_overu given.	*/
 		/*--------------------------------------------------------------*/
-		if ( stratum[0].defaults[0][0].ustar_overu == -999.9 ){
+        if ( close_enough(stratum[0].defaults[0][0].ustar_overu, -999.9 )){
 			if ( command_line[0].verbose_flag == -5 ){
 				printf("\n     STRATUM DAILY F: PAI0=%lf tmin=%lf tmax=%lf tavg=%lf RH=%lf edewpt=%lf vpd=%lf Kdir=%lf Kdif=%lf Lstar=%lf Lstarpch=%lf\n          K_refl=%lf PAR_refl=%lf snow_stor=%lf wetfrac=%lf snowcap=%lf",
 				    stratum[0].epv.proj_pai_when_red,
@@ -721,7 +721,7 @@ void	canopy_stratum_daily_F(
 			/*--------------------------------------------------------------*/
 			/*		Highest layer in patch.				*/
 			/*--------------------------------------------------------------*/
-			if ( stratum[0].epv.height == patch[0].layers[0].height ){
+            if ( close_enough(stratum[0].epv.height, patch[0].layers[0].height )){
 				stratum[0].ga = 1.0 / compute_ra_overstory(
 					command_line[0].verbose_flag,
 					stratum[0].defaults[0][0].wind_attenuation_coeff,
@@ -2178,7 +2178,7 @@ void	canopy_stratum_daily_F(
 	if ((command_line[0].output_flags.yearly == 1) && (command_line[0].c != NULL || command_line[0].f != NULL)){
 		stratum[0].acc_year.psn += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr;
 		stratum[0].acc_year.lwp += stratum[0].epv.psi;
-		if (stratum[0].acc_year.minNSC == -999)
+        if (close_enough(stratum[0].acc_year.minNSC, -999))
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;
 		else
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);

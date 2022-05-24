@@ -102,7 +102,7 @@ double	compute_N_leached(int verbose_flag,
 	/*	(assuming all water leaves, so Qout/theta here */
 	/*	is 1)						*/
 	/*------------------------------------------------------*/
-	if ((s1 == 0.0) && (s2 == 0.0)) {
+    if (close_enough(s1, 0.0) && close_enough(s2, 0.0)) {
 		
 		z2 = -1.0 * p * log (1 - (Qout) / (p * n_0));
 		z1 = 0.0;

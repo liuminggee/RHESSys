@@ -212,7 +212,7 @@ void update_basin_patch_accumulator(
 					patch[0].acc_year.recharge_wyd += patch[0].recharge
 							* round(patch[0].acc_year.length);
 
-					if ((patch[0].snowpack.water_equivalent_depth == 0)
+                    if (close_enough(patch[0].snowpack.water_equivalent_depth, 0)
 							&& (patch[0].acc_year.snowpack > 0)) {
 						if (patch[0].acc_year.meltday
 								< patch[0].acc_year.peaksweday)
