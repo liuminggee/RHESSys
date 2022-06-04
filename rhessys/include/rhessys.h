@@ -2995,6 +2995,8 @@ struct  stratum_default
 
         int length;
         double psn;
+        double mr;                                                              //06012022LML
+        double gr;                                                              //06012022LML
         double lai;
         double lwp;
         double minNSC;

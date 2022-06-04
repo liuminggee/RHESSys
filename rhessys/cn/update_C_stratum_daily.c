@@ -39,6 +39,11 @@ int update_C_stratum_daily(struct epconst_struct epc,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 	int ok=1;
+
+
+    double init_cpool = cs->cpool;
+
+
 	
 	/* Daily photosynthesis */
 	cs->gpsn_src	+= cdf->psn_to_cpool;
@@ -127,6 +132,22 @@ int update_C_stratum_daily(struct epconst_struct epc,
 		cs->deadcroot_gr_snk += cdf->transfer_deadcroot_gr;
 		cs->gresp_transfer   -= cdf->transfer_deadcroot_gr;
 	}
+
+
+//
+//    if (epc.veg_type == TREE && (cs->cpool < init_cpool)) {
+//        fprintf(stderr,"init_cpool:%f end_cpool:%f psn:%f mr:%f gr:%f alloc_all:%f alloc_biome:%f alloc_store:%f\n",
+//                init_cpool,
+//                cs->cpool,
+//                cdf->psn_to_cpool,
+//                (cdf->leaf_day_mr + cdf->leaf_night_mr + cdf->froot_mr + cdf->livestem_mr + cdf->livecroot_mr),
+//                (cdf->cpool_leaf_gr + cdf->cpool_froot_gr + cdf->cpool_livestem_gr + cdf->cpool_deadstem_gr + cdf->cpool_livecroot_gr + cdf->cpool_deadcroot_gr),
+//                (cdf->cpool_to_leafc + cdf->cpool_to_frootc + cdf->cpool_to_livestemc + cdf->cpool_to_deadstemc + cdf->cpool_to_livecrootc + cdf->cpool_to_deadcrootc + cdf->cpool_to_gresp_store + cdf->cpool_to_leafc_store + cdf->cpool_to_frootc_store + cdf->cpool_to_livestemc_store + cdf->cpool_to_deadstemc_store + cdf->cpool_to_livecrootc_store + cdf->cpool_to_deadcrootc_store),
+//                (cdf->cpool_to_leafc + cdf->cpool_to_frootc + cdf->cpool_to_livestemc + cdf->cpool_to_deadstemc + cdf->cpool_to_livecrootc + cdf->cpool_to_deadcrootc),
+//                (cdf->cpool_to_gresp_store + cdf->cpool_to_leafc_store + cdf->cpool_to_frootc_store + cdf->cpool_to_livestemc_store + cdf->cpool_to_deadstemc_store + cdf->cpool_to_livecrootc_store + cdf->cpool_to_deadcrootc_store)
+//                );
+//    }
+
 
 	return (!ok);
 }		

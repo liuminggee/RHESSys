@@ -453,7 +453,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
          "year",
          "basinID",
          "hillID",
@@ -469,7 +469,19 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
          "stemn",
          "cwdc",
          "cwdn",
-         "psn","cpool", "mortfract","height","rootdepth");
+         "psn_net",
+         "mr",
+         "gr",
+         "minNSC",
+         "mortfract",
+         "snagc",
+         "snagn",
+         "redneedlec",
+         "redneedlen",
+         "dead_rootc_beetle",
+         "dead_rootn_beetle",
+         "height",
+         "rootdepth_mm");
 	}
 
 

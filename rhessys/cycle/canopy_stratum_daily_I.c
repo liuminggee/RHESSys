@@ -225,9 +225,11 @@ void	canopy_stratum_daily_I(
 
 		daily_mortality = stratum[0].defaults[0][0].epc.max_daily_mortality;
 
-		if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold)
-			daily_mortality = daily_mortality - daily_mortality*min(1.0,
-				(cs->age-stratum[0].defaults[0][0].epc.daily_mortality_threshold)/100.0);
+        /*06032022LML seems not right!
+        if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold)
+            daily_mortality = daily_mortality - daily_mortality*min(1.0,
+                (cs->age-stratum[0].defaults[0][0].epc.daily_mortality_threshold)/100.0);
+        */
 
 		daily_mortality = max(daily_mortality, stratum[0].defaults[0][0].epc.min_daily_mortality);
 
@@ -239,6 +241,7 @@ void	canopy_stratum_daily_I(
 		mort.mort_livecrootc = daily_mortality;
 		mort.mort_deadcrootc = daily_mortality;
 		mort.mort_frootc = daily_mortality;
+
 		update_mortality(stratum[0].defaults[0][0].epc,
 			&(stratum[0].cs),
 			&(stratum[0].cdf),

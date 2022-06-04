@@ -376,8 +376,8 @@ SOURCES += \
     ../../../../rhessys/output/output_fire.c \
     ../../../../rhessys/cn/update_beetle_attack_mortality.c
 
-OTHER_FILES += \
-    ../../../../rhessys/cycle/patch_daily_F.c,v
+#OTHER_FILES += \
+#    ../../../../rhessys/cycle/patch_daily_F.c,v
 
 HEADERS += \
     ../../../../rhessys/cycle/canopy_stratum_daily_F.new \

@@ -279,11 +279,15 @@ printf("\n at line 274  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 			if (thintyp == 3) {
 				cs->dead_stemc       += m_livestemc_to_cwdc;
 				cs->dead_stemc       += m_deadstemc_to_cwdc;
+                cs->dead_crootc      += m_livecrootc_to_cwdc;                   //06032022LML
+                cs->dead_crootc      += m_deadcrootc_to_cwdc;                   //06032022LML
 				}
 			/*	  Transfer to CWD otherwise */
 			else {
 				cs->cwdc       += m_livestemc_to_cwdc;
-				cs->cwdc       += m_deadstemc_to_cwdc;
+                cs->cwdc       += m_deadstemc_to_cwdc;
+                cs->cwdc       += m_livecrootc_to_cwdc;                         //06032022LML
+                cs->cwdc       += m_deadcrootc_to_cwdc;                         //06032022LML
 				}
 			cs_litr->litr1c    += m_livestemc_store_to_litr1c;
 			cs_litr->litr1c    += m_deadstemc_store_to_litr1c;
@@ -315,6 +319,8 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		/*    Stem wood mortality */
 		cs->live_stemc  -= m_livestemc_to_cwdc;
 		cs->dead_stemc  -= m_deadstemc_to_cwdc;
+        cs->live_crootc -= m_livecrootc_to_cwdc;                                //06032022LML
+        cs->dead_crootc -= m_deadcrootc_to_cwdc;                                //06032022LML
 		cs->livestemc_store   -= m_livestemc_store_to_litr1c;
 		cs->deadstemc_store   -= m_deadstemc_store_to_litr1c;
 		cs->livestemc_transfer  -= m_livestemc_transfer_to_litr1c;
@@ -391,15 +397,20 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		if (epc.veg_type == TREE){
 		/*    Stem wood mortality */
 			ns_litr->litr1n     += m_livestemn_to_litr1n;
+            ns_litr->litr1n     += m_livecrootn_to_litr1n;                      //06032022LML
 			/*	  Transfer to CWD if normal thinning */
 			if (thintyp != 3) {
 				ns->cwdn       += m_livestemn_to_cwdn;
 				ns->cwdn       += m_deadstemn_to_cwdn;
+                ns->cwdn       += m_livecrootn_to_cwdn;                         //06032022LML
+                ns->cwdn       += m_deadcrootn_to_cwdn;                         //06032022LML
 				}
 			/*	  Transfer to DEADWOOD if standing dead */
 			else {
 				ns->dead_stemn       += m_livestemn_to_cwdn;
 				ns->dead_stemn       += m_deadstemn_to_cwdn;
+                ns->dead_crootn      += m_livecrootn_to_cwdn;                   //06032022LML
+                ns->dead_crootn      += m_deadcrootn_to_cwdn;                   //06032022LML
 				}
 			ns_litr->litr1n    += m_livestemn_store_to_litr1n;
 			ns_litr->litr1n    += m_deadstemn_store_to_litr1n;
@@ -429,6 +440,9 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		ns->live_stemn  -= m_livestemn_to_litr1n;
 		ns->live_stemn  -= m_livestemn_to_cwdn;
 		ns->dead_stemn  -= m_deadstemn_to_cwdn;
+        ns->live_crootn -= m_livecrootn_to_litr1n;                              //06032022LML
+        ns->live_crootn -= m_livecrootn_to_cwdn;                                //06032022LML
+        ns->dead_crootn -= m_deadcrootn_to_cwdn;                                //06032022LML
 		ns->livestemn_store   -= m_livestemn_store_to_litr1n;
 		ns->deadstemn_store   -= m_deadstemn_store_to_litr1n;
 		ns->livestemn_transfer  -= m_livestemn_transfer_to_litr1n;

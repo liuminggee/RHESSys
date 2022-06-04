@@ -414,6 +414,8 @@ struct canopy_strata_object *construct_canopy_strata(
 	/*--------------------------------------------------------------*/
 	canopy_strata[0].acc_year.lai = 0.0;
 	canopy_strata[0].acc_year.psn = 0.0;
+    canopy_strata[0].acc_year.mr = 0.0;                                         //06012022LML
+    canopy_strata[0].acc_year.gr = 0.0;                                         //06012022LML
 	canopy_strata[0].acc_year.lwp = 0.0;
 	canopy_strata[0].acc_year.minNSC = -999;
 	canopy_strata[0].acc_year.length = 0;

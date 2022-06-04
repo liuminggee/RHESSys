@@ -2011,6 +2011,8 @@ void		patch_daily_F(
 			patch[0].totaln += strata->cover_fraction * strata->ns.totaln;
 			patch[0].net_plant_psn += strata->cover_fraction *	strata->cs.net_psn;
 			strata->acc_year.psn += strata->cs.net_psn;
+            strata->acc_year.mr += strata->cdf.total_mr;                        //06012022LML
+            strata->acc_year.gr += strata->cdf.total_gr;                        //06012022LML
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
 		}
 	}
