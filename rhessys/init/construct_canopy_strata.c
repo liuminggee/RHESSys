@@ -41,6 +41,9 @@
 #include <stdlib.h>
 #include "rhessys.h"
 #include "params.h"
+
+int set_zero_strata_storage(struct canopy_strata_object *canopy_strata);
+
 struct canopy_strata_object *construct_canopy_strata(
 													 struct	command_line_object	*command_line,
 													 FILE	*world_file,
@@ -267,6 +270,12 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].epv.min_vwc = getDoubleWorldfile(&paramCnt,&paramPtr,"epv.min_vwc","%lf",0.0,1);
 
 	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+
+
+#ifdef LIU_START_FROM_ZERO_STORAGE
+    set_zero_strata_storage(canopy_strata);
+#endif
+
 	/*--------------------------------------------------------------*/
 	/*	Assign	defaults for this canopy_strata								*/
 	/*--------------------------------------------------------------*/
@@ -753,3 +762,79 @@ struct canopy_strata_object *construct_canopy_strata(
 	}
 	return(canopy_strata);
 } /*end construct_canopy_strata.c*/
+
+//06072022LML initilize from zero
+int set_zero_strata_storage(struct canopy_strata_object *canopy_strata)
+{
+    canopy_strata->rootzone.depth = 0.2;
+
+    canopy_strata->snow_stored = 0;
+    canopy_strata->rain_stored = 0;
+
+    canopy_strata->cs.cpool = 0;
+
+    canopy_strata->cs.leafc = 0;
+    canopy_strata->cs.leafc_store = 0;
+    canopy_strata->cs.leafc_transfer = 0;
+
+    canopy_strata->cs.dead_leafc = 0;
+
+    canopy_strata->cs.live_stemc = 0;
+    canopy_strata->cs.livestemc_store = 0;
+    canopy_strata->cs.livestemc_transfer = 0;
+
+    canopy_strata->cs.dead_stemc = 0;
+    canopy_strata->cs.deadstemc_store = 0;
+    canopy_strata->cs.deadstemc_transfer = 0;
+
+    canopy_strata->cs.live_crootc = 0;
+    canopy_strata->cs.livecrootc_store = 0;
+    canopy_strata->cs.livecrootc_transfer = 0;
+
+    canopy_strata->cs.dead_crootc = 0;
+    canopy_strata->cs.deadcrootc_store = 0;
+    canopy_strata->cs.deadcrootc_transfer = 0;
+
+    canopy_strata->cs.frootc = 0;
+    canopy_strata->cs.frootc_store = 0;
+    canopy_strata->cs.frootc_transfer = 0;
+
+    canopy_strata->cs.cwdc = 0;
+
+    canopy_strata->epv.prev_leafcalloc = 0;
+
+    canopy_strata->ns.npool = 0;
+
+    canopy_strata->ns.leafn = 0;
+    canopy_strata->ns.leafn_store = 0;
+    canopy_strata->ns.leafn_transfer = 0;
+
+    canopy_strata->ns.live_stemn = 0;
+    canopy_strata->ns.livestemn_store = 0;
+    canopy_strata->ns.livestemn_transfer = 0;
+
+    canopy_strata->ns.dead_stemn = 0;
+    canopy_strata->ns.deadstemn_store = 0;
+    canopy_strata->ns.deadstemn_transfer = 0;
+
+    canopy_strata->ns.live_crootn = 0;
+    canopy_strata->ns.livecrootn_store = 0;
+    canopy_strata->ns.livecrootn_transfer = 0;
+
+    canopy_strata->ns.dead_crootn = 0;
+    canopy_strata->ns.deadcrootn_store = 0;
+    canopy_strata->ns.deadcrootn_transfer = 0;
+
+    canopy_strata->ns.frootn = 0;
+    canopy_strata->ns.frootn_store = 0;
+    canopy_strata->ns.frootn_transfer = 0;
+
+    canopy_strata->ns.cwdn = 0;
+    canopy_strata->ns.retransn = 0;
+
+    canopy_strata->cs.age = 0;
+    canopy_strata->epv.wstress_days = 0;
+    canopy_strata->epv.max_fparabs = 0;
+    canopy_strata->epv.min_vwc = 0.0;
+    return 0;
+}

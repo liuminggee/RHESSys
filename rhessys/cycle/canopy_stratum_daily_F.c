@@ -1836,6 +1836,17 @@ void	canopy_stratum_daily_F(
 			stratum[0].cdf.psn_to_cpool = (assim_sunlit*stratum[0].epv.proj_lai_sunlit
 					+ assim_shade * stratum[0].epv.proj_lai_shade)
 					*zone[0].metv.dayl*12.011e-9 + stratum[0].cdf.leaf_day_mr;
+
+
+            //if (stratum[0].veg_parm_ID == 1){
+            //    fprintf(stderr,"psn_to_cpool:%f assim_sunlit:%f lai_sunlit:%f assim_shade:%f lai_shade:%f dayl:%f day_mr:%f leafc:%f leafn:%f proj_sla_sunlit:%f\n",
+            //            stratum[0].cdf.psn_to_cpool,assim_sunlit,stratum[0].epv.proj_lai_sunlit
+            //            ,assim_shade,stratum[0].epv.proj_lai_shade,zone[0].metv.dayl,stratum[0].cdf.leaf_day_mr
+            //            ,stratum[0].cs.leafc,stratum[0].ns.leafn,stratum[0].epv.proj_sla_sunlit);
+            //}
+
+
+
 			if ((assim_sunlit + assim_shade) > ZERO)
 				stratum[0].dC13 = (assim_sunlit * dC13_sunlit + assim_shade * dC13_shade)/(assim_sunlit+assim_shade);
 			else

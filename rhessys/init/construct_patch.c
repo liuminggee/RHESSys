@@ -42,6 +42,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 #include "params.h"
+int set_zero_patch_storage(struct patch_object *patch);
 struct patch_object *construct_patch(
 									 struct	command_line_object	*command_line,
 									 FILE	*world_file,
@@ -217,6 +218,10 @@ struct patch_object *construct_patch(
 		      getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil4c","%lf",0.0,1);
 	patch[0].num_base_stations =
 		      getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
+
+#ifdef LIU_START_FROM_ZERO_STORAGE
+    set_zero_patch_storage(patch);
+#endif
 
 	patch[0].slope = patch[0].slope * DtoR;
 	patch[0].surface_Tday = -999.9;
@@ -787,7 +792,31 @@ if (command_line[0].beetlespread_flag == 1) {
 
 	if(paramPtr!=NULL)
 	  free(paramPtr);
-
 	return(patch);
 } /*end construct_patch.c*/
 
+//06072022LML initilize from zero
+int set_zero_patch_storage(struct patch_object *patch)
+{
+    patch->litter_cs.litr1c = 0;
+    patch->litter_cs.litr2c = 0;
+    patch->litter_cs.litr3c = 0;
+    patch->litter_cs.litr4c = 0;
+    patch->soil_cs.soil1c = 0;
+    patch->soil_cs.soil2c = 0;
+    patch->soil_cs.soil3c = 0;
+    patch->soil_cs.soil4c = 0;
+
+    patch->litter_ns.litr1n = 0;
+    patch->litter_ns.litr2n = 0;
+    patch->litter_ns.litr3n = 0;
+    patch->litter_ns.litr4n = 0;
+    patch->soil_ns.soil1n = 0;
+    patch->soil_ns.soil2n = 0;
+    patch->soil_ns.soil3n = 0;
+    patch->soil_ns.soil4n = 0;
+
+    patch->soil_ns.sminn = 0;
+    patch->soil_ns.nitrate = 0;
+    return 0;
+}
