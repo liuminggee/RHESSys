@@ -284,8 +284,10 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			Simulate the world for the start of this day e		*/
 			/*--------------------------------------------------------------*/
+#ifdef LIU_DISPLY_RUN_INFO
             if ( current_date.hour == 1 ) printf("Current_date year = %d mon = %d day = %d\r",
                    current_date.year,current_date.month,current_date.day); /*ning*/
+#endif
             //fflush(stdout);
 			if ( current_date.hour == 1 ){
                 world_daily_I(
@@ -483,7 +485,9 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/
+#ifdef LIU_DISPLY_RUN_INFO
                 printf("\nYear %d\n", current_date.year);
+#endif
 				year = year + 1;
 				current_date.year= next_date.year;
 
@@ -499,7 +503,9 @@ void	execute_tec(
                             next_date.year = current_date.year;
                             day = 0;
                         }
+#ifdef LIU_DISPLY_RUN_INFO
                         printf("Spins:%d Spin_year:%d\n",spins_index,spin_year_index);
+#endif
                     }
                 }
 #endif

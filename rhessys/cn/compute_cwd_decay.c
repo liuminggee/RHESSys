@@ -57,6 +57,7 @@ int	compute_cwd_decay(
 	/*	for now use temperature and water scaleris calculated	*/
 	/*	the previous day for soil decomposition limitations	*/
 	/*--------------------------------------------------------------*/
+
 	rate_scalar = cs_litr->w_scalar * cs_litr->t_scalar;
 	rate_scalar = max(rate_scalar, 0.0);
 	/* physical fragmentation of coarse woody debris */
@@ -68,6 +69,7 @@ int	compute_cwd_decay(
 	ndf->cwdn_to_litr2n = cdf->cwdc_to_litr2c/CEL_CN;
 	ndf->cwdn_to_litr3n = cdf->cwdc_to_litr3c/CEL_CN;
 	ndf->cwdn_to_litr4n = cdf->cwdc_to_litr4c/LIG_CN;
+
 	/*--------------------------------------------------------------*/
 	/*	update carbon state variables				*/
 	/*--------------------------------------------------------------*/
@@ -84,5 +86,6 @@ int	compute_cwd_decay(
 	ns_litr->litr2n += (ndf->cwdn_to_litr2n * cover_fraction);
 	ns_litr->litr3n += (ndf->cwdn_to_litr3n * cover_fraction);
 	ns_litr->litr4n += (ndf->cwdn_to_litr4n * cover_fraction);
+
 	return(!ok);
 } /*end compute_cwd_decay*/

@@ -254,8 +254,11 @@ struct stratum_default *construct_stratum_defaults(
 				exit(EXIT_FAILURE); 
 			}
 				*/
-			epc->deadwood_cn = (epc->deadwood_fucel + epc->deadwood_fscel) * CEL_CN
-					+ (epc->deadwood_flig) * LIG_CN;
+
+
+            //epc->deadwood_cn = (epc->deadwood_fucel + epc->deadwood_fscel) * CEL_CN
+            //		+ (epc->deadwood_flig) * LIG_CN;
+            epc->deadwood_cn = 1.0 / ((epc->deadwood_fucel + epc->deadwood_fscel) / CEL_CN + epc->deadwood_flig / LIG_CN); //06142022LML The original equation cannot get the target CN ratio of CWD
 
 		} /* end if tree */
 		else {

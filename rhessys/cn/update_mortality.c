@@ -421,6 +421,7 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 //printf("\n at line 393 update mortality: litter 1=%lf, litter2 =%lf, litter3=%lf, litter4=%lf\n", cs_litr[0].litr1c, cs_litr[0].litr2c, cs_litr[0].litr3c, cs_litr[0].litr4c);
 //}
 		}
+
 	/* Remove aboveground dead n from n stores in all cases. */
 	ns->npool -= m_npool;
 	/*    Leaf mortality */

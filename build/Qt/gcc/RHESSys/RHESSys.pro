@@ -26,7 +26,7 @@ INCLUDEPATH += ../../../../rhessys/include \
 
 DEFINES += NO_UPDATE_160419 \
            LIU_NETCDF_READER \
-           CHECK_NCCLIM_DATA \
+           xCHECK_NCCLIM_DATA \
            FIND_STATION_BASED_ON_ID \
            LIU_EXTEND_CLIM_VAR \
            LIU_EXTEND_CLIM_VAR_AND_USE_SWRAD \
@@ -34,7 +34,8 @@ DEFINES += NO_UPDATE_160419 \
            LIU_BURN_ALL_AT_ONCE \
            LIU_TRACKING_BASIN_LITTERC \
            LIU_WMFIRE_OUTPUT \
-           xLIU_START_FROM_ZERO_STORAGE
+           LIU_START_FROM_ZERO_STORAGE \
+           LIU_DISPLY_RUN_INFO
 
 
 

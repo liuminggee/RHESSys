@@ -227,7 +227,9 @@ struct base_station_object *construct_netcdf_grid (
         lon = base_station[0].lon;
         if (command_line[0].ncgridinterp_flag != NULL) {
         utm_zone = command_line[0].utm_zone;
+#ifdef LIU_DISPLY_RUN_INFO
         printf("\n Read in the UTM zone from command line for climate data interpolation, the zone is %d \n", utm_zone);
+#endif
         }
         else {
         utm_zone = 12;
@@ -235,7 +237,9 @@ struct base_station_object *construct_netcdf_grid (
         }
 
          return_value= LatLonToUTMXY(lat, lon, utm_zone, &x_utm, &y_utm);
+#ifdef LIU_DISPLY_RUN_INFO
          printf(" the utm x and utm y are %f, %f \n",x_utm, y_utm);
+#endif
          base_station[0].proj_x = (double)x_utm;
          base_station[0].proj_y = (double)y_utm;
 
@@ -501,7 +505,9 @@ struct base_station_object *construct_netcdf_grid (
         *num_world_base_stations +=1;
         base_station_ncheader[0].lastID +=1;
 #endif
+#ifdef LIU_DISPLY_RUN_INFO
         printf( "BASE STATION ID? %d\n", base_station[0].ID );
+#endif
         return(base_station);
 }
 
