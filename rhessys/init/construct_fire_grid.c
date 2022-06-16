@@ -91,7 +91,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				tmp.dists[w]=0;
 		}*/
 		// then initialize values: e.g., 0's
-		#pragma omp parallel for private(j) collapse(2)
+         #pragma omp parallel for private(i,j) collapse(2)
 		 for(i=0;i<grid_dimX;i++){
 			for(j=0;j<grid_dimY;j++){
 				fire_grid[j][i].occupied_area=0;
@@ -376,7 +376,7 @@ struct fire_object **construct_fire_grid(struct world_object *world)
 		fire_grid[i]=(struct fire_object *) malloc(world[0].num_fire_grid_col*sizeof(struct fire_object ));
 
 	// then initialize values: e.g., 0's
-	#pragma omp parallel for
+     #pragma omp parallel for private(i,j)
 	 for(i=0;i<world[0].num_fire_grid_row;i++){
 		for(j=0;j<world[0].num_fire_grid_col;j++){
 			fire_grid[i][j].burn=0; // if burned, WMFire will replace with the p_s value
