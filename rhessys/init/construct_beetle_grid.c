@@ -147,7 +147,7 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 	// of the patch and area arrays, then one more navigation to calculate the areas and
 	// assign the patches to each grid cell
 		for (b=0; b< world[0].num_basin_files; ++b) { // calculate the areas, and assign patches to each grid cell
-         #pragma omp parallel for                                                //160628LML
+         //#pragma omp parallel for                                                //160628LML
          for (int h=0; h< world[0].basins[b][0].num_hillslopes; ++h) {
            for (int z=0; z< world[0].basins[b][0].hillslopes[h][0].num_zones; ++z) {
                 double tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
@@ -184,7 +184,7 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 
 	//	printf("after tallying the number of patches per grid cell\n"); tally=counting up
 		// allocate the arrays for each grid cell
-        #pragma omp parallel for                                                 //160628LML
+        //#pragma omp parallel for                                                 //160628LML
         for(int i=0;i<grid_dimX;i++){ //grid_dimx is how many grids in x direction
             for(int j=0;j<grid_dimY;j++){
 	//printf("number of patches: col %d row %d num patches %d\n",i,j,beetle_grid[j][i].num_patches);
@@ -232,7 +232,7 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 																curMinX,curMinY,minXpix,minYpix,grid_dimX,grid_dimY, maxXpix, maxYpix); */ //N.R 20180619
 	   // so now we loop through each pixel pair starting with minX and minY, and ending with < maxX and maxY (In C)
 	    // in the case that the patch overlaps with >1 pixel in both directions
-                #pragma omp parallel for                                         //160628LML
+                //#pragma omp parallel for                                         //160628LML
                 for(int i =minXpix; i<maxXpix; i++) { //does maxXpix - minXpix is equal to 1
                     for(int j =minYpix; j<maxYpix; j++){
 						beetle_grid[j][i].patches[beetle_grid[j][i].tmp_patch]=patch; // this is the current patch in the loop line 210
@@ -260,7 +260,7 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 	//	printf("after calculating area of overlap between patches and grid cells\n");
 	/* finally, navigate the grid cells one more time to calculate the proportions of each patch in each
 		grid cell, given the total area occupied in each grid cell calculated above. */
-        #pragma omp parallel for                                                 //160628LML
+        //#pragma omp parallel for                                                 //160628LML
         for(int i=0;i<grid_dimX;i++){
             for(int j=0;j<grid_dimY;j++){
 				if(beetle_grid[j][i].occupied_area>0){
@@ -281,13 +281,13 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 
 
 		beetle_grid=(struct patch_beetle_object **) malloc(grid_dimY*sizeof(struct patch_beetle_object *)); // first allocate the rows
-        #pragma omp parallel for                                                 //160628LML
+        //#pragma omp parallel for                                                 //160628LML
         for(int i=0;i<grid_dimY;i++) // for each row, allocate the columns
 			beetle_grid[i]=(struct patch_beetle_object *) malloc(grid_dimX*sizeof(struct patch_beetle_object ));
 		printf("allocate the beetle grid\n");
 
 		// then initialize values: e.g., 0's
-        #pragma omp parallel for                                                 //160628LML
+        //#pragma omp parallel for                                                 //160628LML
          for(int i=0;i<grid_dimX;i++){
             for(int j=0;j<grid_dimY;j++){
 				beetle_grid[j][i].occupied_area=0;
@@ -502,12 +502,12 @@ struct beetle_object **construct_beetle_grid(struct world_object *world)
 	struct beetle_object **beetle_grid;
 	int i,j;
 	beetle_grid=(struct beetle_object **) malloc(world[0].num_beetle_grid_row*sizeof(struct beetle_object *)); // first allocate the rows
-    #pragma omp parallel for                                                     //160628LML
+    //#pragma omp parallel for                                                     //160628LML
     for(int i=0;i<world[0].num_beetle_grid_row;i++) // for each row, allocate the columns
 		beetle_grid[i]=(struct beetle_object *) malloc(world[0].num_beetle_grid_col*sizeof(struct beetle_object ));
 
 	// then initialize values: e.g., 0's
-     #pragma omp parallel for                                                    //160628LML
+     //#pragma omp parallel for                                                    //160628LML
      for(int i=0;i<world[0].num_beetle_grid_row;i++){
         for(int j=0;j<world[0].num_beetle_grid_col;j++){
 			beetle_grid[i][j].mort=0.0; // the mortality rate of bark beetle attack
