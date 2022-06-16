@@ -173,7 +173,7 @@ struct beetle_object **construct_patch_beetle_grid (struct world_object *world, 
 	    // in the case that the patch overlaps with >1 pixel in both directions
                 for(int i =minXpix; i<maxXpix; i++){
                     for(int j =minYpix; j<maxYpix; j++) { // actually the loop only once, counting the patches
-                        #pragma omp critical
+                        //#pragma omp critical
 						beetle_grid[j][i].num_patches=beetle_grid[j][i].num_patches+1; // tally the number of patches that occupy each grid cell
                     }
 				}
