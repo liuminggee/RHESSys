@@ -74,6 +74,7 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
     if(world[0].defaults[0].fire[0].fire_verbose == 3) { //NREN 20190912
 	printf("In WMFire\n");}
+    #pragma omp parallel for private(i,j) reduction(+ : denom_for_mean,mean_fuel_veg,mean_fuel_litter,mean_fuel_moist,mean_soil_moist,mean_relative_humidity,mean_wind_direction,mean_wind,mean_temp,mean_et,mean_pet,mean_understory_et,mean_understory_pet,mean_trans)
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 		  world[0].fire_grid[i][j].fire_size=0; // reset grid to no fire
@@ -141,7 +142,7 @@ void execute_firespread_event(
 //    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_fire_grid[i][j].num_patches; ++p) { // should just be 1 now...
 //printf("Patch p: %d\n",p);
-			patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
+            struct patch_object *patch = world[0].patch_fire_grid[i][j].patches[p]; //So this is patch family now? points to patch family
 //printf("Patch p1 %lf\n", patch[0].litter_cs.litr1c);
 
 //printf("Patch p2: %d\n",p);
@@ -231,8 +232,8 @@ void execute_firespread_event(
 		world[0].fire_grid[i][j].trans=world[0].fire_grid[i][j].trans*1000;//NEW NR
 
 
-	}
-	}
+      } //j
+    } //i
 //	printf("denom: %lf\t",denom_for_mean);
 	if(denom_for_mean>0&&world[0].defaults[0].fire[0].fire_in_buffer==1) // so here we calculate the mean value
 	{
@@ -255,6 +256,7 @@ void execute_firespread_event(
 
 	//	printf("mean pet, mean et: %lf\t%lf\n",mean_pet,mean_et);
 	//	printf("mean wind: %lf, mean direction %lf \n",mean_wind,mean_wind_direction);
+        #pragma omp parallel for
 		for  (i=0; i< world[0].num_fire_grid_row; i++) {
 		  for (j=0; j < world[0].num_fire_grid_col; j++) {
 			  if(world[0].patch_fire_grid[i][j].occupied_area==0) // and here we fill in the buffer
@@ -297,30 +299,24 @@ void execute_firespread_event(
 
 	// if(world[0].fire_grid[0][0].fire_size>0) // only do this if there was a fire
 
-#ifdef LIU_BURN_ALL_AT_ONCE
-    double total_pspread = 0;                                                   //No real meaning, just for counting
-#endif
+//#ifdef LIU_BURN_ALL_AT_ONCE
+//    double total_pspread = 0;                                                   //No real meaning, just for counting
+//#endif
+    #pragma omp parallel for private(i,j,p,pspread)
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
-
-
             //if(patch_fire_grid[i][j].num_patches > 0)
             //    printf("i:%d j:%d num_patches:%d",i,j,patch_fire_grid[i][j].num_patches);
-
-
 			for (p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
-				patch = world[0].patch_fire_grid[i][j].patches[p];
+                struct patch_object *patch = world[0].patch_fire_grid[i][j].patches[p];
 #ifndef LIU_BURN_ALL_AT_ONCE
 				patch[0].burn = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
 				pspread = world[0].fire_grid[i][j].burn * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
-
-
-
                 //if(patch_fire_grid[i][j].num_patches > 0)
                 //    printf("\tp:%d prop_grid_in_patch:%f\n",p,world[0].patch_fire_grid[i][j].prop_grid_in_patch[p]);
 
 #else
-                total_pspread += pspread;
+                //total_pspread += pspread;
                 //05062022LML pspread = 1.0;                                                  //Handle the patch once for all pixels since they share same C&N pools
                 pspread = command_line[0].fire_pspread * world[0].patch_fire_grid[i][j].prop_grid_in_patch[p]; //05182022LML
                 if (pspread < 0) pspread = world[0].patch_fire_grid[i][j].prop_grid_in_patch[p];
@@ -346,28 +342,18 @@ void execute_firespread_event(
 				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
 				{
                     //printf("calling WMFire: pspread is %lf \n, burn is %lf \n", pspread, world[0].fire_grid[i][j].burn);
-
-
                     //printf("row:%d col:%d patch_ID:%d\n",i,j,patch->ID);
-//#ifdef LIU_BURN_ALL_AT_ONCE
-//                    //05182022LML might be wrong since each patch might be in different fire gridcells
-//                    if (!patch->fire_effect_processed) {
-//#endif
 					compute_fire_effects(
 						patch,
 						pspread,
 						command_line);
-//#ifdef LIU_BURN_ALL_AT_ONCE
-//                        patch->fire_effect_processed = 1;
-//                    }
-//#endif
                 }
 			}
 		}
 	}
 #ifdef LIU_BURN_ALL_AT_ONCE
-    if (total_pspread > 0.1)
-        printf("Has burn event! total_pspread:%f\n",total_pspread);
+//    if (total_pspread > 0.1)
+//        printf("Has burn event! total_pspread:%f\n",total_pspread);
 #endif
 	return;
 } /*end execute_firespread_event.c*/

@@ -40,7 +40,7 @@ void update_basin_patch_accumulator(
 	/*-----------------------------------------------------------------------*/
 	double scale;
 	double tmp;
-	struct patch_object *patch;
+    //struct patch_object *patch;
 	int b,h,p,z,c,s;
 	/*----------------------------------------------------------------------*/
 	/* initializations		                                           */
@@ -49,16 +49,203 @@ void update_basin_patch_accumulator(
 	/*---------------------------------------------------------------------*/
 	/*update accumulator variables                                            */
 	/*-----------------------------------------------------------------------*/
-	for (h=0; h < basin->num_hillslopes; ++h) {
+
+    #pragma omp parallel for private(h,z,p)
+    for (h=0; h < basin->num_hillslopes; ++h) {
+      for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
+        for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
+            struct patch_object *patch=basin->hillslopes[h]->zones[z]->patches[p];
+
+             patch[0].acc_year_trans += (patch[0].transpiration_unsat_zone
+                    + patch[0].transpiration_sat_zone);
+            if ((command_line[0].output_flags.monthly == 1)
+                    && (command_line[0].p != NULL )) {
+                patch[0].acc_month.theta += patch[0].rootzone.S;
+                patch[0].acc_month.sm_deficit +=
+                        max(0.0,
+                                (patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
+                patch[0].acc_month.et += (patch[0].transpiration_unsat_zone
+                        + patch[0].evaporation_surf
+                        + patch[0].exfiltration_unsat_zone
+                        + patch[0].exfiltration_sat_zone
+                        + +patch[0].transpiration_sat_zone
+                        + patch[0].evaporation);
+                patch[0].acc_month.denitrif += patch[0].ndf.denitrif;
+                patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
+                patch[0].acc_month.mineralized +=
+                        patch[0].ndf.net_mineralized;
+                patch[0].acc_month.uptake += patch[0].ndf.sminn_to_npool;
+                patch[0].acc_month.DON_loss +=
+                        (patch[0].soil_ns.DON_Qout_total
+                                - patch[0].soil_ns.DON_Qout_total);
+                patch[0].acc_month.DOC_loss +=
+                        (patch[0].soil_cs.DOC_Qout_total
+                                - patch[0].soil_cs.DOC_Qout_total);
+                patch[0].acc_month.psn += patch[0].net_plant_psn;
+                patch[0].acc_month.snowpack =
+                        max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
+                patch[0].acc_month.lai =
+                        max(patch[0].acc_month.lai, patch[0].lai);
+                patch[0].acc_month.leach += (patch[0].soil_ns.leach
+                        + patch[0].surface_ns_leach);
+                patch[0].acc_month.length += 1;
+
+            }
+            if ((command_line[0].output_flags.yearly == 1)
+                    && (command_line[0].p != NULL ) || command_line[0].grow_flag > 0) {// Here change condition for calculating ET for landclim model
+                patch[0].acc_year.length += 1;
+                if ((patch[0].sat_deficit - patch[0].unsat_storage)
+                        > command_line[0].thresholds[SATDEF])
+                    patch[0].acc_year.num_threshold += 1;
+                patch[0].acc_year.theta += patch[0].rootzone.S;
+                patch[0].acc_year.denitrif += patch[0].ndf.denitrif;
+                patch[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate;
+                patch[0].acc_year.mineralized +=
+                        patch[0].ndf.net_mineralized;
+                patch[0].acc_year.uptake += patch[0].ndf.sminn_to_npool;
+                patch[0].acc_year.leach += (patch[0].soil_ns.leach
+                        + patch[0].surface_ns_leach);
+                patch[0].acc_year.DON_loss +=
+                        (patch[0].soil_ns.DON_Qout_total
+                                - patch[0].soil_ns.DON_Qout_total);
+                patch[0].acc_year.DOC_loss +=
+                        (patch[0].soil_cs.DOC_Qout_total
+                                - patch[0].soil_cs.DOC_Qout_total);
+                patch[0].acc_year.streamflow += patch[0].streamflow;
+                patch[0].acc_year.Qout_total += patch[0].Qout_total;
+                patch[0].acc_year.Qin_total += patch[0].Qin_total;
+                patch[0].acc_year.psn += patch[0].net_plant_psn;
+                patch[0].acc_year.PET += (patch[0].PE + patch[0].PET);
+                patch[0].acc_year.burn += patch[0].burn;
+                patch[0].acc_year.potential_recharge +=
+                        patch[0].rain_throughfall;
+                patch[0].acc_year.potential_recharge_wyd +=
+                        patch[0].rain_throughfall
+                                * round(patch[0].acc_year.length);
+                patch[0].acc_year.recharge += patch[0].recharge;
+                patch[0].acc_year.recharge_wyd += patch[0].recharge
+                        * round(patch[0].acc_year.length);
+
+                if (close_enough(patch[0].snowpack.water_equivalent_depth, 0)
+                        && (patch[0].acc_year.snowpack > 0)) {
+                    if (patch[0].acc_year.meltday
+                            < patch[0].acc_year.peaksweday)
+                        patch[0].acc_year.meltday = round(
+                                patch[0].acc_year.length);
+                }
+
+                if (patch[0].snowpack.water_equivalent_depth
+                        > patch[0].acc_year.snowpack) {
+                    patch[0].acc_year.peaksweday = round(
+                            patch[0].acc_year.length);
+                }
+
+                patch[0].acc_year.snowpack =
+                        max(patch[0].snowpack.water_equivalent_depth,
+                                patch[0].acc_year.snowpack);
+
+                /* transpiration water stress computations */
+                double tmp = (patch[0].transpiration_unsat_zone
+                        + patch[0].exfiltration_unsat_zone
+                        + patch[0].exfiltration_sat_zone
+                        + patch[0].evaporation_surf
+                        + patch[0].transpiration_sat_zone
+                        + patch[0].evaporation);
+                patch[0].acc_year.et += tmp;
+                // for calculating decomposition
+
+                patch[0].acc_year.num_days += 1;
+            if (patch[0].acc_year.num_days <=365) {
+                patch[0].acc_year.et_decom += tmp;
+                patch[0].acc_year.et_decom_mean = patch[0].acc_year.et_decom/patch[0].acc_year.num_days;
+                //printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
+                }
+            else {
+                patch[0].acc_year.et_decom_mean = (364 * patch[0].acc_year.et_decom_mean + tmp) / 365; //give more important ratio to ET
+               // printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
+                                                                }
+
+                tmp = (patch[0].transpiration_unsat_zone
+                        + patch[0].transpiration_sat_zone);
+                patch[0].acc_year.trans += tmp;
+
+                //if(current_date.month == 9 & current_date.day == 1)
+                //printf("\n The [acc_year.et %lf], [acc_year.trans %lf], [PET %lf], \n", patch[0].acc_year.et*1000, patch[0].acc_year.trans*1000, patch[0].acc_year.PET*1000);
+
+                patch[0].acc_year.day7trans = (tmp / 14
+                        + 13 / 14 * patch[0].acc_year.day7trans);
+                patch[0].acc_year.day7pet = (patch[0].PET + patch[0].PE)
+                        / 14 + 13 / 14 * patch[0].acc_year.day7pet;
+                if (patch[0].acc_year.day7pet > patch[0].acc_year.maxpet) {
+                    patch[0].acc_year.maxpet = patch[0].acc_year.day7pet;
+                    patch[0].acc_year.rec_pet_wyd = 0;
+                    patch[0].acc_year.max_pet_wyd = patch[0].acc_year.wyd;
+                }
+
+                if ((patch[0].acc_year.day7trans
+                        > patch[0].acc_year.maxtrans)) {
+                    patch[0].acc_year.maxtrans =
+                            patch[0].acc_year.day7trans;
+                    patch[0].acc_year.rec_wyd = 0;
+                }
+
+                if ((patch[0].acc_year.rec_wyd == 0)
+                        && (patch[0].acc_year.day7trans
+                                < patch[0].acc_year.maxtrans * 0.5)) {
+                    patch[0].acc_year.rec_wyd = patch[0].acc_year.wyd;
+                }
+
+                if ((patch[0].acc_year.rec_pet_wyd == 0)
+                        && (patch[0].acc_year.day7pet
+                                < patch[0].acc_year.maxpet * 0.5)) {
+                    patch[0].acc_year.rec_pet_wyd = patch[0].acc_year.wyd;
+                }
+
+                tmp = (patch[0].transpiration_unsat_zone
+                        + patch[0].exfiltration_unsat_zone
+                        + patch[0].exfiltration_sat_zone
+                        + patch[0].evaporation_surf
+                        + +patch[0].transpiration_sat_zone
+                        + patch[0].evaporation);
+
+                if ((patch[0].PET + patch[0].PE - tmp)
+                        > patch[0].acc_year.sm_deficit)
+                    patch[0].acc_year.sm_deficit = (patch[0].PET
+                            + patch[0].PE - tmp);
+                patch[0].acc_year.lai =
+                        max(patch[0].acc_year.lai, patch[0].lai);
+
+                tmp = patch[0].sat_deficit - patch[0].unsat_storage
+                        - patch[0].rz_storage;
+                if (tmp <= 0)
+                    patch[0].acc_year.ndays_sat += 1;
+
+                if (patch[0].rootzone.S > 0.7)
+                    patch[0].acc_year.ndays_sat70 += 1;
+
+                tmp =
+                        max(0.0, (patch[0].rootzone.field_capacity/patch[0].rootzone.potential_sat -
+                                        patch[0].wilting_point*patch[0].soil_defaults[0][0].porosity_0))
+                                / 2.0
+                                + patch[0].wilting_point
+                                        * patch[0].soil_defaults[0][0].porosity_0;
+
+                if ((patch[0].rootzone.S < tmp) && (current_date.month < 10)
+                        && (patch[0].acc_year.midsm_wyd == 0)
+                        && (patch[0].snowpack.water_equivalent_depth <= 0.0))
+                    patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
+
+                patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
+             } /* end if */
+        } /* end of p*/
+      } /* end of z*/
+    } /* end of h*/
+    if (command_line[0].b != NULL) {
+      for (h=0; h < basin->num_hillslopes; ++h) {
 		for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
 			for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
-
-		patch=basin->hillslopes[h]->zones[z]->patches[p];
-
-		patch[0].acc_year_trans += (patch[0].transpiration_unsat_zone
-						+ patch[0].transpiration_sat_zone);
-				if ((command_line[0].output_flags.monthly == 1)
-						&& (command_line[0].b != NULL )) {
+                struct patch_object *patch=basin->hillslopes[h]->zones[z]->patches[p];
+                if (command_line[0].output_flags.monthly == 1) {
 					scale = patch[0].area / basin[0].area;
 					basin[0].acc_month.streamflow += (patch[0].streamflow)
 							* scale;
@@ -102,9 +289,8 @@ void update_basin_patch_accumulator(
 
 				}
 
-				if ((command_line[0].output_flags.yearly == 1)
-						&& (command_line[0].b != NULL )) {
-					scale = patch[0].area / basin[0].area;
+                if (command_line[0].output_flags.yearly == 1) {
+                    scale = patch[0].area / basin[0].area;
 					basin[0].acc_year.length += 1;
 					basin[0].acc_year.leach += (patch[0].soil_ns.leach
 							+ patch[0].surface_ns_leach) * scale;
@@ -143,189 +329,10 @@ void update_basin_patch_accumulator(
 							* scale;
 					basin[0].acc_year.lai += patch[0].lai * scale;
 				}
-
-				if ((command_line[0].output_flags.monthly == 1)
-						&& (command_line[0].p != NULL )) {
-					patch[0].acc_month.theta += patch[0].rootzone.S;
-					patch[0].acc_month.sm_deficit +=
-							max(0.0,
-									(patch[0].sat_deficit-patch[0].rz_storage-patch[0].unsat_storage));
-					patch[0].acc_month.et += (patch[0].transpiration_unsat_zone
-							+ patch[0].evaporation_surf
-							+ patch[0].exfiltration_unsat_zone
-							+ patch[0].exfiltration_sat_zone
-							+ +patch[0].transpiration_sat_zone
-							+ patch[0].evaporation);
-					patch[0].acc_month.denitrif += patch[0].ndf.denitrif;
-					patch[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate;
-					patch[0].acc_month.mineralized +=
-							patch[0].ndf.net_mineralized;
-					patch[0].acc_month.uptake += patch[0].ndf.sminn_to_npool;
-					patch[0].acc_month.DON_loss +=
-							(patch[0].soil_ns.DON_Qout_total
-									- patch[0].soil_ns.DON_Qout_total);
-					patch[0].acc_month.DOC_loss +=
-							(patch[0].soil_cs.DOC_Qout_total
-									- patch[0].soil_cs.DOC_Qout_total);
-					patch[0].acc_month.psn += patch[0].net_plant_psn;
-					patch[0].acc_month.snowpack =
-							max(patch[0].snowpack.water_equivalent_depth, patch[0].acc_month.snowpack);
-					patch[0].acc_month.lai =
-							max(patch[0].acc_month.lai, patch[0].lai);
-					patch[0].acc_month.leach += (patch[0].soil_ns.leach
-							+ patch[0].surface_ns_leach);
-					patch[0].acc_month.length += 1;
-
-				}
-				if ((command_line[0].output_flags.yearly == 1)
-						&& (command_line[0].p != NULL ) || command_line[0].grow_flag > 0) {// Here change condition for calculating ET for landclim model
-					patch[0].acc_year.length += 1;
-					if ((patch[0].sat_deficit - patch[0].unsat_storage)
-							> command_line[0].thresholds[SATDEF])
-						patch[0].acc_year.num_threshold += 1;
-					patch[0].acc_year.theta += patch[0].rootzone.S;
-					patch[0].acc_year.denitrif += patch[0].ndf.denitrif;
-					patch[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate;
-					patch[0].acc_year.mineralized +=
-							patch[0].ndf.net_mineralized;
-					patch[0].acc_year.uptake += patch[0].ndf.sminn_to_npool;
-					patch[0].acc_year.leach += (patch[0].soil_ns.leach
-							+ patch[0].surface_ns_leach);
-					patch[0].acc_year.DON_loss +=
-							(patch[0].soil_ns.DON_Qout_total
-									- patch[0].soil_ns.DON_Qout_total);
-					patch[0].acc_year.DOC_loss +=
-							(patch[0].soil_cs.DOC_Qout_total
-									- patch[0].soil_cs.DOC_Qout_total);
-					patch[0].acc_year.streamflow += patch[0].streamflow;
-					patch[0].acc_year.Qout_total += patch[0].Qout_total;
-					patch[0].acc_year.Qin_total += patch[0].Qin_total;
-					patch[0].acc_year.psn += patch[0].net_plant_psn;
-					patch[0].acc_year.PET += (patch[0].PE + patch[0].PET);
-					patch[0].acc_year.burn += patch[0].burn;
-					patch[0].acc_year.potential_recharge +=
-							patch[0].rain_throughfall;
-					patch[0].acc_year.potential_recharge_wyd +=
-							patch[0].rain_throughfall
-									* round(patch[0].acc_year.length);
-					patch[0].acc_year.recharge += patch[0].recharge;
-					patch[0].acc_year.recharge_wyd += patch[0].recharge
-							* round(patch[0].acc_year.length);
-
-                    if (close_enough(patch[0].snowpack.water_equivalent_depth, 0)
-							&& (patch[0].acc_year.snowpack > 0)) {
-						if (patch[0].acc_year.meltday
-								< patch[0].acc_year.peaksweday)
-							patch[0].acc_year.meltday = round(
-									patch[0].acc_year.length);
-					}
-
-					if (patch[0].snowpack.water_equivalent_depth
-							> patch[0].acc_year.snowpack) {
-						patch[0].acc_year.peaksweday = round(
-								patch[0].acc_year.length);
-					}
-
-					patch[0].acc_year.snowpack =
-							max(patch[0].snowpack.water_equivalent_depth,
-									patch[0].acc_year.snowpack);
-
-					/* transpiration water stress computations */
-					tmp = (patch[0].transpiration_unsat_zone
-							+ patch[0].exfiltration_unsat_zone
-							+ patch[0].exfiltration_sat_zone
-							+ patch[0].evaporation_surf
-							+ patch[0].transpiration_sat_zone
-							+ patch[0].evaporation);
-					patch[0].acc_year.et += tmp;
-					// for calculating decomposition
-
-					patch[0].acc_year.num_days += 1;
-                if (patch[0].acc_year.num_days <=365) {
-                    patch[0].acc_year.et_decom += tmp;
-					patch[0].acc_year.et_decom_mean = patch[0].acc_year.et_decom/patch[0].acc_year.num_days;
-					//printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
-					}
-				else {
-                    patch[0].acc_year.et_decom_mean = (364 * patch[0].acc_year.et_decom_mean + tmp) / 365; //give more important ratio to ET
-                   // printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
-                                                                    }
-
-					tmp = (patch[0].transpiration_unsat_zone
-							+ patch[0].transpiration_sat_zone);
-					patch[0].acc_year.trans += tmp;
-
-					//if(current_date.month == 9 & current_date.day == 1)
-					//printf("\n The [acc_year.et %lf], [acc_year.trans %lf], [PET %lf], \n", patch[0].acc_year.et*1000, patch[0].acc_year.trans*1000, patch[0].acc_year.PET*1000);
-
-					patch[0].acc_year.day7trans = (tmp / 14
-							+ 13 / 14 * patch[0].acc_year.day7trans);
-					patch[0].acc_year.day7pet = (patch[0].PET + patch[0].PE)
-							/ 14 + 13 / 14 * patch[0].acc_year.day7pet;
-					if (patch[0].acc_year.day7pet > patch[0].acc_year.maxpet) {
-						patch[0].acc_year.maxpet = patch[0].acc_year.day7pet;
-						patch[0].acc_year.rec_pet_wyd = 0;
-						patch[0].acc_year.max_pet_wyd = patch[0].acc_year.wyd;
-					}
-
-					if ((patch[0].acc_year.day7trans
-							> patch[0].acc_year.maxtrans)) {
-						patch[0].acc_year.maxtrans =
-								patch[0].acc_year.day7trans;
-						patch[0].acc_year.rec_wyd = 0;
-					}
-
-					if ((patch[0].acc_year.rec_wyd == 0)
-							&& (patch[0].acc_year.day7trans
-									< patch[0].acc_year.maxtrans * 0.5)) {
-						patch[0].acc_year.rec_wyd = patch[0].acc_year.wyd;
-					}
-
-					if ((patch[0].acc_year.rec_pet_wyd == 0)
-							&& (patch[0].acc_year.day7pet
-									< patch[0].acc_year.maxpet * 0.5)) {
-						patch[0].acc_year.rec_pet_wyd = patch[0].acc_year.wyd;
-					}
-
-					tmp = (patch[0].transpiration_unsat_zone
-							+ patch[0].exfiltration_unsat_zone
-							+ patch[0].exfiltration_sat_zone
-							+ patch[0].evaporation_surf
-							+ +patch[0].transpiration_sat_zone
-							+ patch[0].evaporation);
-
-					if ((patch[0].PET + patch[0].PE - tmp)
-							> patch[0].acc_year.sm_deficit)
-						patch[0].acc_year.sm_deficit = (patch[0].PET
-								+ patch[0].PE - tmp);
-					patch[0].acc_year.lai =
-							max(patch[0].acc_year.lai, patch[0].lai);
-
-					tmp = patch[0].sat_deficit - patch[0].unsat_storage
-							- patch[0].rz_storage;
-					if (tmp <= 0)
-						patch[0].acc_year.ndays_sat += 1;
-
-					if (patch[0].rootzone.S > 0.7)
-						patch[0].acc_year.ndays_sat70 += 1;
-
-					tmp =
-							max(0.0, (patch[0].rootzone.field_capacity/patch[0].rootzone.potential_sat -
-											patch[0].wilting_point*patch[0].soil_defaults[0][0].porosity_0))
-									/ 2.0
-									+ patch[0].wilting_point
-											* patch[0].soil_defaults[0][0].porosity_0;
-
-					if ((patch[0].rootzone.S < tmp) && (current_date.month < 10)
-							&& (patch[0].acc_year.midsm_wyd == 0)
-							&& (patch[0].snowpack.water_equivalent_depth <= 0.0))
-						patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
-
-					patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
-		} /* end if */
-	} /* end of p*/
-	} /* end of z*/
-	} /* end of h*/
+            } /* end of p*/
+        } /* end of z*/
+      } /* end of h*/
+    } /* end if */
 
 
 	return;

@@ -78,6 +78,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 
 
 		fire_grid=(struct patch_fire_object **) malloc(grid_dimY*sizeof(struct patch_fire_object *)); // first allocate the rows
+        #pragma omp parallel for
 		for(i=0;i<grid_dimY;i++) // for each row, allocate the columns
 			fire_grid[i]=(struct patch_fire_object *) malloc(grid_dimX*sizeof(struct patch_fire_object ));
 		printf("allocate the fire grid\n");
