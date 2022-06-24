@@ -465,6 +465,7 @@ void		zone_daily_F(
 		zone[0].e_dewpoint = es - zone[0].metv.vpd;
 		zone[0].relative_humidity = zone[0].e_dewpoint / es;
 	}
+
 	/*-------------------------------------------------------------------*/
 	/* Vapor pressure deficit - Day time							     */
 	/*-------------------------------------------------------------------*/

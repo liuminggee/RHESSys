@@ -1,3 +1,4 @@
+#include <math.h>
 /*--------------------------------------------------------------*/
 /* 								*/
 /*		compute_saturation_vapor_pressure				*/
@@ -38,8 +39,12 @@
 /*								*/
 /*--------------------------------------------------------------*/
 double compute_saturation_vapor_pressure(double temperature) {
+    double tt = exp(2.5);
+    printf(" tt exp(2.5):%lf log(5):%lf pow(5,2):%lf\n",tt,log(5.),pow(5.,2));
 	double es = 613.75 * exp( (17.502 * temperature)
 			/ ( 240.97 + temperature) );
+    double tmp = exp(2.5);
+    printf(" temperature:%lf es:%lf exp(2.5):%lf\n",temperature,es,tmp);
 	return es;
 }
 
