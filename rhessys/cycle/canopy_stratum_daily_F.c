@@ -879,13 +879,13 @@ void	canopy_stratum_daily_F(
 
 	if (stratum[0].epv.proj_lai_shade > ZERO && zone[0].metv.dayl > ZERO)
 		stratum[0].ppfd_shade = (stratum[0].APAR_diffuse * (1-perc_sunlit)) /
-					zone[0].metv.dayl /stratum[0].epv.proj_lai_shade;
-	else
+                    zone[0].metv.dayl /(max(1.0,stratum[0].epv.proj_lai_shade));  //06212022LML add max
+    else
 		stratum[0].ppfd_shade = 0.0;
 
 	if (stratum[0].epv.proj_lai_sunlit > ZERO && zone[0].metv.dayl > ZERO)
 		stratum[0].ppfd_sunlit = (stratum[0].APAR_direct + stratum[0].APAR_diffuse * perc_sunlit) /
-					zone[0].metv.dayl /stratum[0].epv.proj_lai_sunlit;
+                    zone[0].metv.dayl /(max(1.0,stratum[0].epv.proj_lai_sunlit)); //06212022LML add max
 	else
 		stratum[0].ppfd_sunlit = 0.0;
 
@@ -1326,6 +1326,9 @@ void	canopy_stratum_daily_F(
 						* rain_duration_day);
 	stratum[0].potential_evaporation = potential_evaporation_night + potential_evaporation_day;
 
+    //printf(" potential_evaporation:%lf gsurf:%lf gs_sunlit:%lf gs_shade:%lf gs:%lf ga:%lf\n",stratum[0].potential_evaporation * 1000
+    //        ,stratum[0].gsurf,stratum[0].gs_sunlit,stratum[0].gs_shade,stratum[0].gs,stratum[0].ga);
+
 	/*--------------------------------------------------------------*/
 	/*	If this stratum is on the surface and has a non-zero 	*/
 	/*	rootin gdepth we assume it first takes water from soil. */
@@ -1469,10 +1472,10 @@ void	canopy_stratum_daily_F(
 	if  ((stratum[0].defaults[0][0].lai_stomatal_fraction > ZERO) && (stratum[0].epv.proj_lai > ZERO)){
 		if ( stratum[0].potential_evaporation > ZERO ){
 			transpiration  = transpiration_rate *
-				(zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
+                (zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
 				dry_evaporation / potential_evaporation_rate);
 			potential_transpiration  = potential_transpiration_rate *
-				(zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
+                (zone[0].metv.dayl - (zone[0].rain_duration * zone[0].metv.dayl/86400) -
 				dry_evaporation / potential_evaporation_rate);
 		}
 		else{
@@ -1613,7 +1616,7 @@ void	canopy_stratum_daily_F(
 		/*deltaT = 0.0;*/
 
 
-		if ( command_line[0].verbose_flag == -5 ){
+        if ( command_line[0].verbose_flag == -5 ){
 		printf("\n          ENERGY REDUCTION: evap=%lf trans=%lf potevaprate=%lf potrainevaprate=%lf potevap=%lf totalrad=%lf Rnet=%lf Rnet_used=%lf tavg=%lf\n          Kdir=%lf Kdif=%lf Lstar=%lf surfheat=%lf\n          Lstarpch=%lf K_refl=%lf PAR_refl=%lf snowstor1000=%lf rainstor1000=%lf wetfrac=%lf snowcap=%lf raindur=%lf rnet_post=%lf deltaT=%lf",
 			   stratum[0].evaporation,
 			   stratum[0].transpiration_unsat_zone + stratum[0].transpiration_sat_zone,
@@ -1639,7 +1642,7 @@ void	canopy_stratum_daily_F(
 			   zone[0].rain_duration * zone[0].metv.dayl/86400,
 			   Rnet_canopy,
 			   deltaT);
-		}
+        }
 
 
 
@@ -1721,6 +1724,8 @@ void	canopy_stratum_daily_F(
 			else
 				psnout.A = 0.0;
 			assim_sunlit = psnout.A;
+            double assim_sunlit_pot = assim_sunlit;
+
 
 			/*--------------------------------------------------------------*/
 			/* potential shade psn						*/
@@ -1744,6 +1749,7 @@ void	canopy_stratum_daily_F(
 			else
 				psnout.A = 0.0;
 			assim_shade = psnout.A;
+            double assim_shade_pot = assim_shade;
 
 			/*--------------------------------------------------------------*/
 			/* total potential psn						*/
@@ -1838,11 +1844,12 @@ void	canopy_stratum_daily_F(
 					*zone[0].metv.dayl*12.011e-9 + stratum[0].cdf.leaf_day_mr;
 
 
-            //if (stratum[0].veg_parm_ID == 1){
-            //    fprintf(stderr,"psn_to_cpool:%f assim_sunlit:%f lai_sunlit:%f assim_shade:%f lai_shade:%f dayl:%f day_mr:%f leafc:%f leafn:%f proj_sla_sunlit:%f\n",
-            //            stratum[0].cdf.psn_to_cpool,assim_sunlit,stratum[0].epv.proj_lai_sunlit
-            //            ,assim_shade,stratum[0].epv.proj_lai_shade,zone[0].metv.dayl,stratum[0].cdf.leaf_day_mr
-            //            ,stratum[0].cs.leafc,stratum[0].ns.leafn,stratum[0].epv.proj_sla_sunlit);
+            //if (stratum[0].ID == 100952){
+            //    printf("psn_to_cpool:%f assim_sunlit_pot:%f assim_sunlit:%f lai_sunlit:%f assim_shade_pot:%lf assim_shade:%f lai_shade:%f dayl:%f day_mr:%f leafc:%f leafn:%f proj_sla_sunlit:%f proj_sla_shade:%f gs_sunlit:%lf gs_shade:%lf\n",
+            //            stratum[0].cdf.psn_to_cpool,assim_sunlit_pot,assim_sunlit,stratum[0].epv.proj_lai_sunlit
+            //            ,assim_shade_pot,assim_shade,stratum[0].epv.proj_lai_shade,zone[0].metv.dayl,stratum[0].cdf.leaf_day_mr
+            //            ,stratum[0].cs.leafc,stratum[0].ns.leafn,stratum[0].epv.proj_sla_sunlit,stratum[0].epv.proj_sla_shade
+            //            ,stratum[0].gs_sunlit,stratum[0].gs_shade);
             //}
 
 

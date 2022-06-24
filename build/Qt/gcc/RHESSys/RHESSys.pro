@@ -14,9 +14,9 @@ CONFIG   -= app_bundle
 QMAKE_CC = gcc -std=c99
 QMAKE_CXXFLAGS += -fpermissive
 #-std=c++0x
-QMAKE_CXXFLAGS += -fopenmp
-QMAKE_CFLAGS += -fopenmp
-QMAKE_LFLAGS += -fopenmp
+#QMAKE_CXXFLAGS += -fopenmp
+#QMAKE_CFLAGS += -fopenmp
+#QMAKE_LFLAGS += -fopenmp
 
 #QMAKE_CFLAGS += -STD=C99
 
@@ -34,8 +34,9 @@ DEFINES += NO_UPDATE_160419 \
            LIU_BURN_ALL_AT_ONCE \
            LIU_TRACKING_BASIN_LITTERC \
            LIU_WMFIRE_OUTPUT \
-           LIU_START_FROM_ZERO_STORAGE \
-           LIU_DISPLY_RUN_INFO
+           xLIU_START_FROM_ZERO_STORAGE \
+           LIU_DISPLY_RUN_INFO \
+           LIU_LIMIT_PET_WITH_ALFALFA
 
 
 

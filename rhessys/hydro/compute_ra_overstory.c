@@ -153,5 +153,9 @@ double	compute_ra_overstory(
 	/*--------------------------------------------------------------*/
 	*ga = 1/ra_u;
 
+
+    //printf(" ra_u:%lf u_o:%lf ga:%lf\n",ra_u,u_o,1/ra);
+
+
 	return(ra);
 } /*compute_ra_overstory*/

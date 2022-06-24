@@ -143,6 +143,13 @@ Farquhar photosynthesis routine
 	static double pabs = 0.85;    /* (DIM) fPAR effectively absorbed by
 					PSII */
 
+
+
+    //in->t = 25;
+    //fprintf(stderr, "DEBUGGING: t = 25!!!\n");
+
+
+
 	/* local variables  */
 	Rd = in->Rd;
 	t = in->t;
@@ -221,6 +228,14 @@ Farquhar photosynthesis routine
 	else
 		J = 0.0;    
 	*/
+
+
+
+    //in->irad = 400;
+    //g = 0.001;
+    //while(g <= 2){
+
+
 	/* New, substituting our vbl names (note I'm assuming that
 		his ppfd in BGC is same as irad in this code.
 		(also change a->aa, b->bb, c->cc, rename psn
@@ -290,17 +305,21 @@ Farquhar photosynthesis routine
 	/*
 		printf("\n %lf %lf %lf %lf %lf %lf", A, out->Ci, out->Vmax, out->Jmax, out->dC13, out->Ca); 
 	*/
-/*
-                 printf("psnin: %lf %lf %lf %lf %lf %lf %lf %lf %d %lf\n",
-                                in->pa, in->co2, t, in->irad,
-                                g, in->Rd, in->lnc, in->flnr,
-                                c3, ppe);
-                                printf("psnout: %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
-                                g, O2, Ca, Ca - A/g,
-                                out->gamma, Kc, Ko, act,
-                                Vmax, Jmax, J, Av,
-                                Aj, A);   
-*/
+
+      //           printf("psnin: pa:%lf CO2:%lf t:%lf irad:%lf g:%lf Rd:%lf lnc:%lf flnr:%lf c3:%d ppe:%lf\n",
+      //                          in->pa, in->co2, t, in->irad,
+      //                          g, in->Rd, in->lnc, in->flnr,
+      //                          c3, ppe);
+      //           printf("psnout: g:%lf O2:%lf Ca:%lf Ci:%lf gamma:%lf Kc:%lf Ko:%lf act:%lf Vmax:%lf Jmax:%lf J:%lf Av:%lf Aj:%lf A:%lf\n",
+      //                          g, O2, Ca, Ca - A/g,
+      //                          out->gamma, Kc, Ko, act,
+      //                          Vmax, Jmax, J, Av,
+      //                          Aj, A);
+      //  printf("   irad:%lf g:%lf Av:%lf Aj:%lf A:%lf\n",in->irad,g, out->Av,out->Aj,out->A);
+
+    //    g += 0.1;
+    //}
+
 	return (!ok);
 }	 /* end compute_farq_psn.c */
 

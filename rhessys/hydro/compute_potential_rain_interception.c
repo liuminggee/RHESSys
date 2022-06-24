@@ -70,5 +70,8 @@ double	compute_potential_rain_interception(
 
 	potential_interception = max(potential_interception, 0.0);
 
+    //printf(" rain:%lf potential_interception:%lf pai:%lf rain_capacity:%lf\n"
+    //       ,rain*1000,potential_interception*1000,stratum[0].epv.proj_pai_when_red,stratum[0].defaults[0][0].specific_rain_capacity*1000);
+
 	return( potential_interception );
 } /*end compute_potential_rain_interception */

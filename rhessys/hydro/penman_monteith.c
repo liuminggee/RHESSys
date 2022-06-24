@@ -131,6 +131,9 @@ double	penman_monteith(
 	/*	Evaporation in W/m2					*/
 	/*--------------------------------------------------------------*/
 
+#ifdef LIU_LIMIT_PET_WITH_ALFALFA
+    if (rs < 45) rs = 45;                                                       //06222022LML temporal solution for overestimate pet by using Alfalfa
+#endif
 	e = ((s*Rnet) + (rho*CP*vpd/ra)) / (gamma*(1.0 + rs/ra) +s);
 
 	if ( verbose_flag > 2)
@@ -139,7 +142,7 @@ double	penman_monteith(
 	if ( verbose_flag > 2)
 		printf("%8.2f %8.4f ",Rnet, vpd);
 	
-	if ( verbose_flag == -5) {
+    if ( verbose_flag == -5) {
 		printf("\n          PENMAN: s=%8.4f ra=%8.4f rs=%8.4f Rnet=%8.4f gamma=%8.4f vpd=%8.4f rho=%8.4f CP=%8.4f Tair=%lf Pair=%lf LE=%8.4f e=%8.4f",
 			   s , ra, rs,
 			   Rnet,gamma,vpd,
@@ -147,7 +150,7 @@ double	penman_monteith(
 			   Tair,Pair,
 			   e,
 			   e / ( lhvap * 1000 ) * 1000.0);
-	}
+    }
 	
 	
 	/*--------------------------------------------------------------*/
