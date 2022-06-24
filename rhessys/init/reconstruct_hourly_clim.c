@@ -24,6 +24,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void reconstruct_hourly_clim(struct world_object * world,
 			      struct base_station_object **base_stations,

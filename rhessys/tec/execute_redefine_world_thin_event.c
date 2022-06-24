@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void	execute_redefine_world_thin_event(struct world_object *world,
 									  struct command_line_object *command_line,

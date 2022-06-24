@@ -78,6 +78,7 @@
 #include <omp.h>
 #include <math.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void		patch_daily_F(
 						  struct	world_object	*world,

@@ -92,7 +92,7 @@ void skip_strata(
 	int	default_object_ID;
 	char	record[MAXSTR];
 	double 	rootc, ltmp;
-	int	*paramCnt=0;
+	int	paramCnt=0;
 	param	*paramPtr=NULL;
 	/*--------------------------------------------------------------*/
 	/*	Read in the next canopy strata record for this patch.		*/

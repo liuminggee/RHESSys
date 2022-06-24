@@ -116,7 +116,7 @@ int wrap_repeat_date( int month, int day, int start_date_index, int data_length 
   }
 
   if( targetFound == 0 ) {
-    fprintf( stderr, 'error finding next date in repeat clim data.\n' );
+    fprintf( stderr, "error finding next date in repeat clim data.\n" );
     ERR(-1);
   }
   return index;

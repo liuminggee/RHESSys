@@ -28,6 +28,8 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+#include "functions.h"
+
 void destroy_world(struct command_line_object *command_line,
 				   struct world_object *world)
 {

@@ -33,6 +33,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void	execute_hourly_output_event(
 									struct	world_object	*world,

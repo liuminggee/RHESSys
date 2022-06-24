@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "rhessys.h"
+#include "functions.h"
 
 // test comment
 void execute_beetlespread_event(

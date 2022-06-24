@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void	canopy_stratum_growth(
 							  struct	world_object		*world,

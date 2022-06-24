@@ -50,5 +50,26 @@ double compute_saturation_vapor_pressure(double temperature);
 
 double compute_vapor_pressure_deficit(double saturation_vapor_pressure,
 		double dewpoint_vapor_pressure);
+        
+long julday(struct date);
+
+void destroy_beetle_defaults(int,int,struct beetle_default *);
+
+int assign_neighbours (struct neighbour_object *,int,struct hillslope_object *,FILE *);
+
+void execute_hourly_growth_output_event(struct world_object *,struct command_line_object *
+        ,struct date,struct world_output_file_object *);
+        
+        
+void output_basin(int,struct basin_object *,struct date,FILE *);
+
+void sort_patch_layers(struct patch_object *);
+
+void output_hourly_zone(int,int,struct zone_object *,struct date,FILE *);
+
+void compute_beetle_effects(struct patch_object *,int,double,int,int,double);
+
+int assign_neighbours_in_hillslope (struct neighbour_object *,int,struct hillslope_object *,FILE *);
+
 
 #endif

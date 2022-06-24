@@ -91,6 +91,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "functions.h"
 
 void	execute_tec(
 					struct	tec_object *tecfile ,

@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "functions.h"
 
 struct routing_list_object *construct_ddn_routing_topology(
   FILE * routing_file, 
@@ -86,7 +87,6 @@ struct routing_list_object *construct_ddn_routing_topology(
 			&hill_ID);
 		fscanf(routing_file,"%lf %lf %lf", &x,&y,&z);
 		fscanf(routing_file,"%lf %d %d", 
-			&area,
 			&area,
 			&drainage_type,
 			&num_innundation_depths);

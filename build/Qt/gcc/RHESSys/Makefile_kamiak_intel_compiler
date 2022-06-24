@@ -10,11 +10,11 @@
 
 ####### Compiler, tools and options
 
-CC            = icc -std=c99
-CXX           = icpc
+CC            = icc 
+CXX           = icc 
 DEFINES       = -DNO_UPDATE_160419 -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID -DLIU_EXTEND_CLIM_VAR -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD -DRUN_WITH_SPINUP_PERIOD_USING_RANDOM_CLIMATE_YEAR_DATA -DFIND_STATION_BASED_ON_ID -DLIU_EXTEND_CLIM_VAR -DLIU_BURN_ALL_AT_ONCE -DLIU_TRACKING_BASIN_LITTERC -DLIU_WMFIRE_OUTPUT -DLIU_DISPLY_RUN_INFO
-CFLAGS        = -pipe -qopenmp -g -Wall -W $(DEFINES)
-CXXFLAGS      = -pipe -fpermissive -qopenmp -g -Wall -W $(DEFINES)
+CFLAGS        = -qopenmp -g -Wall -W $(DEFINES)
+CXXFLAGS      = -fpermissive -qopenmp -g -Wall -W $(DEFINES)
 INCPATH       = -I../../../../rhessys/include -I../../../../../boost_1_66_0
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -29,8 +29,8 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = RHESSys1.0.0
-LINK          = icpc
-LFLAGS        = -qopenmp
+LINK          = icc
+LFLAGS        = -qopenmp 
 LIBS          = $(SUBLIBS) -lnetcdf -lgomp
 AR            = ar cqs
 RANLIB        = 
