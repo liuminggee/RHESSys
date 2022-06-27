@@ -879,13 +879,13 @@ void	canopy_stratum_daily_F(
 
 	if (stratum[0].epv.proj_lai_shade > ZERO && zone[0].metv.dayl > ZERO)
 		stratum[0].ppfd_shade = (stratum[0].APAR_diffuse * (1-perc_sunlit)) /
-                    zone[0].metv.dayl /(max(1.0,stratum[0].epv.proj_lai_shade));  //06212022LML add max
+                    zone[0].metv.dayl /stratum[0].epv.proj_lai_shade;
     else
 		stratum[0].ppfd_shade = 0.0;
 
 	if (stratum[0].epv.proj_lai_sunlit > ZERO && zone[0].metv.dayl > ZERO)
 		stratum[0].ppfd_sunlit = (stratum[0].APAR_direct + stratum[0].APAR_diffuse * perc_sunlit) /
-                    zone[0].metv.dayl /(max(1.0,stratum[0].epv.proj_lai_sunlit)); //06212022LML add max
+                    zone[0].metv.dayl /stratum[0].epv.proj_lai_sunlit;
 	else
 		stratum[0].ppfd_sunlit = 0.0;
 
