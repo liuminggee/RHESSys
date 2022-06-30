@@ -257,6 +257,10 @@ void	execute_daily_output_event(
 															||	(patchID == -999))
 															if (( world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].canopy_strata[c][0].ID == stratumID)
 																|| (stratumID == -999)) {
+
+
+                                                                struct  canopy_strata_object *tmp = world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c];
+
 																output_canopy_stratum(
 																world[0].basins[b][0].ID,
 																world[0].basins[b][0].hillslopes[h][0].ID,

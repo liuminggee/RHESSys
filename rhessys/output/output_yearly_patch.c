@@ -50,7 +50,7 @@ void	output_yearly_patch(
 
 
 
-	fprintf(outfile,"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+    fprintf(outfile,"%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 			current_date.year,
 			basinID,
 			hillID,
@@ -82,7 +82,11 @@ void	output_yearly_patch(
 			patch[0].acc_year.rec_pet_wyd,
 			patch[0].acc_year.ndays_sat, patch[0].acc_year.ndays_sat70, 
 			patch[0].acc_year.midsm_wyd,
-			patch[0].z, patch[0].acc_year.PET*1000.0, patch[0].acc_year.pcp*1000.0, patch[0].acc_year.burn, 
+            patch[0].z,
+            patch[0].acc_year.TPET*1000.0,
+            patch[0].acc_year.PET*1000.0,
+            patch[0].acc_year.PE*1000.0,
+            patch[0].acc_year.pcp*1000.0, patch[0].acc_year.burn,
 			patch[0].acc_year.snowin*1000.0, patch[0].acc_year.potential_recharge*1000.0,
 			patch[0].acc_year.recharge*1000.0, patch[0].acc_year.potential_recharge_wyd,
 			patch[0].acc_year.recharge_wyd);
@@ -102,7 +106,9 @@ void	output_yearly_patch(
 	patch[0].acc_year.psn = 0.0;
 	patch[0].acc_year.et = 0.0;
 	patch[0].acc_year.trans = 0.0;
-	patch[0].acc_year.PET = 0.0;
+    patch[0].acc_year.TPET = 0.0;
+    patch[0].acc_year.PET = 0.0;
+    patch[0].acc_year.PE = 0.0;
 	patch[0].acc_year.lai = 0.0;
 	patch[0].acc_year.mineralized = 0.0;
 	patch[0].acc_year.uptake = 0.0;

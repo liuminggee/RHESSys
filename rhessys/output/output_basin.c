@@ -62,7 +62,7 @@ void	output_basin(			int routing_flag,
 	double apsn, anppcum, alai, acrain, acsnow;
 	double abase_flow, hbase_flow,  hstreamflow_NO3, hstreamflow_NH4;
 	double	aacctrans, var_acctrans, var_trans;
-	double aPET, adC13, amortality_fract, apcp, apcpassim;
+    double aTPET,aPET,aPE,adC13, amortality_fract, apcp, apcpassim;
 	double	hgw;
 	double atmin, atmax, atavg, avpd, asnow;
 	double	hgwQout;
@@ -107,7 +107,10 @@ void	output_basin(			int routing_flag,
 	arecharge = 0.0;
 	apsn = 0.0 ;
 	anppcum = 0.0;
-	aPET = 0.0;
+    aTPET = 0.0;
+    aPET = 0.0;
+    aPE = 0.0;
+
 	aarea =  0.0 ;
 	abase_flow = 0.0;
 	hbase_flow = 0.0;
@@ -209,7 +212,9 @@ void	output_basin(			int routing_flag,
 				if (patch[0].snowpack.water_equivalent_depth > 0.001)
 					aperc_snow += patch[0].area;
 				asnowmelt += patch[0].snow_melt*patch[0].area;
+                aTPET += (patch[0].PET + patch[0].PE) * patch[0].area;
 				aPET += (patch[0].PET) * patch[0].area;
+                aPE += (patch[0].PE) * patch[0].area;
 				alitter_store += patch[0].litter.rain_stored * patch[0].area;
 				adetention_store += patch[0].detention_store*patch[0].area;
 				aacctrans += patch[0].acc_year_trans * patch[0].area;
@@ -340,7 +345,9 @@ void	output_basin(			int routing_flag,
 	aLdown /= zone_area;
 
 	apcpassim /=  aarea;
+    aTPET /=  aarea;
 	aPET /=  aarea;
+    aPE /=  aarea;
 	acrain /=  aarea;
 	arecharge /= aarea;
 	arain_throughfall /=  aarea;
@@ -454,8 +461,8 @@ void	output_basin(			int routing_flag,
 		abase_flow * 1000.0,
 		areturn_flow * 1000.0,
 		astreamflow * 1000.0,
-		apsn,
-		anppcum,
+        apsn * 1000.0,                                                          //06272022LML
+        anppcum * 1000.0,                                                       //06272022LML
 		alai,
 		hgwQout *1000.0,
 		hgw *1000.0,
@@ -468,7 +475,9 @@ void	output_basin(			int routing_flag,
 		var_trans,
 		aacctrans*1000,
 		var_acctrans,
+        aTPET*1000,
 		aPET*1000,
+        aPE*1000,
 		adC13,
 		apcp*1000.0,
 		apcpassim*1000.0,

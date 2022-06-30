@@ -60,7 +60,7 @@ void	output_yearly_basin(
 
 
 	check = fprintf(outfile,
-		"%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf\n",
+        "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %lf %lf\n",
 		current_date.year,
 		basin[0].ID,
 		basin[0].acc_year.streamflow * 1000.0,
@@ -75,7 +75,9 @@ void	output_yearly_basin(
 		basin[0].acc_year.mineralized * 1000.0,
 		basin[0].acc_year.uptake * 1000.0,
 		basin[0].acc_year.num_threshold,
-		basin[0].acc_year.PET * 1000.0
+        basin[0].acc_year.TPET * 1000.0,
+        basin[0].acc_year.PET * 1000.0,
+        basin[0].acc_year.PE * 1000.0
 		);
 	if (check <= 0) {
 		fprintf(stdout,
@@ -87,7 +89,9 @@ void	output_yearly_basin(
 	basin[0].acc_year.streamflow = 0.0;
 	basin[0].acc_year.stream_NO3 = 0.0;
 	basin[0].acc_year.et = 0.0;
-	basin[0].acc_year.PET = 0.0;
+    basin[0].acc_year.TPET = 0.0;
+    basin[0].acc_year.PET = 0.0;
+    basin[0].acc_year.PE = 0.0;
 	basin[0].acc_year.psn = 0.0;
 	basin[0].acc_year.lai = 0.0;
 	basin[0].acc_year.length = 0;

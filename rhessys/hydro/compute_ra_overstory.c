@@ -123,7 +123,6 @@ double	compute_ra_overstory(
 	/*	stratum. ga (m/s)					*/
 	/*--------------------------------------------------------------*/
 	ra = pow( log( (z-d_o)/zo_o ) / 0.41, 2.0 ) / *u;
-
 	ra_u = ra + log ( (z-d_o)/zo_o ) * h_o * exp(-1*cn)
 		* ( exp(-1*cn*(d_u+zo_u)/h_o) - exp(-1*cn*(d_o+zo_o)/h_o))
 		/ ( *u * 0.41 * 0.41 * cn * (h_o - d_o));
@@ -152,10 +151,5 @@ double	compute_ra_overstory(
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/
 	*ga = 1/ra_u;
-
-
-    //printf(" ra_u:%lf u_o:%lf ga:%lf\n",ra_u,u_o,1/ra);
-
-
 	return(ra);
 } /*compute_ra_overstory*/

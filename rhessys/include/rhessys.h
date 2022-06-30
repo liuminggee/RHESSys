@@ -509,7 +509,9 @@ struct accumulate_patch_object
    double day7pet;
    double maxtrans;
    double maxpet;
-   double PET;
+   double TPET;                                                                 //06292022LML = PET + PE
+   double PET;                                                                  //06292022LML
+   double PE;                                                                   //06292022LML
    double lai;
    double snowpack;
    double sm_deficit;
@@ -1122,6 +1124,7 @@ struct  zone_default
         double  max_snow_temp;                                          /* degrees C */
         double  min_rain_temp;                                          /* degrees C */
         double  ndep_NO3;               /* kgN/m2/day   */
+        double rain_duration_default;   /* hour/day */
         double  atm_CO2;                /* ppm */
         double  psen[7];
         double  ravg_days; /* (days) number of days for running average */
@@ -3015,7 +3018,7 @@ struct  canopy_strata_object
         int             ID;
         int             num_base_stations;
 	int		veg_parm_ID;
-        double  APAR_direct;                                    /* (umol photon/m2*day) */
+        double  APAR_direct;                                    /* (umol photon/m2*day) */  //absorbed
         double  APAR_diffuse;                                   /* */
         double  cover_fraction;
         double  dC13;           /* % discrimination of C13 */
@@ -3028,7 +3031,7 @@ struct  canopy_strata_object
         double  gs_sunlit;                                      /* m/s          */
         double  gs_shade;                                       /* m/s          */
         double  gsurf;                                          /* m/s          */
-        double  Kstar_direct;                                   /* Kj/(m2*day)  */
+        double  Kstar_direct;                                   /* Kj/(m2*day)  */ //absorbed
         double  Kstar_diffuse;                                  /* Kj/(m2*day)  */
         double  Lstar;                                          /* Kj/(m2*day)  */
         double  Lstar_night;									/* Kj/(m2*day)  */
@@ -3048,6 +3051,10 @@ struct  canopy_strata_object
         double  transpiration_sat_zone;                         /* m water /day */
         double  wind;                                           /* 1/meters     */
         double  canopy_drip;
+        double  assim_sunlit;                                   /* (umol/m2/s) */
+        double  assim_shade;                                    /* (umol/m2/s) */
+        double  trans_sunlit;                                   /* m water/s   */
+        double  trans_shade;                                    /* m water/s   */
         struct  rooting_zone_object     rootzone;
         struct  cdayflux_struct cdf;
         struct  cstate_struct   cs;

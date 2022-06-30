@@ -281,7 +281,6 @@ void		surface_daily_F(
 		/*** Use Penman with rsurface=0 for open water evaporation. ***/
 
 		patch[0].ga = max((patch[0].ga * patch[0].stability_correction),0.0001);
-
 		detention_store_potential_dry_evaporation_rate_night = penman_monteith(
 				command_line[0].verbose_flag,
 				zone[0].metv.tnight,
@@ -803,6 +802,7 @@ void		surface_daily_F(
 				+ (PE_rainy_rate_day
 				* rain_duration_day);
 		patch[0].PE = PE_night + PE_day;
+
 
 		/*--------------------------------------------------------------*/
 		/*	Update rain storage ( this also updates the patch level	*/

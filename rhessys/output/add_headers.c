@@ -137,7 +137,9 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"trans_var",
 		"acc_trans",
 		"acctransv_var",
-		"pet",
+        "tpet",
+        "pet",
+        "pe",
 		"dC13",
 		"precip",
 		"pcp_assim",
@@ -207,7 +209,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].basin[0].yearly;
 	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 		"year",
 		"basinID",
 		"streamflow",
@@ -217,7 +219,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"DON",
 		"et",
 		"psn","lai","nitrif",
-		"mineralized", "uptake", "num_thresh","pet");
+        "mineralized", "uptake", "num_thresh","tpet","pet","pe");
 	}
 
 	/*--------------------------------------------------------------*/
@@ -397,7 +399,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].patch[0].daily;
 		check = fprintf(outfile,
-						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+                        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 						"day",
 						"month",
 						"year",
@@ -431,7 +433,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 						"root_zone.S",
 						"root.depth",
 						"litter.rain_stor",
-						"litter.S","area","pet","lai","baseflow","streamflow","pcp","recharge",
+                        "litter.S","area","tpet","pet","pe","lai","baseflow","streamflow","pcp","recharge",
 						"Kdowndirpch","Kdowndiffpch",
 						"Kupdirpch","Kupdifpch","Luppch",
 						"Kdowndirsubcan","Kdowndifsubcan","Ldownsubcan",

@@ -115,7 +115,9 @@ void update_basin_patch_accumulator(
                 patch[0].acc_year.Qout_total += patch[0].Qout_total;
                 patch[0].acc_year.Qin_total += patch[0].Qin_total;
                 patch[0].acc_year.psn += patch[0].net_plant_psn;
-                patch[0].acc_year.PET += (patch[0].PE + patch[0].PET);
+                patch[0].acc_year.TPET += (patch[0].PE + patch[0].PET);
+                patch[0].acc_year.PET += patch[0].PET;
+                patch[0].acc_year.PE += patch[0].PE;
                 patch[0].acc_year.burn += patch[0].burn;
                 patch[0].acc_year.potential_recharge +=
                         patch[0].rain_throughfall;
@@ -316,8 +318,10 @@ void update_basin_patch_accumulator(
 					basin[0].acc_year.stream_DOC += patch[0].streamflow_DOC
 							* scale;
 					basin[0].acc_year.psn += patch[0].net_plant_psn * scale;
-					basin[0].acc_year.PET += (patch[0].PE + patch[0].PET)
+                    basin[0].acc_year.TPET += (patch[0].PE + patch[0].PET)
 							* scale;
+                    basin[0].acc_year.PET += patch[0].PET * scale;
+                    basin[0].acc_year.PE += patch[0].PE	* scale;
 
 					basin[0].acc_year.et += (patch[0].evaporation
 							+ patch[0].evaporation_surf

@@ -426,7 +426,7 @@ void		patch_daily_F(
 	double 	surfaceN_to_soil;
 	double	FERT_TO_SOIL;
 	double	pond_height;
-	double tmpra, tmpga, tmpgasnow, tmpwind, tmpwindcan, tmpwindsnow, tmpustar;
+    double tmpra, tmpga, tmpgasnow, tmpwind, tmpwindcan, tmpwindsnow, tmpustar;
 	double Kup_direct_snow, Kup_diffuse_snow;
 	double Kdown_direct_covered, Kdown_diffuse_covered, Kdown_direct_exposed, Kdown_diffuse_exposed;
 	double Kup_direct_snow_covered, Kup_diffuse_snow_covered, Kup_direct_snow_exposed, Kup_diffuse_snow_exposed;
@@ -731,10 +731,8 @@ void		patch_daily_F(
 				inx = inx2;
 				clim_event = patch[0].base_stations[0][0].dated_input[0].beetle_attack.seq[inx];
 
-            if (patch[0].ID == 7788 && current_date.month ==8 && current_date.day == 1){
-                 printf("\n checking beetle attack squence after while in patch %d\n, the current date is %d, %d ,%d, the inx is %d; the mortality is %lf, the climate event date is %d %d %d %d\n",
-                             patch[0].ID, current_date.year, current_date.month, current_date.day, inx, clim_event.value, clim_event.edate.year, clim_event.edate.month, clim_event.edate.day, clim_event.edate.hour);}
-			if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && (clim_event.value <= 1) && ( julday(clim_event.edate) == julday(current_date)) ) {
+
+                if ((clim_event.edate.year > 0) && (clim_event.value > 0.0) && (clim_event.value <= 1) && ( julday(clim_event.edate) == julday(current_date)) ) {
 				attack_mortality = clim_event.value;
               //initialize the snage_sequences c and n
              /*  if (inx ==0) {  // here 300 is hard coded, it is means most 300/24 12.5 events
@@ -836,6 +834,8 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		patch[0].snowpack.overstory_height = zone[0].base_stations[0][0].screen_height;
+        double rain_throughfall_in = 0;
+        double NO3_throughfall_in = 0;
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) &&
 			(patch[0].layers[layer].height > pond_height) ){
 			if ( command_line[0].verbose_flag == -5 ){
@@ -860,26 +860,31 @@ void		patch_daily_F(
 			patch[0].snow_throughfall_final = patch[0].layers[layer].null_cover * patch[0].snow_throughfall;
 			patch[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].NO3_throughfall;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
-			if (dum == 0) {
-				patch[0].ga_final = tmpga;
-				patch[0].gasnow_final = tmpgasnow;
-				patch[0].wind_final = patch[0].layers[layer].null_cover * tmpwind;
-				patch[0].windsnow_final = patch[0].layers[layer].null_cover * tmpwindsnow;
-				patch[0].ustar_final = patch[0].layers[layer].null_cover * tmpustar;
-				if ( command_line[0].verbose_flag == -5 ){
-					printf("\n     ***TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
-				}
-			}
-			else {
-				patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
-				patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
-				patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
-				patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
-				patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
-				if ( command_line[0].verbose_flag == -5 ){
-					printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
-				}
-			}
+
+            rain_throughfall_in = patch[0].rain_throughfall;
+            NO3_throughfall_in = patch[0].NO3_throughfall;
+
+
+            if (dum == 0) {
+                //patch[0].ga_final = tmpga;
+                //patch[0].gasnow_final = tmpgasnow;
+                patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind; //tmpwind;
+                patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow; //tmpwindsnow;
+                patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;//tmpustar;
+                if ( command_line[0].verbose_flag == -5 ){
+                    printf("\n     ***TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
+                }
+            }
+            else {
+            //	patch[0].ga_final = patch[0].layers[layer].null_cover * patch[0].ga;
+            //	patch[0].gasnow_final = patch[0].layers[layer].null_cover * patch[0].gasnow;
+                patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
+                patch[0].windsnow_final = patch[0].layers[layer].null_cover * patch[0].windsnow;
+                patch[0].ustar_final = patch[0].layers[layer].null_cover * patch[0].ustar;
+                if ( command_line[0].verbose_flag == -5 ){
+                    printf("\n     ***NOT TOP: ga=%lf gasnow=%lf wind=%lf windsnow=%lf",patch[0].ga_final, patch[0].gasnow_final, patch[0].wind_final, patch[0].windsnow_final);
+                }
+            }
 
 			/*--------------------------------------------------------------*/
 			/*		Cycle through the canopy strata in this layer	*/
@@ -900,6 +905,7 @@ void		patch_daily_F(
 
 				dum += 1;
 			}
+
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
 			patch[0].Kup_direct = patch[0].Kup_direct_final;
 			patch[0].Kdown_diffuse = patch[0].Kdown_diffuse_final;
@@ -1227,6 +1233,7 @@ void		patch_daily_F(
 						event,
 						current_date );
 			}
+
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
 			patch[0].Kdown_diffuse = patch[0].Kdown_diffuse_final;
 			patch[0].PAR_direct = patch[0].PAR_direct_final;
@@ -1274,6 +1281,7 @@ void		patch_daily_F(
 						event,
 						current_date );
 			}
+
 			patch[0].Kdown_direct = patch[0].Kdown_direct_final;
 			patch[0].Kdown_diffuse = patch[0].Kdown_diffuse_final;
 			patch[0].PAR_direct = patch[0].PAR_direct_final;

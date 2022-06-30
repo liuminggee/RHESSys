@@ -298,7 +298,9 @@ void		zone_daily_F(
 			 radiation, we are now defining it as # of seconds of rain over
 			 ENTIRE 24-hr period. If no value is given, we assume it rains
 			 over the full day. */
-			zone[0].rain_duration = 86400;
+
+            //06292022LML it doesn't make sense. May improve it later.
+            zone[0].rain_duration = zone[0].defaults[0][0].rain_duration_default * 3600;
 		}
 	}
 	else{

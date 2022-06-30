@@ -159,9 +159,7 @@ double	compute_rain_stored(
 			   stratum[0].potential_evaporation);
 	}
 
-
 	*rain = throughfall;
-
 
 	return( rain_storage);
 } /*end compute_rain_stored*/

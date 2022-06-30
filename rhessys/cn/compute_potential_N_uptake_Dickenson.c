@@ -67,6 +67,12 @@ double compute_potential_N_uptake_Dickenson(
 	gross production and maintenance respiration costs
 	----------------------------------------------------------------*/
 	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
+
+    //printf("availc_gC:%lf psn_to_cpool_gC:%lf mr_gC:%lf\n"
+    //       ,cs->availc*1000
+    //       ,cdf->psn_to_cpool*1000
+    //       ,cdf->total_mr*1000);
+
 	/* no allocation when the daily C balance is negative */
 	if (cs->availc < 0.0) cs->availc = 0.0;
 	/* test for cpool deficit */

@@ -296,7 +296,9 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.DON_loss = 0.0;
 	patch[0].acc_year.stream_NO3 = 0.0;
 	patch[0].acc_year.stream_NH4 = 0.0;
-	patch[0].acc_year.PET = 0.0;
+    patch[0].acc_year.TPET = 0.0;
+    patch[0].acc_year.PET = 0.0;
+    patch[0].acc_year.PE = 0.0;
 	patch[0].acc_year.psn = 0.0;
 	patch[0].acc_year.num_threshold = 0;
 	patch[0].acc_year.meltday = 0;

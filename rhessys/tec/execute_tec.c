@@ -225,7 +225,6 @@ void	execute_tec(
 	/*--------------------------------------------------------------*/
 	current_date = world[0].start_date;
 	next_date = current_date;
-
 #ifdef LIU_BURN_ALL_AT_ONCE
     int spins_index = 0;                                                    //which spin
     int spin_year_index = 0;                                                //which year index within this spin
@@ -286,8 +285,8 @@ void	execute_tec(
 			/*			Simulate the world for the start of this day e		*/
 			/*--------------------------------------------------------------*/
 #ifdef LIU_DISPLY_RUN_INFO
-            if ( current_date.hour == 1 ) printf("Current_date year = %d mon = %d day = %d\r",
-                   current_date.year,current_date.month,current_date.day); /*ning*/
+            if ( current_date.hour == 1 ) printf("Current_date runyear = %d clim_year = %d mon = %d day = %d\r",
+                   year,current_date.year,current_date.month,current_date.day); /*ning*/
 #endif
             //fflush(stdout);
 			if ( current_date.hour == 1 ){

@@ -113,7 +113,9 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", -1.0, 1);
         printf("min_rain_temperature: %lf\n",default_object_list[i].min_rain_temp);
 		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.001, 1) / 365.0; // variable name different than parameter name
-
+        printf("ndep_NO3: %lf\n",default_object_list[i].ndep_NO3);
+        default_object_list[i].rain_duration_default =		getDoubleParam(&paramCnt, &paramPtr, "rain_duration_default", "%lf", 3, 1);
+        printf("rain_duration_default: %lf\n",default_object_list[i].rain_duration_default);
 
 		/*--------------------------------------------------------------*/
 		/*	convert from annual to daily				*/

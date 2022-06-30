@@ -149,8 +149,6 @@ double	compute_ra_understory(
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/
 	*ga = 1/ra_u;
-
-
 	/*printf(" ra_bot2=%lf ga_bot=%lf",ra_u,*ga);*/
 	return(ra);
 } /*compute_ra_understory*/

@@ -91,17 +91,26 @@ double	compute_ra_surface(
 /*
 	zo_u =  pow(10.0, (0.997 * log10(h_u+0.001) - 0.883));
 */
-	zo_u = 0.1 * h_u;
+    zo_u = max(0.1 * h_u, 0.01);
+
+    h_o = max(zo_u, h_o);
 
 	/*--------------------------------------------------------------*/
 	/*	compute exponential decay of wind throught the canopy  */
 	/*--------------------------------------------------------------*/
-	*u = max((*u * exp(cn*(max(h_u, 0.1*h_o)/h_o - 1))), 0.0);	
+
+    *u = max((*u * exp(cn*(max(h_u, 0.1*h_o)/h_o - 1))), 0.0);
+
+    //06282022LML the concept of above implementation is different from Haddeland & Lettenmaier (1995)
+    //May need further clarification
+
 	/*--------------------------------------------------------------*/
 	/*	this canopy below is below  0.1*ho of the surface	*/
 	/* 	therefore resistence is  a logarithmic profile 		*/
 	/*--------------------------------------------------------------*/
-	ra_u = pow(log( (h_o)/ max(zo_u, 0.01 ) )/0.41,2.0) / *u;
+
+    ra_u = ra + pow(log( h_o / zo_u )/0.41,2.0) / *u;                           //06292022LML add ra
+
 	/*--------------------------------------------------------------*/
 	/*	update conductance below this patch			*/
 	/*--------------------------------------------------------------*/
