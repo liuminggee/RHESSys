@@ -219,7 +219,7 @@ struct patch_object *construct_patch(
 	patch[0].num_base_stations =
 		      getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 
-#ifdef LIU_START_FROM_ZERO_STORAGE
+#ifdef LIU_START_FROM_ZERO_SOIL_STORAGE
     set_zero_patch_storage(patch);
 #endif
 

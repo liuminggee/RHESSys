@@ -272,7 +272,7 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].num_base_stations = getIntWorldfile(&paramCnt,&paramPtr,"n_basestations","%d",0,0);
 
 
-#ifdef LIU_START_FROM_ZERO_STORAGE
+#ifdef LIU_START_FROM_ZERO_VEG_STORAGE
     set_zero_strata_storage(canopy_strata);
 #endif
 
