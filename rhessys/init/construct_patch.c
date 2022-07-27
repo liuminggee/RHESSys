@@ -221,6 +221,9 @@ struct patch_object *construct_patch(
 
 #ifdef LIU_START_FROM_ZERO_SOIL_STORAGE
     set_zero_patch_storage(patch);
+#else
+    if (command_line[0].start_from_zero_soilpools)
+        set_zero_patch_storage(patch);
 #endif
 
 	patch[0].slope = patch[0].slope * DtoR;

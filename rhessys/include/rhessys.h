@@ -2260,6 +2260,9 @@ struct  command_line_object
         struct  date            output_yearly_date;
         struct  date            start_date;
         struct  date            end_date;
+
+    int start_from_zero_soilpools;                                              //07272022LML
+    int start_from_zero_vegpools;                                               //07272022LML
         };
 
 

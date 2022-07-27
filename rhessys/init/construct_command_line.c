@@ -131,6 +131,8 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].thresholds[SATDEF] = 0.0;
 	command_line[0].thresholds[STREAMFLOW] = 0.0;
 	command_line[0].snow_scale_tol = 999999999;
+    command_line[0].start_from_zero_soilpools = 0;
+    command_line[0].start_from_zero_vegpools = 0;
 #ifdef LIU_BURN_ALL_AT_ONCE
         command_line[0].burn_on_flag = 0;
         command_line[0].fire_mortality_flag = 0;
@@ -344,7 +346,7 @@ struct	command_line_object	*construct_command_line(
 				/*--------------------------------------------------------------*/
 				strncpy(command_line[0].vegspinup_filename, main_argv[i], FILEPATH_LEN);
 				i++;
-      }
+            }
 
 			/*-------------------------------------------------*/
 			/*	routing gw to riparian option */
@@ -354,6 +356,16 @@ struct	command_line_object	*construct_command_line(
 				printf("\n Running with hillslope gw routed to riparian areas\n ");
 				command_line[0].gwtoriparian_flag = 1;
 			}/* end if */
+            else if ( strcmp(main_argv[i],"-start_from_zero_soilpools") == 0 ){
+                i++;
+                printf("\n Running from zero soil C & N pools\n ");
+                command_line[0].start_from_zero_soilpools = 1;
+            }/* end if */
+            else if ( strcmp(main_argv[i],"-start_from_zero_vegpools") == 0 ){
+                i++;
+                printf("\n Running from zero veg C & N pools\n ");
+                command_line[0].start_from_zero_vegpools = 1;
+            }/* end if */
 			/*-------------------------------------------------*/
 			/*	groundwater flag and coeffcients	  */
 			/*-------------------------------------------------*/

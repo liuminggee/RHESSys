@@ -90,7 +90,9 @@ int	 valid_option( char *command_line){
         (strcmp(command_line,"-firespin") == 0) ||
 #endif
 		(strcmp(command_line,"-vegspinup") == 0) ||
-		(strcmp(command_line,"-template") == 0))
+        (strcmp(command_line,"-template") == 0) ||
+        (strcmp(command_line,"-start_from_zero_soilpools") == 0) ||
+        (strcmp(command_line,"-start_from_zero_vegpools") == 0))
 
 		i = 0;
 	if ( i == 0 ){

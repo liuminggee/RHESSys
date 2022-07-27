@@ -274,6 +274,9 @@ struct canopy_strata_object *construct_canopy_strata(
 
 #ifdef LIU_START_FROM_ZERO_VEG_STORAGE
     set_zero_strata_storage(canopy_strata);
+#else
+    if (command_line[0].start_from_zero_vegpools)
+        set_zero_strata_storage(canopy_strata);
 #endif
 
 	/*--------------------------------------------------------------*/

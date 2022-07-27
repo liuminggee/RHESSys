@@ -155,7 +155,10 @@ void		patch_hourly(
 
 #if !(defined(LIU_HIGH_NDEP) || defined(LIU_START_FROM_ZERO_SOIL_STORAGE))
 //#if !(defined(LIU_HIGH_NDEP))
-	patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24; 
+    if (!command_line[0].start_from_zero_soilpools)
+      patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
+    else
+      patch[0].hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;
 #else
     patch[0].hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;            //1.0/365./24.;     //06072022LML 1kgN/year JUST AVOID N LIMITATION
 #endif
