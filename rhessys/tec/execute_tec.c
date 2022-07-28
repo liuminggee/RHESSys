@@ -496,6 +496,20 @@ void	execute_tec(
                     if(spins_index < command_line[0].fire_spins) {
                         if (spin_year_index < command_line[0].fire_spin_period) {
                             spin_year_index++;
+
+                            //07272022LML select random climate data year from spin-up period
+                            current_date.year = world[0].start_date.year
+                                    + rand() % command_line[0].fire_spin_period;
+                            next_date.year = current_date.year;
+                            int t1 = get_indays(current_date.year,current_date.month,current_date.day,1901,1);
+                            int t2 = get_indays(world[0].start_date.year,world[0].start_date.month,world[0].start_date.day,1901,1);
+                            day = t1 - t2;
+                            if (day < 0) {
+                                printf("Date error for spin-up!\n");
+                                exit(-1);
+                            }
+
+
                         } else {
                             spins_index++;
                             spin_year_index = 0;
