@@ -1631,7 +1631,7 @@ void		patch_daily_F(
 			sat_zone_patch_demand);
 	}
 
-	if ( command_line[0].verbose_flag == -5 ){
+    if ( command_line[0].verbose_flag == -5 ){
 		printf("\n***ET DEMANDS START: rzdepth=%lf rzstor=%lf rzS=%lf rzFC=%lf rzpotsat=%lf unsatstor=%lf FC=%lf WP=%lf\n***                  S=%lf satdefz_preday=%lf satdefz=%lf satdef=%lf exfil_unsat=%lf exfil_sat=%lf unsatdemand=%lf satdemand=%lf",
 			   patch[0].rootzone.depth,
 			   patch[0].rz_storage,
@@ -1649,7 +1649,7 @@ void		patch_daily_F(
 			   patch[0].exfiltration_sat_zone,
 			   unsat_zone_patch_demand,
 			   sat_zone_patch_demand);
-	}
+    }
 
 
 	/*--------------------------------------------------------------*/
@@ -2062,6 +2062,8 @@ void		patch_daily_F(
 			patch[0].rz_storage - patch[0].rootzone.field_capacity);
 
 
+
+
 		patch[0].rz_storage -=  rz_drainage;
 		patch[0].unsat_storage +=  rz_drainage;
 
@@ -2079,6 +2081,15 @@ void		patch_daily_F(
 
 		patch[0].unsat_storage -=  unsat_drainage;
 		patch[0].sat_deficit -=  unsat_drainage;
+
+        //if (unsat_drainage > 0.001) {
+        //    printf("wtable_below_rootz:: w_table:%lf r_dep:%lf rz_storage:%lf rz_drainage:%lf unsat_drainage:%lf rz.fc:%lf pc_fc:%lf\n"
+        //           ,patch[0].sat_deficit_z,patch[0].rootzone.depth,patch[0].rz_storage
+        //           ,rz_drainage,unsat_drainage,patch[0].rootzone.field_capacity
+        //           ,patch[0].field_capacity);
+        //    int itemp = 1;
+        //}
+
 	}
 	else  {
 		patch[0].rz_storage += patch[0].unsat_storage;	/* transfer left water in unsat storage to rootzone layer */
@@ -2099,6 +2110,15 @@ void		patch_daily_F(
 
 		patch[0].rz_storage -=  rz_drainage;
 		patch[0].sat_deficit -=  rz_drainage;
+
+        //if (rz_drainage > 0.001) {
+        //    printf("wtable_within_rootz:: w_table:%lf r_dep:%lf rz_storage:%lf rz_drainage:%lf unsat_drainage:%lf rz.fc:%lf pc_fc:%lf\n"
+        //           ,patch[0].sat_deficit_z,patch[0].rootzone.depth,patch[0].rz_storage
+        //           ,rz_drainage,unsat_drainage,patch[0].rootzone.field_capacity
+        //           ,patch[0].field_capacity);
+        //    int itemp = 1;
+        //}
+
 	}
 	patch[0].unsat_drainage += unsat_drainage;
 	patch[0].rz_drainage += rz_drainage;
@@ -2112,6 +2132,14 @@ void		patch_daily_F(
 	else
 		patch[0].rootzone.S = min((patch[0].rz_storage + patch[0].rootzone.potential_sat - patch[0].sat_deficit)
 			/ patch[0].rootzone.potential_sat, 1.0);
+
+
+    //printf("rootzone.S:%lf rz_storage:%lf rootzone.potential_sat:%lf fc:%lf fc_frac:%lf\n",
+    //       patch[0].rootzone.S,patch[0].rz_storage,patch[0].rootzone.potential_sat,
+    //       patch[0].rootzone.field_capacity,
+    //       patch[0].rootzone.field_capacity/patch[0].rootzone.potential_sat);
+
+
 	/*-----------------------------------------------------*/
 	/*  re-Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/
@@ -2209,6 +2237,8 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_denitrif() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
+        //fprintf(stderr," p_rt_zone_d:%lf sat_deficit_z:%lf fc:%lf ",
+        //        patch[0].rootzone.depth, patch[0].sat_deficit_z, patch[0].field_capacity);
 
 	}
 

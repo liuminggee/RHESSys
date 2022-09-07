@@ -63,6 +63,10 @@ double	compute_varbased_returnflow( double std,
 	double	normal[9], perc[9];
 	int i;
 
+
+    if (std > ZERO) fprintf(stderr,"std:%lf\n",std);
+
+
 	normal[0] = 0;
 	normal[1] = 0.253;
 	normal[2] = 0.524;

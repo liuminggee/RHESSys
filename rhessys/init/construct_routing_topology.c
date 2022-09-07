@@ -115,10 +115,24 @@ struct routing_list_object *construct_routing_topology(
 			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",
 				patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
 
-		if (patch[0].soil_defaults[0][0].m < ZERO)
+        if (patch[0].soil_defaults[0][0].m < ZERO) {
 		 	gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0;
-		else
-		 	gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;
+        } else {
+#ifndef LIU_GAMMA_TRANSMISSIVITY
+            gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;   //08312022LML: seems wrong if suppose to use average Ksat
+#else
+
+            //09012022LML
+            //double avg_ksat_coefz = patch[0].soil_defaults[0][0].m_z
+            //        * (1.0 - exp(-patch[0].soil_defaults[0][0].soil_depth)/patch[0].soil_defaults[0][0].m_z)
+            //        / (patch[0].soil_defaults[0][0].soil_depth);
+            double avg_ksat_coef = patch[0].soil_defaults[0][0].m
+                    * (1.0 - exp(-patch[0].soil_defaults[0][0].soil_water_cap/patch[0].soil_defaults[0][0].m))
+                    / (patch[0].soil_defaults[0][0].soil_water_cap);
+
+            gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0 * avg_ksat_coef; //(m3/day)
+#endif
+        }
 
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation list array				*/

@@ -1298,10 +1298,10 @@ struct	soil_default
 	int		ID;
 	int	theta_psi_curve;				/* unitless */
 	double	albedo;						/* 0 to 1   */
-	double	interval_size;					/* m */
+    double	interval_size;					/* m */ //LML: in term of water
 	double	Ksat_0;						/* meters/day */
 	double	Ksat_0_v;					/* meters/day */
-	double	m;						/* m^-1	*/
+    double	m;						/* m^-1	*/  //LML: 08312022: should be in unit of m water
 	double	m_v;						/* m^-1	*/
 	double	m_z;						/* m^-1	*/
 	double	mz_v;						/* m^-1	*/
@@ -1315,7 +1315,7 @@ struct	soil_default
 	double	sat_to_gw_coeff;				/* percent/day */
 	double	soil_depth;					/* m */
 	double	effective_soil_depth;					/* m */
-	double	soil_water_cap;					/* m of water */
+    double	soil_water_cap;					/* m of water   water_equivalent depth of soil */
 	double	deltaz;						/* m */
 	double	min_heat_capacity;				/* J/m3/K */
 	double	detention_store_size;				/* m water */
@@ -1358,7 +1358,7 @@ struct	soil_default
 struct  innundation_object
         {
         double  critical_depth;         /* m */
-        double  gamma;                                      /*110321LML m**2; it is patach_area X sum((boundary_length * slope)/total_boundary_length) of each downstream neignboring */
+        double  gamma;                                      /*110321LML m**3; it is patch gamma X ksat_mean */
         int     num_neighbours;
         struct  neighbour_object *neighbours;
         };
@@ -1909,7 +1909,7 @@ struct patch_object
         double  preday_rootzone_depth;                  /* metters water for move water from rootzone due to beetle attack*/
         double  sat_deficit;                            /* meters water         */
         double  sat_deficit_z;                          /* meters               */
-        double  *transmissivity_profile;                /* array (m/day) */
+        double  *transmissivity_profile;                /* array (m/day) */   //09012022LML should be unitless
         struct  snowpack_object snowpack;               /* meters               */
         double  preday_unsat_storage;                   /* meters water         */
         double  preday_rz_storage;                      /* meters water by Taehee Hwang */

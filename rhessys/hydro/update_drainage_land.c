@@ -179,6 +179,9 @@ void  update_drainage_land(
 		patch);
 
 
+    //printf("route_to_patch(mm/day):%lf total_gamma:%lf\n",route_to_patch*1000/time_int/patch[0].area,total_gamma);
+
+
 
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
@@ -266,7 +269,6 @@ void  update_drainage_land(
 	
 	patch[0].Qout += (route_to_patch / patch[0].area);
 
-
 	/*--------------------------------------------------------------*/
 	/*	calculate any return flow associated with this patch	*/
 	/*	and route any infiltration excess			*/
@@ -282,6 +284,11 @@ void  update_drainage_land(
 		return_flow = compute_varbased_returnflow(patch[0].std * std_scale, 
 			patch[0].rz_storage+patch[0].unsat_storage,
 			patch[0].sat_deficit, &(patch[0].litter));
+
+
+        //fprintf(stderr,"return_flow:%lf\n",return_flow);
+
+
 		patch[0].detention_store += return_flow;  
 		patch[0].sat_deficit += (return_flow - (patch[0].unsat_storage+patch[0].rz_storage));
 		patch[0].unsat_storage = 0.0;

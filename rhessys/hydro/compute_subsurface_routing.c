@@ -275,6 +275,12 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			/*-------------------------------------------------------------------------*/
 			patch[0].sat_deficit += (patch[0].Qout - patch[0].Qin);
 
+            //if (patch[0].Qout * 1000 >= 2) {
+            //    printf("patch[0].Qout(mm/day):%lf patch[0].Qin(mm/day):%lf sat_deficit_z:%lf gamma:%lf\n",
+            //           patch[0].Qout*1000*24, patch[0].Qin*1000*24,patch[0].sat_deficit_z,patch[0].innundation_list->gamma);
+            //}
+
+
 			patch[0].sat_deficit_z = compute_z_final(verbose_flag,
 					patch[0].soil_defaults[0][0].porosity_0,
 					patch[0].soil_defaults[0][0].porosity_decay,
@@ -986,7 +992,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                           + patch[0].hourly_sur2stream_flow;*/
 
             //hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
-                            if (patch[0].drainage_type == STREAM) {
+            if (patch[0].drainage_type == STREAM) {
                 patch[0].streamflow += patch[0].return_flow
                     + patch[0].base_flow;
             }

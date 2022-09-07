@@ -153,7 +153,6 @@ void		patch_hourly(
 	else
 		patch[0].hourly[0].rain_throughfall = 0.0;
 
-//#if !(defined(LIU_HIGH_NDEP) || defined(LIU_START_FROM_ZERO_SOIL_STORAGE))
 #if !(defined(LIU_HIGH_NDEP))
     if (!command_line[0].start_from_zero_soilpools)
       patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;

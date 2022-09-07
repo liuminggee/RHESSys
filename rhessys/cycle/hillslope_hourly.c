@@ -253,6 +253,9 @@ void		hillslope_hourly(
 	}
 	hillslope[0].gw.Qout += hillslope[0].gw.hourly_Qout; // this is the daily gw.Qout, used in hillslop_daily_F
 	hillslope[0].base_flow += hillslope[0].hourly_base_flow; // daily base_flow
+
+    //printf("base_flow:%lf gw.Qout:%lf gw_storage:%lf\n",
+    //       hillslope[0].base_flow*1000,hillslope[0].gw.Qout*1000,hillslope[0].gw.storage*1000);
  
 
 

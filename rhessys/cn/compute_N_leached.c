@@ -209,6 +209,10 @@ double	compute_N_leached(int verbose_flag,
 
 	nleached = max(nleached, 0.0);
 	
+    //printf("nleached:%lf Qout:%lf available_water:%lf\n",
+    //       nleached,Qout,available_water);
+
+
 	return(nleached);
 } /* end compute_N_leached */
 

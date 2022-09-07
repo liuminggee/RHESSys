@@ -135,13 +135,21 @@ double	compute_varbased_flow(
 		else {
 		    thre_flow=transmissivity[didthr];
 		    abovthre_flow = (transmissivity[didx]-thre_flow) * fs_spill; // fs_spill default value is 1 
-      		    flow = abovthre_flow + thre_flow * fs_percolation;  // fs_percolation defaults = 1
+            flow = abovthre_flow + thre_flow * fs_percolation;  // fs_percolation defaults = 1
+
+
+            //fprintf(stderr,"flow(mm/day):%lf abovthre_flow:%lf thre_flow:%lf sat_deficit:%lf sat_deficit_z:%lf didx:%d transmissivity[didx]:%lf didthr:%d transmissivity[didthr]:%lf\n",
+            //        flow*1000.*gamma/patch[0].area,abovthre_flow,thre_flow,patch[0].sat_deficit
+            //        ,patch[0].sat_deficit_z,didx,transmissivity[didx],
+            //        didthr,transmissivity[didthr]);
+
+
 		}
 
 	
 	}
 
-	flow = flow*gamma;
+    flow = flow*gamma; /*m3*/
 
 	  return(flow);
 } /*compute_varbased_flow*/

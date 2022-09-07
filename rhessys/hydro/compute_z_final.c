@@ -173,7 +173,7 @@ double	compute_z_final(
 	/*	Case iii water table at or above surface + discharge	*/
 	/*--------------------------------------------------------------*/
 	else if ( (z_initial<=0) && (delta_water<0) ){
-		z_final = z_initial - delta_water;
+        z_final = z_initial - delta_water;                                      //08192022LML the logic is not right, while it gives correct value in the following equations.
 		/*--------------------------------------------------------------*/
 		/*	The drainage brings z_final below the surface	*/
 		/*--------------------------------------------------------------*/

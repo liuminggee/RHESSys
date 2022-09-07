@@ -101,20 +101,28 @@ int update_denitrif(
 				water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
 
 
-		nitrate_ratio = (ns_soil->nitrate)
-			/ (cs_soil->totalc + ns_soil->totaln) * 1e6;
+        //nitrate_ratio = (ns_soil->nitrate)
+        //	/ (cs_soil->totalc + ns_soil->totaln) * 1e6;   //(ugN/gC) 09072022LML note: seems not right!
+
+        nitrate_ratio = (ns_soil->nitrate)
+            / (cs_soil->totalc) * 1e6;   //(ugN/gC) 09072022LML
+
 		/*--------------------------------------------------------------*/
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*		N03							*/
 		/*--------------------------------------------------------------*/
-		fnitrate = atan(PI*0.002*(nitrate_ratio - 180)) * 0.004 / PI + 0.0011;
+        fnitrate = atan(PI*0.002*(nitrate_ratio - 180)) * 0.004 / PI + 0.0011; //(kgN/m2/day)
+
+        //09072022LML set max Ndep under low soil NO3 condition according Fig. 6 of Parton et al., 1996
+        if (nitrate_ratio <= 10.) fnitrate = 5e-6;
+
 		/*--------------------------------------------------------------*/
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*	carbon substrate - estimated from heter. respiration    */
 		/*--------------------------------------------------------------*/
 		hr = (cdf->soil1c_hr + cdf->soil2c_hr + cdf->soil3c_hr + cdf->soil4c_hr);
 		if (hr > ZERO) 
-			fCO2 = 0.0024 / (1+ 200.0/exp(0.35*hr*10000.0)) - 0.00001;
+            fCO2 = 0.0024 / (1+ 200.0/exp(0.35*hr*10000.0)) - 0.00001;  //09072022LML note: kgN/m2/day
 			
 		else
 			fCO2 = 0.0;
@@ -122,6 +130,13 @@ int update_denitrif(
 		/*	estimate denitrification				*/
 		/*--------------------------------------------------------------*/
 		denitrify = min(fCO2, fnitrate) * water_scalar;
+
+
+        //printf("\nDEBUG DENITRIFICATION! denitrify(gN):%lf w_scalar:%lf theta:%lf fCO2:%lf fnitrate(gN):%lf nitrate_ratio(ugN-NO3/gC):%lf NO3:%lf SoilC:%lf hr:%lf",
+        //        denitrify*1000., water_scalar,theta,fCO2*1000.,fnitrate*1000.,nitrate_ratio,
+        //        ns_soil->nitrate*1000.,cs_soil->totalc*1000., hr*1000.);
+
+
 	} /* end mineralized N available */
 	else
 		denitrify = 0.0;

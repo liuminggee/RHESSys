@@ -137,7 +137,7 @@ double 	*compute_transmissivity_curve(
 				0.0,
 				-1.0*depth);
 
-	       		fclayer = compute_field_capacity(
+            fclayer = compute_field_capacity(
 				command_line[0].verbose_flag,
 				patch[0].soil_defaults[0][0].theta_psi_curve,
 				patch[0].soil_defaults[0][0].psi_air_entry,
@@ -151,15 +151,21 @@ double 	*compute_transmissivity_curve(
 				depth_z);
 
 
-		if (m > ZERO)
+        if (m > ZERO) {
 			transmissivity_layer = gamma  
-			 * (exp ( -1.0 * (max(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m))); 
-		else
-			transmissivity_layer =  gamma * (lower-depth);
+             * (exp ( -1.0 * (max(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m)));  //(m3)
+        } else {
+#ifndef LIU_GAMMA_TRANSMISSIVITY
+            transmissivity_layer =  gamma * (lower-depth); //(m3)
+#else
+            transmissivity_layer =  gamma * (lower-depth) / patch[0].soil_defaults[0][0].soil_water_cap; //(m3) from this layer
+#endif
+
+        }
 
 		fclayer = max(patch[0].soil_defaults[0][0].interval_size-fclayer,0.0);
 
-		transmissivity_layer = min(fclayer, transmissivity_layer/patch[0].area);  
+        transmissivity_layer = min(fclayer, transmissivity_layer/patch[0].area);  //(m)
 
 		if (gamma > ZERO)
 			transmissivity[didx] = transmissivity[didx+1]+transmissivity_layer * 
@@ -167,7 +173,11 @@ double 	*compute_transmissivity_curve(
 		else
 			transmissivity[didx] = transmissivity[didx+1];
 
-		}
+
+
+        //printf("didx:%d transmissivity:%lf\n",didx,transmissivity[didx]);
+        }
+
 	}
 	
 	else {
@@ -182,6 +192,6 @@ double 	*compute_transmissivity_curve(
 		
 		}
 
-	return(transmissivity);
+    return(transmissivity); //09012022LML (unitless)
 
 } /*compute_transmissivity_curve*/
