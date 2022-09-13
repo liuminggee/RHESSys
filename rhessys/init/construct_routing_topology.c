@@ -100,7 +100,8 @@ struct routing_list_object *construct_routing_topology(
 			&area,
 			&area,
 			&drainage_type,
-			&gamma,
+            &gamma,                                                             //09092022LML: (m2) patch area X mean_slope (in terms of del_z/dist; or gamma_tot/perim_sum; gamma_tot = sum(tp_perimeter X slope_ij)))
+                                                                                //09092022LML: SHOULD BE DOWNSTREAM BOUNDARY LENGTH x AVG_SLOPE (m)
 			&num_neighbours);
 
 		if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) ) {
@@ -131,6 +132,7 @@ struct routing_list_object *construct_routing_topology(
                     / (patch[0].soil_defaults[0][0].soil_water_cap);
 
             gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0 * avg_ksat_coef; //(m3/day)
+                                                                                 //SHOULD BE (m2/day) if original gamma input is in length X slope
 #endif
         }
 
@@ -155,7 +157,9 @@ struct routing_list_object *construct_routing_topology(
 		}
 
 		innundation_list->num_neighbours = num_neighbours;
-		innundation_list->gamma = gamma;
+
+        innundation_list->gamma = gamma; //09092022LML (m)
+
 		// TODO: what should critical depth be for a surface flow table?
 		innundation_list->critical_depth = NULLVAL;
 

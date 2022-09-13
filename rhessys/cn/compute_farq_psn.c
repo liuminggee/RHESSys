@@ -306,15 +306,15 @@ Farquhar photosynthesis routine
 		printf("\n %lf %lf %lf %lf %lf %lf", A, out->Ci, out->Vmax, out->Jmax, out->dC13, out->Ca); 
 	*/
 
-      //           printf("psnin: pa:%lf CO2:%lf t:%lf irad:%lf g:%lf Rd:%lf lnc:%lf flnr:%lf c3:%d ppe:%lf\n",
-      //                          in->pa, in->co2, t, in->irad,
-      //                          g, in->Rd, in->lnc, in->flnr,
-      //                          c3, ppe);
-      //           printf("psnout: g:%lf O2:%lf Ca:%lf Ci:%lf gamma:%lf Kc:%lf Ko:%lf act:%lf Vmax:%lf Jmax:%lf J:%lf Av:%lf Aj:%lf A:%lf\n",
-      //                          g, O2, Ca, Ca - A/g,
-      //                          out->gamma, Kc, Ko, act,
-      //                          Vmax, Jmax, J, Av,
-      //                          Aj, A);
+    //             printf("psnin: pa:%lf CO2:%lf t:%lf irad:%lf g:%lf Rd:%lf lnc:%lf flnr:%lf c3:%d ppe:%lf\n",
+    //                            in->pa, in->co2, t, in->irad,
+    //                            g, in->Rd, in->lnc, in->flnr,
+    //                            c3, ppe);
+    //             printf("psnout: g:%lf O2:%lf Ca:%lf Ci:%lf gamma:%lf Kc:%lf Ko:%lf act:%lf Vmax:%lf Jmax:%lf J:%lf Av:%lf Aj:%lf A:%lf\n",
+    //                            g, O2, Ca, Ca - A/g,
+    //                            out->gamma, Kc, Ko, act,
+    //                            Vmax, Jmax, J, Av,
+    //                            Aj, A);
       //  printf("   irad:%lf g:%lf Av:%lf Aj:%lf A:%lf\n",in->irad,g, out->Av,out->Aj,out->A);
 
     //    g += 0.1;

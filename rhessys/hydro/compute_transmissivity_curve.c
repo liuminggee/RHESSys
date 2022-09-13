@@ -111,11 +111,18 @@ double 	*compute_transmissivity_curve(
 	/*	for do not include surface overland flow or detention   */
 	/*	storage here						*/
 	/*--------------------------------------------------------------*/
+
+    double k_bottom = 1.0;
+    if (m > ZERO) {
+        k_bottom = exp(-patch[0].soil_defaults[0][0].soil_water_cap/m);
+    }
+
 	if (patch[0].soil_defaults[0][0].soil_water_cap > patch[0].soil_defaults[0][0].interval_size) {
 		initial = patch[0].num_soil_intervals;
 		depth = patch[0].soil_defaults[0][0].soil_water_cap;
 		transmissivity[initial]=0.0;
 		initial = initial-1;
+
 		for (didx=initial; didx >= 0; didx -= 1) {
 			lower = depth;
 			depth = depth-patch[0].soil_defaults[0][0].interval_size;
@@ -152,30 +159,44 @@ double 	*compute_transmissivity_curve(
 
 
         if (m > ZERO) {
+#ifndef LIU_GAMMA_TRANSMISSIVITY_NEW
 			transmissivity_layer = gamma  
              * (exp ( -1.0 * (max(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m)));  //(m3)
+#else
+            transmissivity_layer = m * (exp ( -1.0 * (max(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m)))
+                                   * patch[0].soil_defaults[0][0].Ksat_0; //(m2)
+#endif
         } else {
-#ifndef LIU_GAMMA_TRANSMISSIVITY
+#if !defined(LIU_GAMMA_TRANSMISSIVITY_NEW)
             transmissivity_layer =  gamma * (lower-depth); //(m3)
 #else
-            transmissivity_layer =  gamma * (lower-depth) / patch[0].soil_defaults[0][0].soil_water_cap; //(m3) from this layer
+            transmissivity_layer = patch[0].soil_defaults[0][0].Ksat_0 * (lower-depth); //(m2)
 #endif
 
         }
 
 		fclayer = max(patch[0].soil_defaults[0][0].interval_size-fclayer,0.0);
-
+#ifndef LIU_GAMMA_TRANSMISSIVITY_NEW
         transmissivity_layer = min(fclayer, transmissivity_layer/patch[0].area);  //(m)
+#else
+        double pot_flow_m3 = transmissivity_layer * patch[0].innundation_list->gamma;
+        if ((pot_flow_m3 / patch[0].area) > fclayer)
+            transmissivity_layer = fclayer * patch[0].area / patch[0].innundation_list->gamma;
+#endif
 
-		if (gamma > ZERO)
+#ifndef LIU_GAMMA_TRANSMISSIVITY_NEW
+        if (gamma > ZERO) {
 			transmissivity[didx] = transmissivity[didx+1]+transmissivity_layer * 
 				patch[0].area / gamma;
-		else
+        } else {
 			transmissivity[didx] = transmissivity[didx+1];
+        }
+#else
+        transmissivity[didx] = transmissivity[didx+1] + transmissivity_layer;
+#endif
 
 
-
-        //printf("didx:%d transmissivity:%lf\n",didx,transmissivity[didx]);
+        printf("didx:%d transmissivity:%lf\n",didx,transmissivity[didx]);
         }
 
 	}
@@ -185,13 +206,19 @@ double 	*compute_transmissivity_curve(
 		transmissivity[initial]=0.0;
 		lower = patch[0].soil_defaults[0][0].soil_water_cap;
 		depth = 0;
+        //09092022LML: seems not right and need double check!
+#ifndef LIU_GAMMA_TRANSMISSIVITY_NEW
 		if (m > ZERO)
 			transmissivity[initial-1] =   (exp ( -1.0 * (max(depth, 0.0)/ m)) - exp ( -1.0 * (lower/m))); 
 		else
 			transmissivity[initial-1] =  (lower-depth);
+#else
+        if (m > ZERO) transmissivity[initial-1] = m * ((1.0 - k_bottom) / lower) * patch[0].soil_defaults[0][0].Ksat_0;
+        else transmissivity[initial-1] = (lower-depth) * patch[0].soil_defaults[0][0].Ksat_0;
+#endif
 		
 		}
 
-    return(transmissivity); //09012022LML (unitless)
+    return(transmissivity); //09122022LML (m2 H2O/day array)
 
 } /*compute_transmissivity_curve*/

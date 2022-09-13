@@ -149,7 +149,7 @@ double	compute_varbased_flow(
 	
 	}
 
-    flow = flow*gamma; /*m3*/
+    flow = flow*gamma; /*m3*/ //09122022LML note: flow:(m2/day) gamma (m boundary length X tan(slope))
 
 	  return(flow);
 } /*compute_varbased_flow*/

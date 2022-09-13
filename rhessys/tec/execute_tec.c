@@ -285,7 +285,7 @@ void	execute_tec(
 			/*			Simulate the world for the start of this day e		*/
 			/*--------------------------------------------------------------*/
 #ifdef LIU_DISPLY_RUN_INFO
-            if ( current_date.hour == 1 ) printf("Current_date runyear = %d clim_year = %d mon = %d day = %d\r",
+            if ( current_date.hour == 1 ) printf("Current_date runyear = %d clim_year = %d mon = %d day = %d\n",
                    year,current_date.year,current_date.month,current_date.day); /*ning*/
 #endif
             //fflush(stdout);

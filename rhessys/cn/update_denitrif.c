@@ -114,6 +114,9 @@ int update_denitrif(
         fnitrate = atan(PI*0.002*(nitrate_ratio - 180)) * 0.004 / PI + 0.0011; //(kgN/m2/day)
 
         //09072022LML set max Ndep under low soil NO3 condition according Fig. 6 of Parton et al., 1996
+        //This equation will give a high max denitrificatiion rate (~0.02gN/m2/day)
+        //even under zero soil NO3. Although final denitrification will not higher than the total soil NO3,
+        //this high denitrification rate will still move large amount of NO3. So I added the following line:
         if (nitrate_ratio <= 10.) fnitrate = 5e-6;
 
 		/*--------------------------------------------------------------*/
@@ -135,6 +138,11 @@ int update_denitrif(
         //printf("\nDEBUG DENITRIFICATION! denitrify(gN):%lf w_scalar:%lf theta:%lf fCO2:%lf fnitrate(gN):%lf nitrate_ratio(ugN-NO3/gC):%lf NO3:%lf SoilC:%lf hr:%lf",
         //        denitrify*1000., water_scalar,theta,fCO2*1000.,fnitrate*1000.,nitrate_ratio,
         //        ns_soil->nitrate*1000.,cs_soil->totalc*1000., hr*1000.);
+
+
+
+        //fprintf(stderr,"Testing!\n");
+
 
 
 	} /* end mineralized N available */

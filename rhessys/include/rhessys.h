@@ -1306,7 +1306,7 @@ struct	soil_default
 	double	m_z;						/* m^-1	*/
 	double	mz_v;						/* m^-1	*/
 	double	porosity_0;						/* unitless */
-	double	porosity_decay;						/* m^-1 */
+    double	porosity_decay;						/* m^-1 */ //09092022LML: should be in unit of meter
 	double	p3;						/* unitless */
 	double	p4;						/* unitless */
 	double	pore_size_index;				/* unitless */
@@ -1358,7 +1358,7 @@ struct	soil_default
 struct  innundation_object
         {
         double  critical_depth;         /* m */
-        double  gamma;                                      /*110321LML m**3; it is patch gamma X ksat_mean */
+        double  gamma;                  /*09092022LML (m); it is total downstream patach perimeter X slope (tan(slope_degree)) */
         int     num_neighbours;
         struct  neighbour_object *neighbours;
         };
@@ -1909,7 +1909,7 @@ struct patch_object
         double  preday_rootzone_depth;                  /* metters water for move water from rootzone due to beetle attack*/
         double  sat_deficit;                            /* meters water         */
         double  sat_deficit_z;                          /* meters               */
-        double  *transmissivity_profile;                /* array (m/day) */   //09012022LML should be unitless
+        double  *transmissivity_profile;                /* array (m/day) */   //09122022LML should be m2 H2O/day
         struct  snowpack_object snowpack;               /* meters               */
         double  preday_unsat_storage;                   /* meters water         */
         double  preday_rz_storage;                      /* meters water by Taehee Hwang */

@@ -318,6 +318,7 @@ void update_basin_patch_accumulator(
 					basin[0].acc_year.stream_DOC += patch[0].streamflow_DOC
 							* scale;
 					basin[0].acc_year.psn += patch[0].net_plant_psn * scale;
+
                     basin[0].acc_year.TPET += (patch[0].PE + patch[0].PET)
 							* scale;
                     basin[0].acc_year.PET += patch[0].PET * scale;
