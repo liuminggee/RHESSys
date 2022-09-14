@@ -271,6 +271,11 @@ void  update_drainage_land(
 
 	
 	patch[0].Qout += (route_to_patch / patch[0].area);
+    //09132022LML
+    if (patch[0].innundation_list[0].num_neighbours == 0) {
+        patch[0].base_flow += (route_to_patch / patch[0].area);
+    }
+
 
 	/*--------------------------------------------------------------*/
 	/*	calculate any return flow associated with this patch	*/
@@ -404,6 +409,11 @@ void  update_drainage_land(
 		route_to_surface = (Qout *  patch[0].area);
 		patch[0].detention_store -= Qout;
 		patch[0].surface_Qout += Qout;
+
+        //09132022LML
+        if (patch[0].innundation_list[0].num_neighbours == 0) {
+            patch[0].return_flow += Qout;
+        }
 
 		}
 			

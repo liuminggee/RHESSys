@@ -239,18 +239,15 @@ void	output_basin(			int routing_flag,
 				if (patch[0].sat_deficit <= ZERO)
 					asat_area += patch[0].area;
 				if (routing_flag == 1) {
-					if (patch[0].drainage_type == STREAM  )
+                    if (patch[0].drainage_type == STREAM
+                        || patch[0].innundation_list[0].num_neighbours == 0     //09132022LML
+                       )
 						astreamflow += patch[0].streamflow*patch[0].area;
                     areturn_flow += patch[0].return_flow * patch[0].area;
                     abase_flow += patch[0].base_flow * patch[0].area;
                     if (isnan(patch[0].base_flow)==1) {
                         printf("warning, the patchID %ld have NaN baseflow\n", patch[0].ID);
                     }
-
-                    if (areturn_flow + abase_flow > 1.0)
-                        printf("areturn_flow:%lf abase_flow:%lf\n",areturn_flow,abase_flow);
-
-
 				}
 				else {
 						/* for Topmodel version compute only return flow and later added to streamflow */
