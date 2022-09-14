@@ -196,7 +196,7 @@ double 	*compute_transmissivity_curve(
 #endif
 
 
-        printf("didx:%d transmissivity:%lf\n",didx,transmissivity[didx]);
+        //printf("didx:%d transmissivity:%lf\n",didx,transmissivity[didx]);
         }
 
 	}
