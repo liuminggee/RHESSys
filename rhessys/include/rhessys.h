@@ -520,6 +520,25 @@ struct accumulate_patch_object
    double stream_NO3;
    double stream_NH4;
    double streamflow;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+   double baseflow; // JMG09082022
+   double returnflow; // JMG09082022
+   double rz_storage; // JMG09082022
+   double unsat_storage; // JMG09082022
+   double gw_drainage; // JMG09122022
+   double overland_flow; // JMG09122022
+
+   double pch_pcp; //JMG09122022
+   double pch_et; //JMG09122022
+   double pch_streamflow; //JMG09122022
+   double pch_base_flow; //JMG09122022
+   double pch_return_flow; //JMG09122022
+   double pch_gw_drainage; //JMG09122022
+   double pch_rz_storage; //JMG09122022
+   double pch_unsat_storage; //JMG09122022
+   double hill_gw_storage; //JMG09122022
+   double hill_base_flow; //JMG09122022
+#endif
    double leach;
    double denitrif;
    double nitrif;

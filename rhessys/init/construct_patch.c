@@ -284,6 +284,14 @@ struct patch_object *construct_patch(
 	patch[0].acc_year.snowpack = 0.0;
 	patch[0].acc_year.theta = 0.0;
 	patch[0].acc_year.streamflow = 0.0;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    patch[0].acc_year.baseflow = 0.0; // JMG09082022
+    patch[0].acc_year.returnflow = 0.0; // JMG09082022 -> add rz_storage, un    sat_stor, and gw.storage
+    patch[0].acc_year.rz_storage = 0.0; // JMG09082022
+    patch[0].acc_year.unsat_storage = 0.0; // JMG09082022
+    patch[0].acc_year.gw_drainage = 0.0; // JMG09082022
+    patch[0].acc_year.overland_flow = 0.0; // JMG09122022
+#endif
 	patch[0].acc_year.length = 0;
 	patch[0].acc_year.denitrif = 0.0;
 	patch[0].acc_year.nitrif = 0.0;

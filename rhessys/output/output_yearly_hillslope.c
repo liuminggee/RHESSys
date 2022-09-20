@@ -46,24 +46,41 @@ void	output_yearly_hillslope(	int basinID,
 
 	if (hillslope[0].acc_year.length == 0) hillslope[0].acc_year.length = 1;
 
-
 	check = fprintf(outfile,
-		"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n",
+#ifndef JMG_MORE_YEARLY_OUTPUT
+        "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n",
+#else
+        "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#endif
 		current_date.year-1,
 		basinID,
 		hillslope[0].ID,
-		hillslope[0].acc_year.streamflow * 1000.0,
-		hillslope[0].acc_year.stream_NO3 * 1000.0,
-		hillslope[0].acc_year.denitrif * 1000.0,
-		hillslope[0].acc_year.DOC_loss * 1000.0,
-		hillslope[0].acc_year.DON_loss * 1000.0,
-		hillslope[0].acc_year.et * 1000.0,
-		hillslope[0].acc_year.psn * 1000.0,
-		hillslope[0].acc_year.lai/ hillslope[0].acc_year.length,
-		hillslope[0].acc_year.num_threshold,
-		hillslope[0].acc_year.nitrif * 1000.0,
-		hillslope[0].acc_year.mineralized * 1000.0,
-		hillslope[0].acc_year.uptake * 1000.0,
+#ifndef JMG_MORE_YEARLY_OUTPUT
+        hillslope[0].acc_year.streamflow * 1000.0,
+        hillslope[0].acc_year.stream_NO3 * 1000.0,
+        hillslope[0].acc_year.denitrif * 1000.0,
+        hillslope[0].acc_year.DOC_loss * 1000.0,
+        hillslope[0].acc_year.DON_loss * 1000.0,
+        hillslope[0].acc_year.et * 1000.0,
+        hillslope[0].acc_year.psn * 1000.0,
+        hillslope[0].acc_year.lai/ hillslope[0].acc_year.length,
+        hillslope[0].acc_year.num_threshold,
+        hillslope[0].acc_year.lai/ hillslope[0].acc_year.length,
+        hillslope[0].acc_year.nitrif * 1000.0,
+        hillslope[0].acc_year.mineralized * 1000.0,
+        hillslope[0].acc_year.uptake * 1000.0,
+#else
+        hillslope[0].acc_year.pch_pcp * 1000.0,
+        hillslope[0].acc_year.pch_et * 1000.0,
+        hillslope[0].acc_year.pch_streamflow * 1000.0,
+        hillslope[0].acc_year.pch_return_flow * 1000.0,
+        hillslope[0].acc_year.pch_base_flow * 1000.0,
+        hillslope[0].acc_year.hill_base_flow * 1000.0,
+        hillslope[0].acc_year.pch_gw_drainage * 1000.0,
+        (hillslope[0].acc_year.pch_rz_storage / hillslope[0].acc_year.length) * 1000.0, // average daily rz_storage
+        (hillslope[0].acc_year.pch_unsat_storage / hillslope[0].acc_year.length) * 1000.0, // average daily unsat_storage
+        (hillslope[0].acc_year.hill_gw_storage / hillslope[0].acc_year.length) * 1000.0, // average daily gw_storage
+#endif
 		hillslope[0].area
 		);
 	if (check <= 0) {
@@ -87,5 +104,19 @@ void	output_yearly_hillslope(	int basinID,
 	hillslope[0].acc_year.lai = 0.0;
 	hillslope[0].acc_year.mineralized = 0.0;
 	hillslope[0].acc_year.uptake = 0.0;
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    hillslope[0].acc_year.pch_pcp = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_et = 0.0; // JG09122022
+    hillslope[0].acc_year.pch_streamflow = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_base_flow = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_return_flow = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_gw_drainage = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_rz_storage = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_unsat_storage = 0.0; // JMG09122022
+    hillslope[0].acc_year.hill_gw_storage = 0.0; // JMG09122022
+    hillslope[0].acc_year.hill_base_flow = 0.0; // JMG09122022
+#endif
+
 	return;
 } /*end output_yearly_hillslope*/
