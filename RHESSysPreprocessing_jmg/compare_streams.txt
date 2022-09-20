@@ -1,0 +1,3 @@
+### To compare streamflow input files, extract all streamflow data and compare the number of cells,
+## also you can resample the cells so all streams equal 1 and compare it that way between the two stream rasters
+## compare streamtable as well, but I don't know how just yet
