@@ -470,13 +470,19 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].canopy_stratum[0].yearly;
-    fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    fprintf(outfile,
+#ifndef JMG_MORE_YEARLY_OUTPUT
+            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#else
+            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#endif
          "year",
          "basinID",
          "hillID",
          "zoneID",
          "patchID",
          "stratumID",
+#ifndef JMG_MORE_YEARLY_OUTPUT
          "proj_lai",
          "leafc",
          "leafn",
@@ -498,7 +504,21 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
          "dead_rootc_beetle",
          "dead_rootn_beetle",
          "height",
-         "rootdepth_mm");
+         "rootdepth_mm"
+#else
+        "AGBc",
+        "height",
+        "LAI", // actually epv.proj_lai (projected LAI to surface plane)
+        "psn_net",
+        "mr",
+        "gr",
+        "stemc",
+        "leafc",
+        "rootc",
+        "rootdepth_mm",
+        "rootc_rd"
+#endif
+            );
 	}
 
 

@@ -237,8 +237,8 @@ void	execute_tec(
 		/*--------------------------------------------------------------*/
 		handle_event(event,command_line,current_date,world);
 #ifdef LIU_BURN_ALL_AT_ONCE
-        printf("Event: year:%d mon:%d day:%d command:%s\n",event[0].cal_date.year,
-                event[0].cal_date.month,event[0].cal_date.day,event[0].command);
+        //printf("Event: year:%d mon:%d day:%d command:%s\n",event[0].cal_date.year,
+        //        event[0].cal_date.month,event[0].cal_date.day,event[0].command);
 #endif
 		/*--------------------------------------------------------------*/
 		/*		read the next tec file entry.							*/
@@ -285,8 +285,8 @@ void	execute_tec(
 			/*			Simulate the world for the start of this day e		*/
 			/*--------------------------------------------------------------*/
 #ifdef LIU_DISPLY_RUN_INFO
-            if ( current_date.hour == 1 ) printf("Current_date runyear = %d clim_year = %d mon = %d day = %d\n",
-                   year,current_date.year,current_date.month,current_date.day); /*ning*/
+            //if ( current_date.hour == 1 ) printf("Current_date runyear = %d clim_year = %d mon = %d day = %d\n",
+            //       year,current_date.year,current_date.month,current_date.day); /*ning*/
 #endif
             //fflush(stdout);
 			if ( current_date.hour == 1 ){

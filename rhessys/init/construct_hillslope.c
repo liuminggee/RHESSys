@@ -306,7 +306,20 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].acc_year.stream_NO3 = 0.0;
 	hillslope[0].acc_year.stream_NH4 = 0.0;
 	hillslope[0].acc_year.psn = 0.0;
-	
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    hillslope[0].acc_year.pch_pcp = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_et = 0.0; // JG09122022
+    hillslope[0].acc_year.pch_streamflow = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_base_flow = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_return_flow = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_gw_drainage = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_rz_storage = 0.0; // JMG09122022
+    hillslope[0].acc_year.pch_unsat_storage = 0.0; // JMG09122022
+    hillslope[0].acc_year.hill_gw_storage = 0.0; // JMG09122022
+    hillslope[0].acc_year.hill_base_flow = 0.0; // JMG09122022
+#endif
+
+
 	if(paramPtr!=NULL)
 	  free(paramPtr);
 

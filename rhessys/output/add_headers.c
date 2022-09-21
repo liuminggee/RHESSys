@@ -303,19 +303,37 @@ void add_headers(struct world_output_file_object *world_output_files,
 	/*	Yearly 							*/
 	/*--------------------------------------------------------------*/
 	outfile = world_output_files[0].hillslope[0].yearly;
-	check = fprintf(outfile,
-		"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
-		"year",
-		"basinID",
-		"hillslopeID",
-		"streamflow",
-		"streamflow_NO3",
-		"denitrif",
-		"DOC",
-		"DON",
-		"et",
-		"psn","lai","nitrif",
-		"mineralized", "uptake","area");
+    check = fprintf(outfile,
+#ifndef JMG_MORE_YEARLY_OUTPUT
+        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#else
+        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#endif
+        "year",
+        "basinID",
+        "hillslopeID",
+#ifndef JMG_MORE_YEARLY_OUTPUT
+        "streamflow",
+        "streamflow_NO3",
+        "denitrif",
+        "DOC",
+        "DON",
+        "et",
+        "psn","lai","nitrif",
+                    "mineralized", "uptake",
+#else
+        "pch_pcp",
+        "pch_et",
+        "pch_streamflow",
+        "pch_return_flow",
+        "pch_base_flow",
+        "hill_base_flow",
+        "pch_gw_drainage",
+        "pch_rz_storage",
+        "pch_unsat_storage",
+        "hill_gw_storage",
+#endif
+        "area");
 	}
 	/*--------------------------------------------------------------*/
 	/*	Zone file headers					*/
@@ -468,28 +486,62 @@ void add_headers(struct world_output_file_object *world_output_files,
 		"DON","lai","nitrif","mineralized","uptake","theta","snow","area","nitrate","sminn", "burn");
 	/*--------------------------------------------------------------*/
 	/*	Yearly							*/
-	/*--------------------------------------------------------------*/
-	outfile = world_output_files[0].patch[0].yearly;
-	fprintf(outfile, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
-			"year",
-			"basinID",
-			"hillID",
-			"zoneID",
-			"patchID",
-			"num_threshold_sat_def",
-			"peaksweday",
-			"meltday",
-			"peaklaiday",
-			"leach",
-			"denitrif",
+	/*--------------------------------------------------------------*/	
+    outfile = world_output_files[0].patch[0].yearly;
+    fprintf(outfile,
+#ifndef JMG_MORE_YEARLY_OUTPUT
+            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#else
+            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#endif
+            "year",
+            "basinID",
+            "hillID",
+            "zoneID",
+            "patchID",
+#ifndef JMG_MORE_YEARLY_OUTPUT
+            "num_threshold_sat_def",
+            "peaksweday",
+            "meltday",
+            "pklai",
+            "peaklaiday",
+            "leach",
+            "denitrif",
 			"DOC_loss",
 			"DON_loss",
 			"psn", "trans",
 			"et","lai","nitrif","mineralized",
 			"uptake","Theta","sd",
 			"pkswe", "pktrans", "pkpet", "streamflow", "Qin","Qout","rec.wyd","rec.pet.wyd",
-			"ndays_sat", "ndays_sat70", "midsm_wyd",
-			"area","pet","pcp","burn","snowin","pot_recharge","recharge","recharge.wyd","pot_recharge.wyd"
+			"ndays_sat", "ndays_sat70", "midsm_wyd",			
+            "area","tpet","pet","pe","snowin_pcp","pot_recharge","recharge","recharge.wyd","pot_recharge.wyd"
+#else
+            "precip",
+            "streamflow",
+            "base_flow",
+            "return_flow",
+            "rz_storage",
+            "unsat_storage",
+            "gw_drainage",
+            "overland_flow", // JMG09122022
+            "et",
+            "nday_sat",
+            "nday_sat70",
+            "plantc",
+            "plantn",
+            "litrc",
+            "litrn",
+            "soilc",
+            "soiln",
+            "lai",
+            "psn",
+            "uptake",
+            "leach",
+            "DON_loss",
+            "denitrif",
+            "nitrif",
+            "mineralized"
+#endif
 			);
 	}
 

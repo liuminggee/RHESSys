@@ -41,16 +41,40 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    double AGBc; // above ground biomass carbon weight (kgC/m2)
+    AGBc = 0.0;
+    AGBc +=  stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc + // leafc
+            stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc + stratum[0].cs.livestemc_store + stratum[0].cs.deadstemc_store + stratum[0].cs.livestemc_transfer + stratum[0].cs.deadstemc_transfer + // stemc
+            stratum[0].cs.cwdc + stratum[0].cs.cpool; // remaining biomass
+    /*AGBc += stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc + stratum[0].cs.livestemc_store + stratum[0].cs.deadstemc_store + stratum[0].cs.livestemc_transfer + stratum[0].cs.deadstemc_transfer + // stemc
+            stratum[0].cs.cpool; // remaining biomass
+            */
 
-  	fprintf(outfile,
+    double LAI; // projected leaf area index (epc.proj_lai)
+    LAI = 0.0;
+    LAI += (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc) * stratum[0].defaults[0][0].epc.proj_sla;
+
+    double rootc; // live croot + live froot + dead croot
+    rootc = 0.0;
+    rootc += (stratum[0].cs.frootc + stratum[0].cs.live_crootc + stratum[0].cs.dead_crootc);
+
+#endif
+
+
+    fprintf(outfile,
+#ifndef JMG_MORE_YEARLY_OUTPUT
            "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
-
+#else
+            "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#endif
         	current_date.year,
         	basinID,
         	hillID,
         	zoneID,
         	patchID,
         	stratum[0].ID,
+#ifndef JMG_MORE_YEARLY_OUTPUT
             (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc) * stratum[0].defaults[0][0].epc.proj_sla,
         	stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc,
         	stratum[0].ns.leafn + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer + stratum[0].ns.dead_leafn,
@@ -78,7 +102,23 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
             stratum[0].cs.dead_rootc_beetle,
             stratum[0].ns.dead_rootn_beetle,
             stratum[0].epv.height, // the reason here height is different with fire.yearly, is fire.yearly is before burning but, stratum.yearly; if turn off the fire effect they should be the same
-            stratum[0].rootzone.depth*1000.0);
+            stratum[0].rootzone.depth*1000.0
+#else
+            AGBc, // above ground biomass (kg-C/m2)
+            stratum[0].epv.height, // canopy height (m)
+            LAI, // Leaf Area Index (m2/m2)
+            stratum[0].acc_year.psn, // yearly agg gross photosynthesis
+            stratum[0].acc_year.mr, // yearly agg maintainance respiration
+            stratum[0].acc_year.gr,  // yearly agg growth respiration
+            stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc + stratum[0].cs.livestemc_store + stratum[0].cs.deadstemc_store + stratum[0].cs.livestemc_transfer + stratum[0].cs.deadstemc_transfer, // stemc
+            stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc, // leafc
+            stratum[0].cs.frootc + stratum[0].cs.frootc_store + stratum[0].cs.frootc_transfer +
+            stratum[0].cs.live_crootc + stratum[0].cs.livecrootc_store + stratum[0].cs.livecrootc_transfer +
+            stratum[0].cs.dead_crootc + stratum[0].cs.deadcrootc_store + stratum[0].cs.deadcrootc_transfer, // rootc
+            stratum[0].rootzone.depth*1000.0, // rootdepth (mm)
+            rootc
+#endif
+            );
 
     stratum[0].acc_year.mr = 0.0;                                               //06012022LML
     stratum[0].acc_year.gr = 0.0;                                               //06012022LML
