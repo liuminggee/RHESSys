@@ -225,10 +225,10 @@ void	execute_tec(
 	/*--------------------------------------------------------------*/
 	current_date = world[0].start_date;
 	next_date = current_date;
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
     int spins_index = 0;                                                    //which spin
     int spin_year_index = 0;                                                //which year index within this spin
-#endif
+//#endif
 
 
 	while ( cal_date_lt(current_date,world[0].end_date)){
@@ -491,7 +491,7 @@ void	execute_tec(
 				year = year + 1;
 				current_date.year= next_date.year;
 
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
                 if (command_line[0].fire_spin_flag != 0) {
                     if(spins_index < command_line[0].fire_spins) {
                         if (spin_year_index < command_line[0].fire_spin_period) {
@@ -522,7 +522,7 @@ void	execute_tec(
 #endif
                     }
                 }
-#endif
+//#endif
 
 			}  /*end if*/
 			} /*end while*/

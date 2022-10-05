@@ -140,7 +140,7 @@ struct patch_object *construct_patch(
 		//fscanf(world_file,"%d",&(fire_parm_ID));
 		//read_record(world_file, record);//NREn 20190224
 #ifndef LIU_BURN_ALL_AT_ONCE
-		fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",-9999,0);
+        fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",1,1);
 #else
         fire_parm_ID = 1;
 #endif

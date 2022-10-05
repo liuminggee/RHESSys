@@ -426,6 +426,7 @@ struct	command_line_object	*construct_command_line(
                 }
 
             }/* end if */
+#endif
             /*-------------------------------------------------*/
             /*	spin up before fire runs	  */
             /*-------------------------------------------------*/
@@ -444,7 +445,7 @@ struct	command_line_object	*construct_command_line(
                 command_line[0].fire_spins = (double)atof(main_argv[i]);
                 i++;
             }/* end if */
-#endif
+
 			/*-------------------------------------------------*/
 			/* simple addition of temperature increases 		*/
 			/*-------------------------------------------------*/
