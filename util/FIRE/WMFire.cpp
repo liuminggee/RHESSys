@@ -521,13 +521,12 @@ void LandScape::chooseIgnPix(GenerateRandom& rng)
 		int vecID=0;
 		int temp_row =-1;
 		int temp_col = -1;
-		while (temp_row <0 || temp_col <0 || isnan(temp_row) || isnan(temp_col)) { //if not a zero or positive value resample NREN20190227
-        if(def_.fire_verbose==1)
-        cout<<" resampling ignition row and column: "<<temp_row<<"\t"<<temp_col<<"\n";
-
-        vecID=int(floor(rng()*n_ign_)); // n_ign_ just counts how many pixels are available for ignition 05202022LML remove "+1" since it should not bigger than n_ign_.
-		temp_row =ignCells_[vecID].rowId;
-		temp_col = ignCells_[vecID].colId;
+        while (n_ign_ > 0 && (temp_row <0 || temp_col <0 || isnan(temp_row) || isnan(temp_col))) { //if not a zero or positive value resample NREN20190227
+          if(def_.fire_verbose==1)
+              cout<<" resampling ignition row and column: "<<temp_row<<"\t"<<temp_col<<"\n";
+          vecID=int(floor(rng()*n_ign_)); // n_ign_ just counts how many pixels are available for ignition 05202022LML remove "+1" since it should not bigger than n_ign_.
+          temp_row =ignCells_[vecID].rowId;
+          temp_col = ignCells_[vecID].colId;
         }
 	//	fire.ignRow=buffer_+(rows_-2*buffer_)*rng();
 	//	fire.ignCol=buffer_+(cols_-2*buffer_)*rng();
@@ -699,51 +698,52 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 	if(ign_moisture_k2>1)
 		ign_moisture_k2=1;
 	// for WMFire, do we make this based on load and moisture (probably)
-	if(fireGrid_[cur_row][cur_col].temp>=def_.ignition_tmin)
-	{
+    if (cur_row >= 0 && cur_col >= 0) {
+      if(fireGrid_[cur_row][cur_col].temp>=def_.ignition_tmin)
+      {
 //		cout<<"In if\n";
-switch(def_.spread_calc_type)
-	{
-	case 1: // 1-3, just use the fuel moisture value with the usual spread curve
-	case 2:
-	case 3:
-		p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
-		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].fuel_moist;
-		break;
-	case 4: // 4-6 use absolute deficit with the usual spread curve
-	case 5:
-	case 6:
-		cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et;
-		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
-		break;
-	case 7: // relative def with the usual spread curve
-		if(fireGrid_[cur_row][cur_col].pet>0)
-			cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
-		else
-			cur_moist=0;
-		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
-		break;
-	case 8: // understory def with the usual spread curve
-		if(fireGrid_[cur_row][cur_col].understory_pet>0)
-			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
-		else
-			cur_moist=0;
-		p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
-		break;
-	case 9: // understory def with its own ignition curve
-		if(fireGrid_[cur_row][cur_col].understory_pet>0)
-			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
-		else
-			cur_moist=0;
-		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
-		break;
-	default: // understory def with its own ignition curve by default
-		if(fireGrid_[cur_row][cur_col].understory_pet>0)
-			cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
-		else
-			cur_moist=0;
-		p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
-	}
+        switch(def_.spread_calc_type)
+        {
+        case 1: // 1-3, just use the fuel moisture value with the usual spread curve
+        case 2:
+        case 3:
+            p_moisture=1-1/(1+exp(-(def_.moisture_k1*(fireGrid_[cur_row][cur_col].fuel_moist-def_.moisture_k2))));
+            cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].fuel_moist;
+            break;
+        case 4: // 4-6 use absolute deficit with the usual spread curve
+        case 5:
+        case 6:
+            cur_moist=fireGrid_[cur_row][cur_col].pet-fireGrid_[cur_row][cur_col].et;
+            p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+            break;
+        case 7: // relative def with the usual spread curve
+            if(fireGrid_[cur_row][cur_col].pet>0)
+                cur_moist=1-fireGrid_[cur_row][cur_col].et/(fireGrid_[cur_row][cur_col].pet); // for now, see if it solves the problem
+            else
+                cur_moist=0;
+            p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+            break;
+        case 8: // understory def with the usual spread curve
+            if(fireGrid_[cur_row][cur_col].understory_pet>0)
+                cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+            else
+                cur_moist=0;
+            p_moisture=1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use relative deficit for moisture status
+            break;
+        case 9: // understory def with its own ignition curve
+            if(fireGrid_[cur_row][cur_col].understory_pet>0)
+                cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+            else
+                cur_moist=0;
+            p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
+            break;
+        default: // understory def with its own ignition curve by default
+            if(fireGrid_[cur_row][cur_col].understory_pet>0)
+                cur_moist=1-fireGrid_[cur_row][cur_col].understory_et/(fireGrid_[cur_row][cur_col].understory_pet); // for now, see if it solves the problem
+            else
+                cur_moist=0;
+            p_moisture=1/(1+exp(-(def_.moisture_ign_k1*(cur_moist-def_.moisture_ign_k2))));
+        }
 
 /*		if(def_.spread_calc_type<4)
 		{
@@ -810,6 +810,7 @@ switch(def_.spread_calc_type)
 			ign=1;
 			fireGrid_[cur_row][cur_col].burn=pIgn;
 		}
+      }
 	}
 	if(def_.fire_verbose==1)
 		cout<<"in test ignition pIgn: "<<pIgn<<"ign: "<<ign<<"temperature: "<<fireGrid_[cur_row][cur_col].temp<<" et, pet, underET, underPET"<<"  "<<fireGrid_[cur_row][cur_col].et<<"   "<<fireGrid_[cur_row][cur_col].pet<<"  "<<fireGrid_[cur_row][cur_col].understory_et<<"   "<<fireGrid_[cur_row][cur_col].understory_pet<<"\n\n";
