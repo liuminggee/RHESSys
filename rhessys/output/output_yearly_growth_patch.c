@@ -30,17 +30,17 @@
 #include "rhessys.h"
 
 void	output_yearly_growth_patch(
-				int basinID, int hillID, int zoneID,
-				struct	patch_object	*patch,
-				struct	date	current_date,
-				FILE *outfile)
+                int basinID, int hillID, int zoneID,
+                struct	patch_object	*patch,
+                struct	date	current_date,
+                FILE *outfile)
 {
-	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
-	/*--------------------------------------------------------------*/
-	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
-	/*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*	Local function definition.									*/
+    /*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*	Local variable definition.									*/
+    /*--------------------------------------------------------------*/
 
     double aleafc = 0;
     double aleafn = 0;
@@ -85,9 +85,18 @@ void	output_yearly_growth_patch(
         }
     }
 
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    double denitrif;
+    denitrif = 0.0;
+    denitrif += patch[0].soil_ns.nvolatilized_snk;
+#endif
 
      fprintf(outfile,
+#ifndef JMG_MORE_YEARLY_OUTPUT
         "%4d %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+#else
+        "%4d %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#endif
         current_date.year,
         basinID,
         hillID,
@@ -97,12 +106,15 @@ void	output_yearly_growth_patch(
         aleafn,
         aleafc + afrootc + awoodc,
         aleafn + afrootn + awoodn,
-	patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c,
+    patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c,
         patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c + patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c,
-	patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n + patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n,
-        patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n + patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n, 
-	patch[0].soil_ns.nitrate,
-	patch[0].soil_ns.sminn, patch[0].rootzone.depth*1000.0);
-
-	return;
+    patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n + patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n,
+        patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n + patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n,
+    patch[0].soil_ns.nitrate,
+    patch[0].soil_ns.sminn, patch[0].rootzone.depth*1000.0
+#ifdef JMG_MORE_YEARLY_OUTPUT
+        ,denitrif
+#endif
+             );
+    return;
 } /*end output_yearly_growth_patch*/
