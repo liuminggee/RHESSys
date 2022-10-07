@@ -46,7 +46,7 @@ void update_basin_patch_accumulator(
     int layer;
     //10072022LML moved into inside the parallel code block
     //struct  canopy_strata_object    *stratum;
-    double leafc, leafn, stemc, stemn, rootc, rootn, AGBc, AGBn, plantc, plantn, BGBc, BGBn;
+    //double leafc, leafn, stemc, stemn, rootc, rootn, AGBc, AGBn, plantc, plantn, BGBc, BGBn;
 #endif
     /*----------------------------------------------------------------------*/
     /* initializations		                                           */
@@ -256,13 +256,11 @@ void update_basin_patch_accumulator(
                     for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
                         struct  canopy_strata_object *stratum = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 
-                        leafc = 0.0;
-                        leafc = stratum[0].cover_fraction	* (stratum[0].cs.leafc
+                        double leafc = stratum[0].cover_fraction	* (stratum[0].cs.leafc
                             + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc);
                             //* patch[0].area;
 
-                        stemc = 0.0;
-                        stemc = stratum[0].cover_fraction * (stratum[0].cs.live_stemc
+                        double stemc = stratum[0].cover_fraction * (stratum[0].cs.live_stemc
                                 + stratum[0].cs.dead_stemc
                                 + stratum[0].cs.livestemc_store
                                 + stratum[0].cs.deadstemc_store
@@ -270,8 +268,7 @@ void update_basin_patch_accumulator(
                                 + stratum[0].cs.deadstemc_transfer
                                 + stratum[0].cs.cwdc + stratum[0].cs.cpool);
 
-                        rootc = 0.0;
-                        rootc = stratum[0].cover_fraction * (stratum[0].cs.live_crootc
+                        double rootc = stratum[0].cover_fraction * (stratum[0].cs.live_crootc
                             + stratum[0].cs.dead_crootc
                             + stratum[0].cs.livecrootc_store
                             + stratum[0].cs.deadcrootc_store
@@ -281,20 +278,15 @@ void update_basin_patch_accumulator(
                             + stratum[0].cs.frootc_store
                             + stratum[0].cs.frootc_transfer);
 
-                        AGBc = 0.0;
-                        AGBc = (leafc + stemc);
-                        plantc = 0.0;
-                        plantc = (AGBc + rootc);
-                        BGBc = 0.0;
-                        BGBc = (rootc);
+                        double AGBc = (leafc + stemc);
+                        double plantc = (AGBc + rootc);
+                        double BGBc = (rootc);
 
-                        leafn = 0.0;
-                        leafn = stratum[0].cover_fraction	* (stratum[0].ns.leafn
+                        double leafn = stratum[0].cover_fraction	* (stratum[0].ns.leafn
                             + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer + stratum[0].ns.dead_leafn);
                             //* patch[0].area;
 
-                        stemn = 0.0;
-                        stemn = stratum[0].cover_fraction * (stratum[0].ns.live_stemn
+                        double stemn = stratum[0].cover_fraction * (stratum[0].ns.live_stemn
                                 + stratum[0].ns.dead_stemn
                                 + stratum[0].ns.livestemn_store
                                 + stratum[0].ns.deadstemn_store
@@ -302,8 +294,7 @@ void update_basin_patch_accumulator(
                                 + stratum[0].ns.deadstemn_transfer
                                 + stratum[0].ns.cwdn + stratum[0].ns.npool);
 
-                        rootn = 0.0;
-                        rootn = stratum[0].cover_fraction * (stratum[0].ns.live_crootn
+                        double rootn = stratum[0].cover_fraction * (stratum[0].ns.live_crootn
                             + stratum[0].ns.dead_crootn
                             + stratum[0].ns.livecrootn_store
                             + stratum[0].ns.deadcrootn_store
@@ -313,13 +304,11 @@ void update_basin_patch_accumulator(
                             + stratum[0].ns.frootn_store
                             + stratum[0].ns.frootn_transfer);
 
-                        AGBn = 0.0;
-                        AGBn = (leafn + stemn);
+                        double AGBn = (leafn + stemn);
                         // plantn = 0.0;
-                        plantn = (AGBn + rootn);
+                        double plantn = (AGBn + rootn);
                         // plantn = (leafn + stemn + rootn);
-                        BGBn = 0.0;
-                        BGBn = (rootn);
+                        double BGBn = (rootn);
 
                         patch[0].acc_year.plantc += plantc; // JMG09272022
                         patch[0].acc_year.plantn += plantn; // JMG09272022
