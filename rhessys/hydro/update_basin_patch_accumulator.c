@@ -44,7 +44,8 @@ void update_basin_patch_accumulator(
     int b,h,p,z,c,s;
 #ifdef JMG_MORE_YEARLY_OUTPUT
     int layer;
-    struct  canopy_strata_object    *stratum;
+    //10072022LML moved into inside the parallel code block
+    //struct  canopy_strata_object    *stratum;
     double leafc, leafn, stemc, stemn, rootc, rootn, AGBc, AGBn, plantc, plantn, BGBc, BGBn;
 #endif
     /*----------------------------------------------------------------------*/
@@ -253,7 +254,7 @@ void update_basin_patch_accumulator(
 
                 for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
                     for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
-                        stratum = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+                        struct  canopy_strata_object *stratum = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 
                         leafc = 0.0;
                         leafc = stratum[0].cover_fraction	* (stratum[0].cs.leafc
