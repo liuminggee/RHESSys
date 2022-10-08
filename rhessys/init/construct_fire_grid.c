@@ -2,7 +2,7 @@
 /* 																*/
 /*					construct_fire_grid								*/
 /*																*/
-/*	construct_fire_grid.c - creates a raster grid of patches to be passed
+/*	construct_fire_grid.c - creates a raster grid of patches to be passed*/
 /*	to WMFire 													*/
 /*																*/
 /*	NAME														*/
@@ -21,7 +21,7 @@
 /*	Allocates memory for a rectangular raster grid.  Navigates the hierarchical 	*/
 /* 	spatial structure in RHESSys and assigns patches to the grid cells with with 	*/
 /* 	they overlap.  Calculates the area of overlap between the patch and the 	*/
-/* 	associated grid cell(s).
+/* 	associated grid cell(s). */
 /*																*/
 /*																*/
 /*	PROGRAMMER NOTES											*/
@@ -159,7 +159,7 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 								tmp = world[0].basins[b][0].hillslopes[h][0].zones[z][0].aspect; /* aspect */
 								for (p=0; p< world[0].basins[b][0].hillslopes[h][0].zones[z][0].num_patches; ++p) {
 									patch = world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p]; //zone object has linked list to point to patch families to point to patches
-                                    printf("is my world ok? %d\n",patch[0].ID);
+                                    //printf("is my world ok? %d\n",patch[0].ID);
 									if(patch[0].ID==tmpPatchID)
 									{
 

@@ -1,5 +1,6 @@
 # Compiled object files
 *.o
+*.optrpt
 *.pyc
 rhessys/rhessys5.20.1
 
