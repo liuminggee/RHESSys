@@ -252,8 +252,8 @@ void update_basin_patch_accumulator(
                 patch[0].acc_year.litrc += patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c; // JMG09272022
                 patch[0].acc_year.litrn += patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n + patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n; // JMG09272022
 
-                for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-                    for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
+                for ( int layer=0 ; layer<patch[0].num_layers; layer++ ){
+                    for ( int c=0 ; c<patch[0].layers[layer].count; c++ ){
                         struct  canopy_strata_object *stratum = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
 
                         double leafc = stratum[0].cover_fraction	* (stratum[0].cs.leafc
