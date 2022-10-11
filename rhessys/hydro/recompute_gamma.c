@@ -54,9 +54,10 @@ double recompute_gamma( struct patch_object *patch,
 	d = 0;
 	if (patch[0].innundation_list[d].num_neighbours > 0)
 		for (i =0; i < patch[0].innundation_list[d].num_neighbours; i++) {
-			z2 = patch[0].innundation_list[d].neighbours[i].patch[0].z;
-			if (patch[0].innundation_list[d].neighbours[i].patch[0].sat_deficit_z > 0)
-				water_table_z2	 = (z2 - patch[0].innundation_list[d].neighbours[i].patch[0].sat_deficit_z);
+            struct  patch_object *tpatch = patch[0].innundation_list[d].neighbours[i].patch;
+            z2 = tpatch[0].z;
+            if (tpatch[0].sat_deficit_z > 0)
+                water_table_z2	 = (z2 - tpatch[0].sat_deficit_z);
 			else
 				water_table_z2 = z2;
 			if (fabs(z1-z2) > ZERO) {

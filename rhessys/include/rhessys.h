@@ -1337,6 +1337,7 @@ struct	soil_default
     double	mz_v;						/* m^-1	*/
     double	porosity_0;						/* unitless */
     double	porosity_decay;						/* m^-1 */ //09092022LML: should be in unit of meter
+    double  Dingman_coef;            //eqn in Dingman p. 235 10112022LML for computing efficiency
     double	p3;						/* unitless */
     double	p4;						/* unitless */
     double	pore_size_index;				/* unitless */
@@ -1357,6 +1358,7 @@ struct	soil_default
     double	fs_spill;					/* multiplier*/
     double	fs_percolation;					/* multiplier */
     double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */
+    double	soil_deficit_threshold;         /*10112022LML*/
     int	snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
     double  bats_b;				/* unitless */
     double  bats_r3;				/* unitless */

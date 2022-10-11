@@ -98,6 +98,7 @@ void		patch_daily_I(
 		double,
 		double,
 		double,
+        double,
 		double,
 		double);
 
@@ -257,6 +258,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
+            patch[0].soil_defaults[0][0].Dingman_coef,
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);
 
@@ -280,6 +282,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
+            patch[0].soil_defaults[0][0].Dingman_coef,
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);
 
@@ -292,6 +295,7 @@ void		patch_daily_I(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
+            patch[0].soil_defaults[0][0].Dingman_coef,
 			patch[0].sat_deficit_z,
 			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.field_capacity;
 

@@ -92,6 +92,7 @@ struct routing_list_object *construct_routing_topology(
 	/*	otherwise add it to the hillslope level routing list		*/
 	/*--------------------------------------------------------------*/
 	for (i=0; i< num_patches; ++i) {
+        patch = 0;
 		fscanf(routing_file,"%d %d %d %lf %lf %lf %lf %lf %d %lf %d",
 			&patch_ID,
 			&zone_ID,
@@ -104,21 +105,22 @@ struct routing_list_object *construct_routing_topology(
                                                                                 //09092022LML: SHOULD BE DOWNSTREAM BOUNDARY LENGTH x AVG_SLOPE (m)
 			&num_neighbours);
 
-		if  ( (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) ) {
+        if  ( (hillslope != 0) && (patch_ID != 0) && (zone_ID != 0) && (hill_ID != 0) ) {
 			patch = find_patch_in_hillslope(patch_ID, zone_ID, hillslope );
-		}else{
-      fprintf(stderr,"\nFATAL ERROR: in construct_routing_topology, could not findpatch with ID:%d in hillslope ID:%d.\n", patch_ID, hill_ID );
-      exit(EXIT_FAILURE);
-    }
-		rlist->list[i] = patch;
+        } else {
+            fprintf(stderr,"\nFATAL ERROR: in construct_routing_topology, could not findpatch with ID:%d in hillslope ID:%d.\n", patch_ID, hill_ID );
+            exit(EXIT_FAILURE);
+        }
 
-		if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))
+		rlist->list[i] = patch;
+        if (patch != 0) {
+          if ((patch[0].soil_defaults[0][0].Ksat_0 < ZERO))
 			printf("\n WARNING lateral Ksat (%lf) are close to zero for patch %d",
 				patch[0].soil_defaults[0][0].Ksat_0, patch[0].ID);
 
-        if (patch[0].soil_defaults[0][0].m < ZERO) {
+          if (patch[0].soil_defaults[0][0].m < ZERO) {
 		 	gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0;
-        } else {
+          } else {
 #ifndef LIU_GAMMA_TRANSMISSIVITY
             gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;   //08312022LML: seems wrong if suppose to use average Ksat
 #else
@@ -134,36 +136,36 @@ struct routing_list_object *construct_routing_topology(
             gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0 * avg_ksat_coef; //(m3/day)
                                                                                  //SHOULD BE (m2/day) if original gamma input is in length X slope
 #endif
-        }
+          }
 
 		/*--------------------------------------------------------------*/
 		/*  Allocate innundation list array				*/
 		/*	note for this routing there is only one innundation depth 	*/
 		/*	however it is need to be compatablability 		*/
 		/*--------------------------------------------------------------*/
-		d=0;
-		if ( surface ) {
+          d=0;
+          if ( surface ) {
 			patch->surface_innundation_list = (struct innundation_object *)alloc( 1 *
 								sizeof(struct innundation_object), "surface_innundation_list", "construct_routing_topology");
 			innundation_list = patch->surface_innundation_list;
-		} else {
+          } else {
 			patch->innundation_list = (struct innundation_object *)alloc( 1 *
 					sizeof(struct innundation_object), "innundation_list", "construct_routing_topology");
 			innundation_list = patch->innundation_list;
-		}
+          }
 
-		if ( surface ) {
+          if ( surface ) {
 			patch[0].num_innundation_depths = 1;
-		}
+          }
 
-		innundation_list->num_neighbours = num_neighbours;
+          innundation_list->num_neighbours = num_neighbours;
 
-        innundation_list->gamma = gamma; //09092022LML (m)
+          innundation_list->gamma = gamma; //09092022LML (m)
 
 		// TODO: what should critical depth be for a surface flow table?
-		innundation_list->critical_depth = NULLVAL;
+          innundation_list->critical_depth = NULLVAL;
 
-		if ( !surface ) {
+          if ( !surface ) {
 			patch[0].stream_gamma = 0.0;
 			patch[0].drainage_type = drainage_type;
 			if ((patch[0].drainage_type != STREAM)
@@ -173,21 +175,21 @@ struct routing_list_object *construct_routing_topology(
 						patch[0].ID);*/
 				patch[0].drainage_type = STREAM;
 			}
-		}
+          }
 
 		/*--------------------------------------------------------------*/
 		/*  Allocate neighbour array									*/
 		/*--------------------------------------------------------------*/
-		innundation_list->neighbours = (struct neighbour_object *)alloc(num_neighbours *
+          innundation_list->neighbours = (struct neighbour_object *)alloc(num_neighbours *
 				sizeof(struct neighbour_object), "neighbours", "construct_routing_topology");
-		num_neighbours = assign_neighbours_in_hillslope(innundation_list->neighbours, num_neighbours, hillslope, routing_file);
-		if ((num_neighbours == -9999) && (patch[0].drainage_type != STREAM)) {
+          num_neighbours = assign_neighbours_in_hillslope(innundation_list->neighbours, num_neighbours, hillslope, routing_file);
+          if ((num_neighbours == -9999) && (patch[0].drainage_type != STREAM)) {
 			printf("\n WARNING sum of patch %d neigh gamma is not equal to 1.0", patch[0].ID);
-		} else {
+          } else {
 			innundation_list->num_neighbours = num_neighbours;
-		}
+          }
 
-		if ( drainage_type == ROAD ) {
+          if ( drainage_type == ROAD ) {
 			fscanf(routing_file,"%d %d %d %lf",
 				&patch_ID,
 				&zone_ID,
@@ -200,9 +202,9 @@ struct routing_list_object *construct_routing_topology(
 				stream = find_patch_in_hillslope(patch_ID, zone_ID, hillslope);
 				patch[0].next_stream = stream;
 			}
-		}
+          }
 
-		if ( !surface ) {
+          if ( !surface ) {
 			/*--------------------------------------------------------------*/
 			/*	create a vector of transmssivities 			*/
 			/*--------------------------------------------------------------*/
@@ -212,9 +214,10 @@ struct routing_list_object *construct_routing_topology(
 				patch[0].soil_defaults[0][0].interval_size = patch[0].soil_defaults[0][0].soil_water_cap / MAX_NUM_INTERVAL;
 				}
 			patch[0].transmissivity_profile = compute_transmissivity_curve(gamma, patch, command_line);
-			}
+          }
+        } else {//if patch!=0
 
-
+        }
 	}
 
 	//fclose(routing_file);

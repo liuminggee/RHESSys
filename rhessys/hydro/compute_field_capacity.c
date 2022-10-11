@@ -87,6 +87,7 @@ double	compute_field_capacity(
 							   double	p4,
 							   double	p_0,
 							   double	p,
+                               double   inDingman_coef,                         //10112022LML if not use, set -9999
 							   double	z_water_table,
 							   double	z,
 							   double	z_surface)
@@ -164,7 +165,9 @@ double	compute_field_capacity(
 		/* Changed field capacity to eqn in Dingman p. 235 using fixed pressure head */
 		/* of -340cm (constant over depth) vs. older method that varied field capacity */
 		/* with depth and overshot (field capacity sat > 1) close to sat zone. */
-		field_capacity = p_0 * ( pow((psi_air_entry / 3.4),pore_size_index) ) * (z - z_surface);
+        field_capacity = p_0 * ((inDingman_coef > 0) ? inDingman_coef
+                                 : ( pow((psi_air_entry / 3.4),pore_size_index) ))
+                             * (z - z_surface);
 		/*field_capacity = 1.0 / (1.0 - pore_size_index) * p_0
 			* pow( psi_air_entry, pore_size_index)
 			* (pow( z - z_surface, 1-pore_size_index));*/

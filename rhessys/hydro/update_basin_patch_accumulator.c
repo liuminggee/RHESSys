@@ -56,7 +56,7 @@ void update_basin_patch_accumulator(
     /*update accumulator variables                                            */
     /*-----------------------------------------------------------------------*/
 
-    #pragma omp parallel for private(h,z,p)
+    //10102022LML #pragma omp parallel for private(h,z,p)
     for (h=0; h < basin->num_hillslopes; ++h) {
       for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
         for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {

@@ -2,6 +2,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "params.h"
+double normal[] = { 0.,
+                    0.253,
+                    0.524,
+                    0.842,
+                    1.283,
+                    -0.253,
+                    -0.524,
+                    -0.842,
+                    -1.283};
+double perc[] = {   0.2,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1};
 
 param * readParamFile(int *paramCnt, char *filename)
 {

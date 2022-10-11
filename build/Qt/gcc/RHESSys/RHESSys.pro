@@ -14,9 +14,9 @@ CONFIG   -= app_bundle
 QMAKE_CC = gcc -std=c99
 QMAKE_CXXFLAGS += -fpermissive
 #-std=c++0x
-#QMAKE_CXXFLAGS += -fopenmp
-#QMAKE_CFLAGS += -fopenmp
-#QMAKE_LFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_CFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
 
 #QMAKE_CFLAGS += -STD=C99
 
@@ -391,7 +391,6 @@ HEADERS += \
     ../../../../rhessys/include/phys_constants.h \
     ../../../../rhessys/include/params.h \
     ../../../../rhessys/include/netcdf.h \
-    ../../../../rhessys/include/functions.h \
-    ../../../../rhessys/init/construct_routing_topology.alt
+    ../../../../rhessys/include/functions.h
 
 LIBS += -L/usr/lib -lnetcdf -lgomp -lpthread -fopenmp

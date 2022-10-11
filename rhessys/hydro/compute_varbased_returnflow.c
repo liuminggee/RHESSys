@@ -45,6 +45,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include <math.h>
+#include "params.h"
 #include "rhessys.h"
 
 double	compute_varbased_returnflow( double std, 
@@ -60,28 +61,10 @@ double	compute_varbased_returnflow( double std,
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
 	double	add_to_litter, return_flow,sd;
-	double	normal[9], perc[9];
 	int i;
-
-
     if (std > ZERO) fprintf(stderr,"std:%lf\n",std);
 
-
-	normal[0] = 0;
-	normal[1] = 0.253;
-	normal[2] = 0.524;
-	normal[3] = 0.842;
-	normal[4] = 1.283;
-	normal[5] = -0.253;
-	normal[6] = -0.524;
-	normal[7] = -0.842;
-	normal[8] = -1.283;
-
-	perc[0] = 0.2;
-	for (i=1; i<8; i++)
-		perc[i] = 0.1;
-
-	return_flow = 0.0;
+    return_flow = 0.0;
 	/*--------------------------------------------------------------*/
 	/*	Return flow = all water above patch surface.		*/
 	/*--------------------------------------------------------------*/

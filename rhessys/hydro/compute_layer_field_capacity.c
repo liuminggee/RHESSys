@@ -87,6 +87,7 @@ double	compute_layer_field_capacity(
 							   double	p4,
 							   double	p_0,
 							   double	p,
+                               double   inDingman_coef,                         //10112022LML if not use, set -9999
 							   double	z_water_table,
 							   double	z_layer,
 							   double	z_surface)
@@ -103,6 +104,7 @@ double	compute_layer_field_capacity(
 		double,
 		double,
 		double,
+        double,
 		double,
 		double,
 		double);
@@ -130,6 +132,7 @@ double	compute_layer_field_capacity(
 						p4,
 						p_0,
 						p,
+                        inDingman_coef,
 						z_water_table,
 						z_water_table,
 						z_surface);
@@ -143,6 +146,7 @@ double	compute_layer_field_capacity(
 						p4,
 						p_0,
 						p,
+                        inDingman_coef,
 						z_water_table,
 						z_water_table,
 						z_layer);

@@ -29,5 +29,7 @@ int    getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *
 float  getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, float defaultVal, int useDefaultVal);
 double getDoubleWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, double defaultVal, int useDefaultVal);
 
+//10112022LML
+extern double normal[9], perc[9];
 
 #endif
