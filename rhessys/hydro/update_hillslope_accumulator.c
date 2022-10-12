@@ -40,6 +40,13 @@ void update_hillslope_accumulator(
     for (int h = 0 ; h < basin[0].num_hillslopes; h++ ){
         struct hillslope_object *hillslope = basin[0].hillslopes[h];
 		hillslope[0].acc_month.length += 1;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+        if((command_line[0].output_flags.yearly == 1)&&(command_line[0].h != NULL)){
+        hillslope[0].acc_year.hill_base_flow += hillslope[0].base_flow;
+        hillslope[0].acc_year.hill_gw_storage += hillslope[0].gw.storage;
+        }
+#endif
+
         for (int z = 0; z < hillslope[0].num_zones; z++) {
             for (int p=0; p < hillslope[0].zones[z][0].num_patches; p++) {
                 struct patch_object *patch = hillslope[0].zones[z][0].patches[p];
@@ -81,6 +88,20 @@ void update_hillslope_accumulator(
 						patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone) * scale;
 					hillslope[0].acc_year.streamflow += (patch[0].streamflow) * scale;
 					hillslope[0].acc_year.lai += patch[0].lai * scale;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+                    hillslope[0].acc_year.pch_pcp += patch[0].zone->rain + patch[0].zone->snow * scale;
+                    hillslope[0].acc_year.pch_streamflow += patch[0].streamflow * scale;
+                    hillslope[0].acc_year.pch_base_flow += patch[0].base_flow * scale;
+                    hillslope[0].acc_year.hill_base_flow += patch[0].base_flow * scale;
+                    hillslope[0].acc_year.pch_return_flow += patch[0].return_flow * scale;
+                    hillslope[0].acc_year.pch_gw_drainage += patch[0].gw_drainage * scale;
+                    hillslope[0].acc_year.pch_rz_storage += patch[0].rz_storage * scale;
+                    hillslope[0].acc_year.pch_unsat_storage += patch[0].unsat_storage * scale;
+
+#endif
+
+
+
 				}
 			} /* end of patch p  */
 		} /* end of zones z */

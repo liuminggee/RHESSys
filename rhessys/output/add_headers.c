@@ -212,10 +212,11 @@ void add_headers(struct world_output_file_object *world_output_files,
 #ifndef JMG_MORE_YEARLY_OUTPUT
         "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 #else
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 #endif
         "year",
         "basinID",
+#ifndef JMG_MORE_YEARLY_OUTPUT
         "streamflow",
         "streamflow_NO3",
         "denitrif",
@@ -224,16 +225,28 @@ void add_headers(struct world_output_file_object *world_output_files,
         "et",
         "psn","lai","nitrif",
         "mineralized", "uptake", "num_thresh","tpet","pet","pe"
-#ifdef JMG_MORE_YEARLY_OUTPUT
-        ,"n_dep",
-        "soilc",
-        "soiln",
-        "litrc",
-        "litrn",
-        "plantc",
-        "plantn",
-        "AGBc",
-        "BGBc"
+#else
+                    "pcp",
+                    "et",
+                    "TPET",
+                    "PET",
+                    "PE",
+                    "streamflow",
+                    "hill_base_flow",
+                    "gw_drainage",
+                    "rz_storage",
+                    "unsat_storage",
+                    "hill_gw_storage",
+                    "n_deposition",
+                    "denitrif",
+                    "soilc",
+                    "soiln",
+                    "litrc",
+                    "litrn",
+                    "plantc",
+                    "plantn",
+                    "AGBc",
+                    "BGBc"
 #endif
                     );
     }

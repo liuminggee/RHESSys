@@ -27,6 +27,7 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
+
 #ifdef LIU_TRACKING_BASIN_LITTERC
 int acumulate_carbon_flux(struct cdayflux_patch_struct *target, struct cdayflux_patch_struct *source, double scale);
 #endif
@@ -38,8 +39,8 @@ void update_basin_patch_accumulator(
     /*----------------------------------------------------------------------*/
     /* Local variables definition                                           */
     /*-----------------------------------------------------------------------*/
-    double scale;
-    double tmp;
+    //double scale;
+    //double tmp;
     //struct patch_object *patch;
     int b,h,p,z,c,s;
 #ifdef JMG_MORE_YEARLY_OUTPUT
@@ -55,17 +56,19 @@ void update_basin_patch_accumulator(
     /*---------------------------------------------------------------------*/
     /*update accumulator variables                                            */
     /*-----------------------------------------------------------------------*/
-
+#ifndef JMG_MORE_YEARLY_OUTPUT
     #pragma omp parallel for private(h,z,p)
+#else
+    #pragma omp parallel for private(h,z,p,layer,c)
+#endif
     for (h=0; h < basin->num_hillslopes; ++h) {
       for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
         for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
             struct patch_object *patch=basin->hillslopes[h]->zones[z]->patches[p];
 
-             patch[0].acc_year_trans += (patch[0].transpiration_unsat_zone
-                    + patch[0].transpiration_sat_zone);
-            if ((command_line[0].output_flags.monthly == 1)
-                    && (command_line[0].p != NULL )) {
+             patch[0].acc_year_trans += (patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone);
+
+            if ((command_line[0].output_flags.monthly == 1) && (command_line[0].p != NULL )) {
                 patch[0].acc_month.theta += patch[0].rootzone.S;
                 patch[0].acc_month.sm_deficit +=
                         max(0.0,
@@ -97,11 +100,10 @@ void update_basin_patch_accumulator(
                 patch[0].acc_month.length += 1;
 
             }
-            if ((command_line[0].output_flags.yearly == 1)
-                    && (command_line[0].p != NULL ) || command_line[0].grow_flag > 0) {// Here change condition for calculating ET for landclim model
+
+            if (((command_line[0].output_flags.yearly == 1) && (command_line[0].p != NULL )) || command_line[0].grow_flag > 0){ // Here change condition for calculating ET for landclim model
                 patch[0].acc_year.length += 1;
-                if ((patch[0].sat_deficit - patch[0].unsat_storage)
-                        > command_line[0].thresholds[SATDEF])
+                if ((patch[0].sat_deficit - patch[0].unsat_storage) > command_line[0].thresholds[SATDEF])
                     patch[0].acc_year.num_threshold += 1;
                 patch[0].acc_year.theta += patch[0].rootzone.S;
                 patch[0].acc_year.denitrif += patch[0].ndf.denitrif;
@@ -134,16 +136,13 @@ void update_basin_patch_accumulator(
                 patch[0].acc_year.recharge_wyd += patch[0].recharge
                         * round(patch[0].acc_year.length);
 
-                if (close_enough(patch[0].snowpack.water_equivalent_depth, 0)
-                        && (patch[0].acc_year.snowpack > 0)) {
-                    if (patch[0].acc_year.meltday
-                            < patch[0].acc_year.peaksweday)
-                        patch[0].acc_year.meltday = round(
-                                patch[0].acc_year.length);
+                if (close_enough(patch[0].snowpack.water_equivalent_depth, 0)&& (patch[0].acc_year.snowpack > 0)) {
+                    if (patch[0].acc_year.meltday < patch[0].acc_year.peaksweday){
+                        patch[0].acc_year.meltday = round(patch[0].acc_year.length);
+                    }
                 }
 
-                if (patch[0].snowpack.water_equivalent_depth
-                        > patch[0].acc_year.snowpack) {
+                if (patch[0].snowpack.water_equivalent_depth > patch[0].acc_year.snowpack) {
                     patch[0].acc_year.peaksweday = round(
                             patch[0].acc_year.length);
                 }
@@ -160,21 +159,21 @@ void update_basin_patch_accumulator(
                         + patch[0].transpiration_sat_zone
                         + patch[0].evaporation);
                 patch[0].acc_year.et += tmp;
-                // for calculating decomposition
 
+                // for calculating decomposition
                 patch[0].acc_year.num_days += 1;
+
             if (patch[0].acc_year.num_days <=365) {
                 patch[0].acc_year.et_decom += tmp;
                 patch[0].acc_year.et_decom_mean = patch[0].acc_year.et_decom/patch[0].acc_year.num_days;
                 //printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
-                }
+            }
             else {
                 patch[0].acc_year.et_decom_mean = (364 * patch[0].acc_year.et_decom_mean + tmp) / 365; //give more important ratio to ET
                // printf("[num_days %d], [ET %lf] \n", patch[0].acc_year.num_days, patch[0].acc_year.et_decom_mean  );
-                                                                }
 
-                tmp = (patch[0].transpiration_unsat_zone
-                        + patch[0].transpiration_sat_zone);
+            }
+                tmp = (patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone);
                 patch[0].acc_year.trans += tmp;
 
                 //if(current_date.month == 9 & current_date.day == 1)
@@ -190,8 +189,7 @@ void update_basin_patch_accumulator(
                     patch[0].acc_year.max_pet_wyd = patch[0].acc_year.wyd;
                 }
 
-                if ((patch[0].acc_year.day7trans
-                        > patch[0].acc_year.maxtrans)) {
+                if ((patch[0].acc_year.day7trans > patch[0].acc_year.maxtrans)){
                     patch[0].acc_year.maxtrans =
                             patch[0].acc_year.day7trans;
                     patch[0].acc_year.rec_wyd = 0;
@@ -252,180 +250,306 @@ void update_basin_patch_accumulator(
                 patch[0].acc_year.litrc += patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c; // JMG09272022
                 patch[0].acc_year.litrn += patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n + patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n; // JMG09272022
 
-                for ( int layer=0 ; layer<patch[0].num_layers; layer++ ){
-                    for ( int c=0 ; c<patch[0].layers[layer].count; c++ ){
-                        struct  canopy_strata_object *stratum = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+                patch[0].acc_year.pcp += patch[0].zone->rain + patch[0].zone->snow;
+                patch[0].acc_year.rz_storage += patch[0].rz_storage; // JMG10112022
+                patch[0].acc_year.unsat_storage += patch[0].unsat_storage; // JMG10112022
+                patch[0].acc_year.gw_drainage += patch[0].gw_drainage; // JMG10112022
+                patch[0].acc_year.baseflow += patch[0].base_flow; // JMG10112022
+                patch[0].acc_year.pch_base_flow += patch[0].base_flow; // JMG10112022
+#endif
 
-                        double leafc = stratum[0].cover_fraction	* (stratum[0].cs.leafc
-                            + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc);
-                            //* patch[0].area;
+            }
 
-                        double stemc = stratum[0].cover_fraction * (stratum[0].cs.live_stemc
-                                + stratum[0].cs.dead_stemc
-                                + stratum[0].cs.livestemc_store
-                                + stratum[0].cs.deadstemc_store
-                                + stratum[0].cs.livestemc_transfer
-                                + stratum[0].cs.deadstemc_transfer
-                                + stratum[0].cs.cwdc + stratum[0].cs.cpool);
+#ifdef JMG_MORE_YEARLY_OUTPUT
+            for ( int layer=0 ; layer<patch[0].num_layers; layer++ ){
+                for ( int c=0 ; c<patch[0].layers[layer].count; c++ ){
+                    struct  canopy_strata_object *stratum = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+                    double cover_fract = stratum[0].cover_fraction;
 
-                        double rootc = stratum[0].cover_fraction * (stratum[0].cs.live_crootc
-                            + stratum[0].cs.dead_crootc
-                            + stratum[0].cs.livecrootc_store
-                            + stratum[0].cs.deadcrootc_store
-                            + stratum[0].cs.livecrootc_transfer
-                            + stratum[0].cs.deadcrootc_transfer
-                            + stratum[0].cs.frootc
-                            + stratum[0].cs.frootc_store
-                            + stratum[0].cs.frootc_transfer);
+                    double leafc = cover_fract	* (stratum[0].cs.leafc
+                        + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc);
+                        //* patch[0].area;
 
-                        double AGBc = (leafc + stemc);
-                        double plantc = (AGBc + rootc);
-                        double BGBc = (rootc);
+                    double stemc = cover_fract * (stratum[0].cs.live_stemc
+                            + stratum[0].cs.dead_stemc
+                            + stratum[0].cs.livestemc_store
+                            + stratum[0].cs.deadstemc_store
+                            + stratum[0].cs.livestemc_transfer
+                            + stratum[0].cs.deadstemc_transfer
+                            + stratum[0].cs.cwdc + stratum[0].cs.cpool);
 
-                        double leafn = stratum[0].cover_fraction	* (stratum[0].ns.leafn
-                            + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer + stratum[0].ns.dead_leafn);
-                            //* patch[0].area;
+                    double rootc = cover_fract * (stratum[0].cs.live_crootc
+                        + stratum[0].cs.dead_crootc
+                        + stratum[0].cs.livecrootc_store
+                        + stratum[0].cs.deadcrootc_store
+                        + stratum[0].cs.livecrootc_transfer
+                        + stratum[0].cs.deadcrootc_transfer
+                        + stratum[0].cs.frootc
+                        + stratum[0].cs.frootc_store
+                        + stratum[0].cs.frootc_transfer);
 
-                        double stemn = stratum[0].cover_fraction * (stratum[0].ns.live_stemn
-                                + stratum[0].ns.dead_stemn
-                                + stratum[0].ns.livestemn_store
-                                + stratum[0].ns.deadstemn_store
-                                + stratum[0].ns.livestemn_transfer
-                                + stratum[0].ns.deadstemn_transfer
-                                + stratum[0].ns.cwdn + stratum[0].ns.npool);
+                    double AGBc = (leafc + stemc);
+                    double plantc = (AGBc + rootc);
+                    double BGBc = (rootc);
 
-                        double rootn = stratum[0].cover_fraction * (stratum[0].ns.live_crootn
-                            + stratum[0].ns.dead_crootn
-                            + stratum[0].ns.livecrootn_store
-                            + stratum[0].ns.deadcrootn_store
-                            + stratum[0].ns.livecrootn_transfer
-                            + stratum[0].ns.deadcrootn_transfer
-                            + stratum[0].ns.frootn
-                            + stratum[0].ns.frootn_store
-                            + stratum[0].ns.frootn_transfer);
+                    double leafn = cover_fract	* (stratum[0].ns.leafn
+                        + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer + stratum[0].ns.dead_leafn);
 
-                        double AGBn = (leafn + stemn);
-                        // plantn = 0.0;
-                        double plantn = (AGBn + rootn);
-                        // plantn = (leafn + stemn + rootn);
-                        double BGBn = (rootn);
+                    double stemn = cover_fract * (stratum[0].ns.live_stemn
+                            + stratum[0].ns.dead_stemn
+                            + stratum[0].ns.livestemn_store
+                            + stratum[0].ns.deadstemn_store
+                            + stratum[0].ns.livestemn_transfer
+                            + stratum[0].ns.deadstemn_transfer
+                            + stratum[0].ns.cwdn + stratum[0].ns.npool);
 
+                    double rootn = cover_fract * (stratum[0].ns.live_crootn
+                        + stratum[0].ns.dead_crootn
+                        + stratum[0].ns.livecrootn_store
+                        + stratum[0].ns.deadcrootn_store
+                        + stratum[0].ns.livecrootn_transfer
+                        + stratum[0].ns.deadcrootn_transfer
+                        + stratum[0].ns.frootn
+                        + stratum[0].ns.frootn_store
+                        + stratum[0].ns.frootn_transfer);
+
+                    double AGBn = (leafn + stemn);
+                    // plantn = 0.0;
+                    double plantn = (AGBn + rootn);
+                    // plantn = (leafn + stemn + rootn);
+                    //double BGBn = (rootn);
+
+                    if (((command_line[0].output_flags.yearly == 1) && (command_line[0].p != NULL )) || command_line[0].grow_flag > 0){
                         patch[0].acc_year.plantc += plantc; // JMG09272022
                         patch[0].acc_year.plantn += plantn; // JMG09272022
                         patch[0].acc_year.AGBc += AGBc; // JMG09272022
                         patch[0].acc_year.BGBc += BGBc; // JMG09272022
-
                     }
-                }
+
+
+
+                } /* end of c */
+            } /* end of layer */
 #endif
-             } /* end if */
         } /* end of p*/
       } /* end of z*/
     } /* end of h*/
+
     if (command_line[0].b != NULL) {
-      for (h=0; h < basin->num_hillslopes; ++h) {
-        for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
-            for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
-                struct patch_object *patch=basin->hillslopes[h]->zones[z]->patches[p];
-                if (command_line[0].output_flags.monthly == 1) {
-                    scale = patch[0].area / basin[0].area;
-                    basin[0].acc_month.streamflow += (patch[0].streamflow)
-                            * scale;
-                    basin[0].acc_month.et += (patch[0].transpiration_unsat_zone
-                            + patch[0].evaporation_surf
-                            + patch[0].exfiltration_unsat_zone
-                            + patch[0].exfiltration_sat_zone
-                            + patch[0].transpiration_sat_zone
-                            + patch[0].evaporation) * scale;
-                    basin[0].acc_month.denitrif += patch[0].ndf.denitrif
-                            * scale;
-                    basin[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate
-                            * scale;
-                    basin[0].acc_month.mineralized +=
-                            patch[0].ndf.net_mineralized * scale;
-                    basin[0].acc_month.uptake += patch[0].ndf.sminn_to_npool
-                            * scale;
-                    basin[0].acc_month.DON_loss +=
-                            (patch[0].soil_ns.DON_Qout_total
-                                    - patch[0].soil_ns.DON_Qin_total) * scale;
-                    basin[0].acc_month.DOC_loss +=
-                            (patch[0].soil_cs.DOC_Qout_total
-                                    - patch[0].soil_cs.DOC_Qin_total) * scale;
-                    basin[0].acc_month.length += 1;
-                    basin[0].acc_month.stream_NO3 += patch[0].streamflow_NO3
-                            * scale;
-                    basin[0].acc_month.stream_NH4 += patch[0].streamflow_NH4
-                            * scale;
-                    basin[0].acc_month.stream_DON += patch[0].streamflow_DON
-                            * scale;
-                    basin[0].acc_month.stream_DOC += patch[0].streamflow_DOC
-                            * scale;
-                    basin[0].acc_month.psn += patch[0].net_plant_psn * scale;
-                    basin[0].acc_month.lai += patch[0].lai * scale;
-                    basin[0].acc_month.leach += (patch[0].soil_ns.leach
-                            + patch[0].surface_ns_leach) * scale;
+        for (h=0; h < basin->num_hillslopes; ++h) {
 
-#ifdef LIU_TRACKING_BASIN_LITTERC
-                    acumulate_carbon_flux(&basin[0].acc_month.cdf,&patch[0].cdf,scale);
-#endif
+  #ifdef JMG_MORE_YEARLY_OUTPUT
+            struct hillslope_object *hillslope=basin->hillslopes[h]; // JMG10112022
+            double scale_hs = hillslope[0].area / basin[0].area; // JMG10112022
 
-                }
+            if (command_line[0].output_flags.yearly == 1) {
+                basin[0].acc_year.hill_gw_storage += hillslope[0].gw.storage * scale_hs; // JMG10112022
+                basin[0].acc_year.baseflow += hillslope[0].base_flow * scale_hs; // JMG10112022
+                basin[0].acc_year.hill_base_flow += hillslope[0].base_flow * scale_hs; // JMG10112022
+            }
 
-                if (command_line[0].output_flags.yearly == 1) {
-                    scale = patch[0].area / basin[0].area;
-                    basin[0].acc_year.length += 1;
-                    basin[0].acc_year.leach += (patch[0].soil_ns.leach
-                            + patch[0].surface_ns_leach) * scale;
-                    basin[0].acc_year.stream_NH4 += patch[0].streamflow_NH4
-                            * scale;
-                    basin[0].acc_year.stream_NO3 += patch[0].streamflow_NO3
-                            * scale;
-                    basin[0].acc_year.denitrif += patch[0].ndf.denitrif * scale;
-                    basin[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate
-                            * scale;
-                    basin[0].acc_year.mineralized +=
-                            patch[0].ndf.net_mineralized * scale;
-                    basin[0].acc_year.uptake += patch[0].ndf.sminn_to_npool
-                            * scale;
-                    basin[0].acc_year.DON_loss +=
-                            (patch[0].soil_ns.DON_Qout_total
-                                    - patch[0].soil_ns.DON_Qin_total) * scale;
-                    basin[0].acc_year.DOC_loss +=
-                            (patch[0].soil_cs.DOC_Qout_total
-                                    - patch[0].soil_cs.DOC_Qin_total) * scale;
-                    basin[0].acc_year.stream_DON += patch[0].streamflow_DON
-                            * scale;
-                    basin[0].acc_year.stream_DOC += patch[0].streamflow_DOC
-                            * scale;
-                    basin[0].acc_year.psn += patch[0].net_plant_psn * scale;
+  #endif
 
-                    basin[0].acc_year.TPET += (patch[0].PE + patch[0].PET)
-                            * scale;
-                    basin[0].acc_year.PET += patch[0].PET * scale;
-                    basin[0].acc_year.PE += patch[0].PE	* scale;
+          for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
+              for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
+                  struct patch_object *patch=basin->hillslopes[h]->zones[z]->patches[p];
+                  double scale_pch = patch[0].area / basin[0].area;
 
-                    basin[0].acc_year.et += (patch[0].evaporation
-                            + patch[0].evaporation_surf
-                            + patch[0].exfiltration_unsat_zone
-                            + patch[0].exfiltration_sat_zone
-                            + patch[0].transpiration_unsat_zone
-                            + patch[0].transpiration_sat_zone) * scale;
-                    basin[0].acc_year.streamflow += (patch[0].streamflow)
-                            * scale;
-                    basin[0].acc_year.lai += patch[0].lai * scale;
-                }
-            } /* end of p*/
-        } /* end of z*/
-      } /* end of h*/
+
+                  if (command_line[0].output_flags.monthly == 1) {
+                      //double scale_pch = patch[0].area / basin[0].area;
+                      basin[0].acc_month.streamflow += (patch[0].streamflow)
+                              * scale_pch;
+                      basin[0].acc_month.et += (patch[0].transpiration_unsat_zone
+                              + patch[0].evaporation_surf
+                              + patch[0].exfiltration_unsat_zone
+                              + patch[0].exfiltration_sat_zone
+                              + patch[0].transpiration_sat_zone
+                              + patch[0].evaporation) * scale_pch;
+                      basin[0].acc_month.denitrif += patch[0].ndf.denitrif
+                              * scale_pch;
+                      basin[0].acc_month.nitrif += patch[0].ndf.sminn_to_nitrate
+                              * scale_pch;
+                      basin[0].acc_month.mineralized +=
+                              patch[0].ndf.net_mineralized * scale_pch;
+                      basin[0].acc_month.uptake += patch[0].ndf.sminn_to_npool
+                              * scale_pch;
+                      basin[0].acc_month.DON_loss +=
+                              (patch[0].soil_ns.DON_Qout_total
+                                      - patch[0].soil_ns.DON_Qin_total) * scale_pch;
+                      basin[0].acc_month.DOC_loss +=
+                              (patch[0].soil_cs.DOC_Qout_total
+                                      - patch[0].soil_cs.DOC_Qin_total) * scale_pch;
+                      basin[0].acc_month.length += 1;
+                      basin[0].acc_month.stream_NO3 += patch[0].streamflow_NO3
+                              * scale_pch;
+                      basin[0].acc_month.stream_NH4 += patch[0].streamflow_NH4
+                              * scale_pch;
+                      basin[0].acc_month.stream_DON += patch[0].streamflow_DON
+                              * scale_pch;
+                      basin[0].acc_month.stream_DOC += patch[0].streamflow_DOC
+                              * scale_pch;
+                      basin[0].acc_month.psn += patch[0].net_plant_psn * scale_pch;
+                      basin[0].acc_month.lai += patch[0].lai * scale_pch;
+                      basin[0].acc_month.leach += (patch[0].soil_ns.leach
+                              + patch[0].surface_ns_leach) * scale_pch;
+
+  #ifdef LIU_TRACKING_BASIN_LITTERC
+                      /*acumulate_carbon_flux(&basin[0].acc_month.cdf,&patch[0].cdf,scale); */
+                      acumulate_carbon_flux(&basin[0].acc_month.cdf,&patch[0].cdf,scale_pch);
+  #endif
+
+                      /* TODO: Add same basin scale aggregation variable but for monthly */
+                  }
+
+                  if (command_line[0].output_flags.yearly == 1) {
+                      //double scale_pch = patch[0].area / basin[0].area;
+                      basin[0].acc_year.length += 1;
+                      basin[0].acc_year.leach += (patch[0].soil_ns.leach
+                              + patch[0].surface_ns_leach) * scale_pch;
+                      basin[0].acc_year.stream_NH4 += patch[0].streamflow_NH4
+                              * scale_pch;
+                      basin[0].acc_year.stream_NO3 += patch[0].streamflow_NO3
+                              * scale_pch;
+                      basin[0].acc_year.denitrif += patch[0].ndf.denitrif * scale_pch;
+                      basin[0].acc_year.nitrif += patch[0].ndf.sminn_to_nitrate
+                              * scale_pch;
+                      basin[0].acc_year.mineralized +=
+                              patch[0].ndf.net_mineralized * scale_pch;
+                      basin[0].acc_year.uptake += patch[0].ndf.sminn_to_npool
+                              * scale_pch;
+                      basin[0].acc_year.DON_loss +=
+                              (patch[0].soil_ns.DON_Qout_total
+                                      - patch[0].soil_ns.DON_Qin_total) * scale_pch;
+                      basin[0].acc_year.DOC_loss +=
+                              (patch[0].soil_cs.DOC_Qout_total
+                                      - patch[0].soil_cs.DOC_Qin_total) * scale_pch;
+                      basin[0].acc_year.stream_DON += patch[0].streamflow_DON
+                              * scale_pch;
+                      basin[0].acc_year.stream_DOC += patch[0].streamflow_DOC
+                              * scale_pch;
+                      basin[0].acc_year.psn += patch[0].net_plant_psn * scale_pch;
+
+                      basin[0].acc_year.TPET += (patch[0].PE + patch[0].PET)
+                              * scale_pch;
+                      basin[0].acc_year.PET += patch[0].PET * scale_pch;
+                      basin[0].acc_year.PE += patch[0].PE	* scale_pch;
+
+                      basin[0].acc_year.et += (patch[0].evaporation
+                              + patch[0].evaporation_surf
+                              + patch[0].exfiltration_unsat_zone
+                              + patch[0].exfiltration_sat_zone
+                              + patch[0].transpiration_unsat_zone
+                              + patch[0].transpiration_sat_zone) * scale_pch;
+                      basin[0].acc_year.streamflow += (patch[0].streamflow)
+                              * scale_pch;
+                      basin[0].acc_year.lai += patch[0].lai * scale_pch;
+
+  #ifdef JMG_MORE_YEARLY_OUTPUT
+                      basin[0].acc_year.n_deposition += (patch[0].zone->ndep_NH4 + patch[0].zone->ndep_NO3) * scale_pch; // JMG10112022
+                      basin[0].acc_year.pcp += (patch[0].zone->rain + patch[0].zone->snow) * scale_pch;
+                      basin[0].acc_year.baseflow += patch[0].base_flow * scale_pch; // JMG10112022 after hillslope[0].base_flow * scale_pch is added
+                      basin[0].acc_year.hill_base_flow += patch[0].base_flow * scale_pch; // JMG10112022 after hillslope[0].base_flow * scale_pch is added
+                      basin[0].acc_year.gw_drainage += patch[0].gw_drainage * scale_pch; // JMG10112022
+                      basin[0].acc_year.rz_storage += patch[0].rz_storage * scale_pch; // JMG10112022
+                      basin[0].acc_year.unsat_storage += patch[0].unsat_storage * scale_pch; // JMG10112022
+
+                      basin[0].acc_year.soilc += (patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c + patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c) * scale_pch; // JMG09272022
+                      basin[0].acc_year.soiln += (patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n + patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n) * scale_pch; // JMG09272022
+                      basin[0].acc_year.litrc += (patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c) * scale_pch; // JMG09272022
+                      basin[0].acc_year.litrn += (patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n + patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n) * scale_pch; // JMG09272022
+
+  #endif
+                  }
+
+  #ifdef JMG_MORE_YEARLY_OUTPUT
+                  for ( int layer=0 ; layer<patch[0].num_layers; layer++ ){
+                      for ( int c=0 ; c<patch[0].layers[layer].count; c++ ){
+                          struct  canopy_strata_object *stratum = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+                          double cover_fract = stratum[0].cover_fraction;
+
+                          double leafc = cover_fract * scale_pch * (stratum[0].cs.leafc
+                              + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc);
+
+                          double stemc = cover_fract * scale_pch * (stratum[0].cs.live_stemc
+                                  + stratum[0].cs.dead_stemc
+                                  + stratum[0].cs.livestemc_store
+                                  + stratum[0].cs.deadstemc_store
+                                  + stratum[0].cs.livestemc_transfer
+                                  + stratum[0].cs.deadstemc_transfer
+                                  + stratum[0].cs.cwdc + stratum[0].cs.cpool);
+
+                          double rootc = cover_fract * scale_pch * (stratum[0].cs.live_crootc
+                              + stratum[0].cs.dead_crootc
+                              + stratum[0].cs.livecrootc_store
+                              + stratum[0].cs.deadcrootc_store
+                              + stratum[0].cs.livecrootc_transfer
+                              + stratum[0].cs.deadcrootc_transfer
+                              + stratum[0].cs.frootc
+                              + stratum[0].cs.frootc_store
+                              + stratum[0].cs.frootc_transfer);
+
+                          double AGBc = (leafc + stemc);
+                          double plantc = (AGBc + rootc);
+                          double BGBc = (rootc);
+
+                          double leafn = cover_fract	* scale_pch * (stratum[0].ns.leafn
+                              + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer + stratum[0].ns.dead_leafn);
+
+                          double stemn = cover_fract * scale_pch * (stratum[0].ns.live_stemn
+                                  + stratum[0].ns.dead_stemn
+                                  + stratum[0].ns.livestemn_store
+                                  + stratum[0].ns.deadstemn_store
+                                  + stratum[0].ns.livestemn_transfer
+                                  + stratum[0].ns.deadstemn_transfer
+                                  + stratum[0].ns.cwdn + stratum[0].ns.npool);
+
+                          double rootn = cover_fract * scale_pch * (stratum[0].ns.live_crootn
+                              + stratum[0].ns.dead_crootn
+                              + stratum[0].ns.livecrootn_store
+                              + stratum[0].ns.deadcrootn_store
+                              + stratum[0].ns.livecrootn_transfer
+                              + stratum[0].ns.deadcrootn_transfer
+                              + stratum[0].ns.frootn
+                              + stratum[0].ns.frootn_store
+                              + stratum[0].ns.frootn_transfer);
+
+                          double AGBn = (leafn + stemn);
+                          // plantn = 0.0;
+                          double plantn = (AGBn + rootn);
+                          // plantn = (leafn + stemn + rootn);
+                          // double BGBn = (rootn);
+
+                          /* TODO: Add monthly accumulator */
+
+                          /* TODO: Add Monthly aggregation
+                          if (command_line[0].output_flags.monthly == 1) {
+                              basin[0].acc_month.plantc += plantc; // JMG10112022
+                              basin[0].acc_month.plantn += plantn; // JMG10112022
+                              basin[0].acc_month.AGBc += AGBc; // JMG10112022
+                              basin[0].acc_month.BGBc += BGBc; // JMG10112022
+                          }
+                          */
+
+                          if (command_line[0].output_flags.yearly == 1){
+                              basin[0].acc_year.plantc += plantc; // JMG10112022
+                              basin[0].acc_year.plantn += plantn; // JMG10112022
+                              basin[0].acc_year.AGBc += AGBc; // JMG10112022
+                              basin[0].acc_year.BGBc += BGBc; // JMG10112022
+                          } /* end if yearly */
+                      } /* end of c */
+                  } /* end of layer */
+  #endif
+              } /* end of p*/
+          } /* end of z*/
+        } /* end of h*/
     } /* end if */
-
 
     return;
 } /* end of update_basin_patch_accumulator.c */
 
 #ifdef LIU_TRACKING_BASIN_LITTERC
-int acumulate_carbon_flux(struct cdayflux_patch_struct *target, struct cdayflux_patch_struct *source, double scale)
-{
+int acumulate_carbon_flux(struct cdayflux_patch_struct *target, struct cdayflux_patch_struct *source, double scale){
     target->do_litr1c_loss += scale * source->do_litr1c_loss;
     target->do_litr2c_loss += scale * source->do_litr2c_loss;
     target->do_litr3c_loss += scale * source->do_litr3c_loss;
@@ -519,6 +643,5 @@ int acumulate_carbon_flux(struct cdayflux_patch_struct *target, struct cdayflux_
     target->litterc_to_atmos += scale * source->litterc_to_atmos;
     target->litterc_to_soilc += scale * source->litterc_to_soilc;
     return 0;
-
 }
 #endif
