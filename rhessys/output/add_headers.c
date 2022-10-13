@@ -212,7 +212,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 #ifndef JMG_MORE_YEARLY_OUTPUT
         "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 #else
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 #endif
         "year",
         "basinID",
@@ -246,7 +246,10 @@ void add_headers(struct world_output_file_object *world_output_files,
                     "plantc",
                     "plantn",
                     "AGBc",
-                    "BGBc"
+                    "BGBc",
+                    "lai",
+                    "sat_deficit",
+                    "sat_deficit_z"
 #endif
                     );
     }
@@ -521,7 +524,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 #ifndef JMG_MORE_YEARLY_OUTPUT
             "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
 #else
-            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
 #endif
             "year",
             "basinID",
@@ -569,7 +572,9 @@ void add_headers(struct world_output_file_object *world_output_files,
             "DON_loss",
             "denitrif",
             "nitrif",
-            "mineralized"
+            "mineralized",
+            "sat_deficit",
+            "sat_deficit_z"
 #endif
             );
     }

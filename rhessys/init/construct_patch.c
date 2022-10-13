@@ -291,6 +291,8 @@ struct patch_object *construct_patch(
     patch[0].acc_year.unsat_storage = 0.0; // JMG09082022
     patch[0].acc_year.gw_drainage = 0.0; // JMG09082022
     patch[0].acc_year.overland_flow = 0.0; // JMG09122022
+    patch[0].acc_year.sat_deficit = 0.0; // JMG10132022
+    patch[0].acc_year.sat_deficit_z = 0.0; // JMG10132022
 
     patch[0].acc_year.soilc = 0.0; // JMG09272022
     patch[0].acc_year.soiln = 0.0; // JMG09272022

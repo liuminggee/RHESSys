@@ -527,6 +527,8 @@ struct accumulate_patch_object
    double unsat_storage; // JMG09082022
    double gw_drainage; // JMG09122022
    double overland_flow; // JMG09122022
+   double  sat_deficit;  /* meters water */
+   double  sat_deficit_z; /* meters depth from surface */
 
    double pch_pcp; //JMG09122022
    double pch_et; //JMG09122022

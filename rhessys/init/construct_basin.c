@@ -315,6 +315,39 @@ struct basin_object *construct_basin(
   basin[0].acc_year.PE = 0.0;
   basin[0].acc_year.psn = 0.0;
   basin[0].acc_year.num_threshold = 0;
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+  basin[0].acc_year.baseflow = 0.0; // JMG10132022
+  basin[0].acc_year.returnflow = 0.0; // JMG10132022
+  basin[0].acc_year.rz_storage = 0.0; // JMG10132022
+  basin[0].acc_year.unsat_storage = 0.0; // JMG10132022
+  basin[0].acc_year.gw_drainage = 0.0; // JMG10132022
+  basin[0].acc_year.overland_flow = 0.0; // JMG10132022
+  basin[0].acc_year.sat_deficit = 0.0; // JMG10132022
+  basin[0].acc_year.sat_deficit_z = 0.0; // JMG10132022
+
+  basin[0].acc_year.soilc = 0.0; // JMG10132022
+  basin[0].acc_year.soiln = 0.0; // JMG10132022
+  basin[0].acc_year.litrc = 0.0; // JMG10132022
+  basin[0].acc_year.litrn = 0.0; // JMG10132022
+  basin[0].acc_year.plantc = 0.0; // JMG10132022
+  basin[0].acc_year.plantn = 0.0; // JMG10132022
+  basin[0].acc_year.AGBc = 0.0; // JMG10132022
+  basin[0].acc_year.BGBc = 0.0; // JMG10132022
+  basin[0].acc_year.n_deposition = 0.0; // JMG10132022
+
+  basin[0].acc_year.pch_pcp = 0.0; // JMG10132022
+  basin[0].acc_year.pch_et = 0.0; // JMG10132022
+  basin[0].acc_year.pch_streamflow = 0.0; // JMG10132022
+  basin[0].acc_year.pch_base_flow = 0.0; // JMG10132022
+  basin[0].acc_year.pch_return_flow = 0.0; // JMG10132022
+  basin[0].acc_year.pch_gw_drainage = 0.0; // JMG10132022
+  basin[0].acc_year.pch_rz_storage = 0.0; // JMG10132022
+  basin[0].acc_year.pch_unsat_storage = 0.0; // JMG10132022
+  basin[0].acc_year.hill_gw_storage = 0.0; // JMG10132022
+  basin[0].acc_year.hill_base_flow = 0.0; // JMG10132022
+#endif
+
 #ifdef LIU_TRACKING_BASIN_LITTERC
   memset(&basin[0].acc_month.cdf, 0, sizeof(struct cdayflux_patch_struct));
 #endif

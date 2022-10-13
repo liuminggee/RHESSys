@@ -256,6 +256,9 @@ void update_basin_patch_accumulator(
                 patch[0].acc_year.gw_drainage += patch[0].gw_drainage; // JMG10112022
                 patch[0].acc_year.baseflow += patch[0].base_flow; // JMG10112022
                 patch[0].acc_year.pch_base_flow += patch[0].base_flow; // JMG10112022
+
+                patch[0].acc_year.sat_deficit += patch[0].sat_deficit; // JMG10132022
+                patch[0].acc_year.sat_deficit_z += patch[0].sat_deficit_z; // JMG10132022
 #endif
 
             }
@@ -453,6 +456,8 @@ void update_basin_patch_accumulator(
                       basin[0].acc_year.gw_drainage += patch[0].gw_drainage * scale_pch; // JMG10112022
                       basin[0].acc_year.rz_storage += patch[0].rz_storage * scale_pch; // JMG10112022
                       basin[0].acc_year.unsat_storage += patch[0].unsat_storage * scale_pch; // JMG10112022
+                      basin[0].acc_year.sat_deficit += patch[0].sat_deficit * scale_pch; // JMG10132022
+                      basin[0].acc_year.sat_deficit_z += patch[0].sat_deficit_z * scale_pch; // JMG10132022
 
                       basin[0].acc_year.soilc += (patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c + patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c) * scale_pch; // JMG09272022
                       basin[0].acc_year.soiln += (patch[0].soil_ns.soil1n + patch[0].soil_ns.soil2n + patch[0].soil_ns.soil3n + patch[0].soil_ns.soil4n) * scale_pch; // JMG09272022

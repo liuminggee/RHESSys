@@ -45,10 +45,7 @@ void	output_yearly_patch(
 
 	if (patch[0].acc_year.length > 0) 
 		patch[0].acc_year.theta /= patch[0].acc_year.length;
-#ifdef JMG_MORE_YEARLY_OUTPUT
-        patch[0].acc_year.rz_storage /= patch[0].acc_year.length; // JMG09082022
-        patch[0].acc_year.unsat_storage /= patch[0].acc_year.length; // JMG09082022
-#endif
+
 	if (patch[0].acc_year.recharge > ZERO)
 		patch[0].acc_year.recharge_wyd /= patch[0].acc_year.recharge;
 
@@ -56,7 +53,7 @@ void	output_yearly_patch(
 #ifndef JMG_MORE_YEARLY_OUTPUT
             "%lf %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 #else
-            "%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+            "%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 #endif
 			current_date.year,
 			basinID,
@@ -103,8 +100,8 @@ void	output_yearly_patch(
             patch[0].acc_year.streamflow * 1000.0, // streamflow (mm/yr)
             patch[0].acc_year.baseflow * 1000.0, // baseflow (mm/yr) // JMG09082022
             patch[0].acc_year.returnflow * 1000.0, // returnflow (mm/yr)
-            patch[0].acc_year.rz_storage * 1000.0, // avg daily rootzone storage (mm) // JMG09082022
-            patch[0].acc_year.unsat_storage * 1000.0, // avg daily unsat storage (mm) // JMG09082022
+            patch[0].acc_year.rz_storage * 1000.0 / patch[0].acc_year.length, // avg daily rootzone storage (mm) // JMG09082022
+            patch[0].acc_year.unsat_storage * 1000.0 / patch[0].acc_year.length, // avg daily unsat storage (mm) // JMG09082022
             patch[0].acc_year.gw_drainage * 1000.0, // avg daily gw storage (mm) // JMG09082022
             patch[0].acc_year.overland_flow * 1000.0, // JMG09122022
             patch[0].acc_year.et * 1000.0, // evapotranspiration
@@ -129,7 +126,9 @@ void	output_yearly_patch(
             patch[0].acc_year.DON_loss * 1000.0,
             patch[0].acc_year.denitrif * 1000.0,
             patch[0].acc_year.nitrif * 1000.0,
-            patch[0].acc_year.mineralized * 1000.0
+            patch[0].acc_year.mineralized * 1000.0,
+            patch[0].acc_year.sat_deficit * 1000.0,
+            patch[0].acc_year.sat_deficit_z * 1000.0
 #endif
             );
 

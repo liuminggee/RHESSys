@@ -64,7 +64,7 @@ void	output_yearly_basin(
 #ifndef JMG_MORE_YEARLY_OUTPUT
         "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %lf %lf\n",
 #else
-        "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+        "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 #endif
         current_date.year,
         basin[0].ID,
@@ -106,7 +106,9 @@ void	output_yearly_basin(
             basin[0].acc_year.plantn / basin[0].acc_year.length,
             basin[0].acc_year.AGBc / basin[0].acc_year.length,
             basin[0].acc_year.BGBc / basin[0].acc_year.length,
-            basin[0].acc_year.lai/ basin[0].acc_year.length
+            basin[0].acc_year.lai / basin[0].acc_year.length,
+            basin[0].acc_year.sat_deficit * 1000.0/ basin[0].acc_year.length,
+            basin[0].acc_year.sat_deficit_z * 1000.0 / basin[0].acc_year.length
 #endif
         );
     if (check <= 0) {
