@@ -266,6 +266,14 @@ struct soil_default *construct_soil_defaults(
         defobj[0].soil_deficit_threshold = defobj[0].porosity_0 * defobj[0].porosity_decay
                                                         * (1. - exp(-defobj[0].soil_depth/defobj[0].porosity_decay))
                                                         *(1. - defobj[0].fs_threshold);
+        defobj[0].decay_rate[LNO3] = defobj[0].N_decay_rate;
+        defobj[0].decay_rate[LNH4] = defobj[0].N_decay_rate;
+        defobj[0].decay_rate[LDON] = defobj[0].DOM_decay_rate;
+        defobj[0].decay_rate[LDOC] = defobj[0].DOM_decay_rate;
+        defobj[0].adsorption_rate[LNO3] = defobj[0].NO3_adsorption_rate;
+        defobj[0].adsorption_rate[LNH4] = defobj[0].NH4_adsorption_rate;
+        defobj[0].adsorption_rate[LDON] = defobj[0].DON_adsorption_rate;
+        defobj[0].adsorption_rate[LDOC] = defobj[0].DOC_adsorption_rate;
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/

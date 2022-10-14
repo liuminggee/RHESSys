@@ -32,7 +32,10 @@
 /*--------------------------------------------------------------*/
 #include <stdio.h>
 #include "rhessys.h"
-
+#include "functions.h"
+#ifdef LIU_OMP_PATCH_LOCK
+#include "params.h"
+#endif
 
 void  update_drainage_land(
 					struct patch_object *patch,
@@ -68,20 +71,20 @@ void  update_drainage_land(
 		struct patch_object *);
 
 
-	double compute_N_leached(int,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double *);
+//	double compute_N_leached(int,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double *);
 	
 	double recompute_gamma(	
 		struct patch_object *,
@@ -183,97 +186,63 @@ void  update_drainage_land(
 
 
     //printf("route_to_patch(mm/day):%lf total_gamma:%lf\n",route_to_patch*1000/time_int/patch[0].area,total_gamma);
-
+    //double gamma = total_gamma / patch[0].area * time_int;
 
 
 	if (route_to_patch < 0.0) route_to_patch = 0.0;
 	if ( route_to_patch > available_sat_water) 
-		route_to_patch *= (available_sat_water)/(route_to_patch);
+        route_to_patch *= available_sat_water/route_to_patch;
+    double pQout = route_to_patch / patch[0].area;
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount				*/
 	/*--------------------------------------------------------------*/
+    double lpools[] = {patch[0].soil_ns.nitrate,
+                      patch[0].soil_ns.sminn,
+                      patch[0].soil_ns.DON,
+                      patch[0].soil_cs.DOC
+                      };
+    double leached[LEACH_ELEMENT_counts];
 	if (command_line[0].grow_flag > 0) {
-		Nout = compute_N_leached(
+
+        //double *Nout =
+        double t = compute_N_leached(
 			verbose_flag,
-			patch[0].soil_ns.nitrate,
-			route_to_patch / patch[0].area,
+            lpools,
+            pQout,
 			patch[0].sat_deficit,
 			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
+            //m,
+            //gamma,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].N_decay_rate,
+            patch[0].soil_defaults[0][0].decay_rate,
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].NO3_adsorption_rate,
-			patch[0].transmissivity_profile);
-		NO3_leached_to_patch = Nout * patch[0].area;
-		patch[0].soil_ns.NO3_Qout += Nout;
+            patch[0].soil_defaults[0][0].adsorption_rate,
+            leached
+            //patch[0].transmissivity_profile
+            );
 
+        NO3_leached_to_patch = leached[LNO3] * patch[0].area;
+        patch[0].soil_ns.NO3_Qout += leached[LNO3];
 
-		Nout = compute_N_leached(
-			verbose_flag,
-			patch[0].soil_ns.sminn,
-			route_to_patch / patch[0].area,
-			patch[0].sat_deficit,
-			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].N_decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].NH4_adsorption_rate,
-			patch[0].transmissivity_profile);
-		NH4_leached_to_patch = Nout * patch[0].area;
-		patch[0].soil_ns.NH4_Qout += Nout;
+        NH4_leached_to_patch = leached[LNH4] * patch[0].area;
+        patch[0].soil_ns.NH4_Qout += leached[LNH4];
 
-		Nout = compute_N_leached(
-			verbose_flag,
-			patch[0].soil_ns.DON,
-			route_to_patch / patch[0].area,
-			patch[0].sat_deficit,
-			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].DOM_decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].DON_adsorption_rate,
-			patch[0].transmissivity_profile);
-		DON_leached_to_patch = Nout * patch[0].area;
-		patch[0].soil_ns.DON_Qout += Nout;
+        DON_leached_to_patch = leached[LDON] * patch[0].area;
+        patch[0].soil_ns.DON_Qout += leached[LDON];
 
-		Nout = compute_N_leached(
-			verbose_flag,
-			patch[0].soil_cs.DOC,
-			route_to_patch / patch[0].area,
-			patch[0].sat_deficit,
-			patch[0].soil_defaults[0][0].soil_water_cap,
-			m,
-			total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-			patch[0].soil_defaults[0][0].DOM_decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-			patch[0].soil_defaults[0][0].DOC_adsorption_rate,
-			patch[0].transmissivity_profile);
-		DOC_leached_to_patch = Nout * patch[0].area;
-		patch[0].soil_cs.DOC_Qout += Nout;
-
+        DOC_leached_to_patch = leached[LDOC] * patch[0].area;
+        patch[0].soil_cs.DOC_Qout += leached[LDOC];
+        //free(Nout);
 
 	}
 
 	
-	patch[0].Qout += (route_to_patch / patch[0].area);
+    patch[0].Qout += pQout;
     //09132022LML
     if (patch[0].innundation_list[0].num_neighbours == 0) {
-        patch[0].base_flow += (route_to_patch / patch[0].area);
+        patch[0].base_flow += (pQout);
     }
 
 
@@ -309,78 +278,52 @@ void  update_drainage_land(
 	/*	lost in subsurface flow routing				*/
 	/*--------------------------------------------------------------*/
 		if (command_line[0].grow_flag > 0) {
-			Nout = compute_N_leached(
+            for (int i = 0; i < LEACH_ELEMENT_counts; i++) {
+                switch(i) {
+                case LNO3:
+                    lpools[i] = patch[0].soil_ns.nitrate - NO3_leached_to_patch/patch[0].area;
+                    break;
+                case LNH4:
+                    lpools[i] = patch[0].soil_ns.sminn - NH4_leached_to_patch/patch[0].area;
+                    break;
+                case LDON:
+                    lpools[i] = patch[0].soil_ns.DON - DON_leached_to_patch/patch[0].area;
+                    break;
+                case LDOC:
+                    lpools[i] = patch[0].soil_cs.DOC - DOC_leached_to_patch/patch[0].area;
+                }
+            }
+            //double *pNout =
+            double t = compute_N_leached(
 				verbose_flag,
-				patch[0].soil_ns.nitrate - (NO3_leached_to_patch/patch[0].area),
+                lpools,
 				return_flow,
 				0.0,
 				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
+                //m,
+                //gamma,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].N_decay_rate,
+                patch[0].soil_defaults[0][0].decay_rate,
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NO3_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_NO3 += Nout;
-			patch[0].soil_ns.NO3_Qout += Nout;
+                patch[0].soil_defaults[0][0].adsorption_rate,
+                leached
+                //patch[0].transmissivity_profile
+                    );
 
-			Nout = compute_N_leached(
-				verbose_flag,
-				patch[0].soil_ns.sminn - (NH4_leached_to_patch/patch[0].area),
-				return_flow,
-				0.0,
-				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].N_decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].NH4_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_NH4 += Nout;
-			patch[0].soil_ns.NH4_Qout += Nout;
+            patch[0].surface_NO3 += leached[LNO3];
+            patch[0].soil_ns.NO3_Qout += leached[LNO3];
 
+            patch[0].surface_NH4 += leached[LNH4];
+            patch[0].soil_ns.NH4_Qout += leached[LNH4];
 
-			Nout = compute_N_leached(
-				verbose_flag,
-				patch[0].soil_ns.DON - (DON_leached_to_patch/patch[0].area),
-				return_flow,
-				0.0,
-				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].DOM_decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DON_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_DON += Nout;
-			patch[0].soil_ns.DON_Qout += Nout;
+            patch[0].surface_DON += leached[LDON];
+            patch[0].soil_ns.DON_Qout += leached[LDON];
 
-			Nout = compute_N_leached(
-				verbose_flag,
-				patch[0].soil_cs.DOC - (DOC_leached_to_patch/patch[0].area),
-				return_flow,
-				0.0,
-				0.0,
-				m,
-				total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].DOM_decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-				patch[0].soil_defaults[0][0].DOC_adsorption_rate,
-				patch[0].transmissivity_profile);
-			patch[0].surface_DOC += Nout;
-			patch[0].soil_cs.DOC_Qout += Nout;
+            patch[0].surface_DOC += leached[LDOC];
+            patch[0].soil_cs.DOC_Qout += leached[LDOC];
+            //free(pNout);
 		}
 	
 	/*--------------------------------------------------------------*/
@@ -416,7 +359,7 @@ void  update_drainage_land(
             patch[0].return_flow += Qout;
         }
 
-		}
+    }//if
 			
 
 	if (NO3_leached_to_surface < 0.0)
@@ -431,31 +374,29 @@ void  update_drainage_land(
 	/* regular downslope routing */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].noredist_flag == 0) {
-	d=0;
-    //#pragma omp parallel for private(j,neigh,Qin)
-	for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
-		neigh = patch[0].innundation_list[d].neighbours[j].patch;  
-        double ngamma = patch[0].innundation_list[d].neighbours[j].gamma;
+    #pragma omp parallel for
+    for (int j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
+        struct  patch_object *neigh = patch[0].innundation_list[d].neighbours[j].patch;
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_set_lock(&locks_patch[neigh[0].Unique_ID_index]);
+#endif
+        double fgamma = patch[0].innundation_list[d].neighbours[j].gamma
+                        / neigh[0].area;
 		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
-        Qin =	(ngamma * route_to_patch) / neigh[0].area;
+        double Qin =	fgamma * route_to_patch;
 		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
 		if (command_line[0].grow_flag > 0) {
-            Nin = (ngamma * DON_leached_to_patch)
-				/ neigh[0].area;
-			neigh[0].soil_ns.DON_Qin += Nin;
-            Nin = (ngamma * DOC_leached_to_patch)
-				/ neigh[0].area;
-			neigh[0].soil_cs.DOC_Qin += Nin;
-            Nin = (ngamma * NO3_leached_to_patch)
-				/ neigh[0].area;
-			neigh[0].soil_ns.NO3_Qin += Nin;
-            Nin = (ngamma * NH4_leached_to_patch)
-				/ neigh[0].area;
-			neigh[0].soil_ns.NH4_Qin += Nin;
-			}
+            neigh[0].soil_ns.DON_Qin += fgamma * DON_leached_to_patch;
+            neigh[0].soil_cs.DOC_Qin += fgamma * DOC_leached_to_patch;
+            neigh[0].soil_ns.NO3_Qin += fgamma * NO3_leached_to_patch;
+            neigh[0].soil_ns.NH4_Qin += fgamma * NH4_leached_to_patch;
+        }
 		neigh[0].Qin += Qin;
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_unset_lock(&locks_patch[neigh[0].Unique_ID_index]);
+#endif
 	}
 
 	/*--------------------------------------------------------------*/
@@ -464,33 +405,31 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/* determine which innundation depth to consider		*/
 	/*--------------------------------------------------------------*/
+    d = 0;
     if (patch[0].num_innundation_depths > 0) {
 		  innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
-		  d=0;
 		  while ((innundation_depth > patch[0].innundation_list[d].critical_depth) 
 			  && (d < patch[0].num_innundation_depths-1)) {
 			  d++;}
-		}
-	else d=0;
-    //#pragma omp parallel for private(j,neigh,Qin,infiltration)
-	for (j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
-
-		neigh = patch[0].surface_innundation_list[d].neighbours[j].patch;
-        double ngamma = patch[0].surface_innundation_list[d].neighbours[j].gamma;
+    }
+    #pragma omp parallel for
+    for (int j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
+        struct  patch_object *neigh = patch[0].surface_innundation_list[d].neighbours[j].patch;
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_set_lock(&locks_patch[neigh[0].Unique_ID_index]);
+#endif
+        double fgamma = patch[0].surface_innundation_list[d].neighbours[j].gamma
+                        / neigh[0].area;
 		/*--------------------------------------------------------------*/
 		/* now transfer surface water and nitrogen */
 		/*	- first nitrogen					*/
 		/*--------------------------------------------------------------*/
 		if (command_line[0].grow_flag > 0) {
-            Nin = (ngamma * NO3_leached_to_surface) / neigh[0].area;
-			neigh[0].surface_NO3 += Nin;
-            Nin = (ngamma * NH4_leached_to_surface) / neigh[0].area;
-			neigh[0].surface_NH4 += Nin;
-            Nin = (ngamma * DON_leached_to_surface) / neigh[0].area;
-			neigh[0].surface_DON += Nin;
-            Nin = (ngamma * DOC_leached_to_surface) / neigh[0].area;
-			neigh[0].surface_DOC += Nin;
-			}
+            neigh[0].surface_NO3 += fgamma * NO3_leached_to_surface;
+            neigh[0].surface_NH4 += fgamma * NH4_leached_to_surface;
+            neigh[0].surface_DON += fgamma * DON_leached_to_surface;
+            neigh[0].surface_DOC += fgamma * DOC_leached_to_surface;
+        }
 		
 		/*--------------------------------------------------------------*/
 		/*	- now surface water 					*/
@@ -498,10 +437,10 @@ void  update_drainage_land(
 		/* added net surface water transfer to detention store		*/
 		/*--------------------------------------------------------------*/
 
-        Qin = (ngamma * route_to_surface) / neigh[0].area;
+        double Qin = fgamma * route_to_surface;
 		neigh[0].detention_store += Qin;// need fix this
 		neigh[0].surface_Qin += Qin;
-		
+        double infiltration = 0;
 		/*--------------------------------------------------------------*/
 		/* try to infiltrate this water					*/ 
 		/* use time_int as duration */
@@ -587,7 +526,9 @@ void  update_drainage_land(
 		}
 
 		neigh[0].detention_store -= infiltration;
-
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_unset_lock(&locks_patch[neigh[0].Unique_ID_index]);
+#endif
 	}
 
 	} /* end if redistribution flag */

@@ -128,7 +128,12 @@ struct patch_object *construct_patch(
     /*--------------------------------------------------------------*/
 
     paramPtr = readtag_worldfile(&paramCnt,world_file,"Patch");
-
+#ifdef LIU_OMP_PATCH_LOCK
+    static int patch_id_index = 0;
+    patch[0].Unique_ID_index = patch_id_index;
+    patch_id_index++;
+    num_patches = patch_id_index;
+#endif
     patch[0].ID = getIntWorldfile(&paramCnt,&paramPtr,"patch_ID","%d",-9999,0);
     patch[0].x = getDoubleWorldfile(&paramCnt,&paramPtr,"x","%lf",0.0,1);
     patch[0].y = getDoubleWorldfile(&paramCnt,&paramPtr,"y","%lf",0.0,1);

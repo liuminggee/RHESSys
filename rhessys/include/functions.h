@@ -70,6 +70,21 @@ void output_hourly_zone(int,int,struct zone_object *,struct date,FILE *);
 void compute_beetle_effects(struct patch_object *,int,double,int,int,double);
 
 int assign_neighbours_in_hillslope (struct neighbour_object *,int,struct hillslope_object *,FILE *);
-
+double	compute_N_leached(int verbose_flag,
+            double total_nitrate[],
+            double Qout,
+            double s1,
+            double s2,
+            //double m,
+            //double gamma,
+            double n_0,
+            double p,
+            double N_decay_rate[],
+            double z2_N,
+            double z2_water,
+            double N_absorption_rate[],
+            double nleached[]
+            //,double *transmissivity
+                          );
 
 #endif

@@ -343,7 +343,10 @@
 #include <errno.h>
 
 #include "rhessys.h"
-
+#ifdef LIU_OMP_PATCH_LOCK
+#include <omp.h>
+#include "params.h"
+#endif
 
 struct world_object *construct_world(struct command_line_object *command_line){
 	/*----------------------------------------------------*/
@@ -974,7 +977,11 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	if ( header_file_flag ) {
 		fclose(header_file);
 	}
-
+#ifdef LIU_OMP_PATCH_LOCK
+    locks_patch = (omp_lock_t *)malloc(num_patches * sizeof(omp_lock_t));
+    #pragma omp parallel for
+    for (int i = 0; i < num_patches; i++) omp_init_lock(&locks_patch[i]);
+#endif
 
 	return(world);
 } /*end construct_world.c*/

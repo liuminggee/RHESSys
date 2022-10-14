@@ -290,6 +290,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
+#include "params.h"
 #include "rhessys.h"
 #include <time.h>
 
@@ -479,6 +480,12 @@ int	main( int main_argc, char **main_argv)
 	/*--------------------------------------------------------------*/
     clock_t endClock =clock();
 	
+#ifdef LIU_OMP_PATCH_LOCK
+    #pragma omp parallel for
+    for (int i = 0; i < num_patches; i++) omp_destroy_lock(&locks_patch[i]);
+    free(locks_patch);
+#endif
+
     printf("\ntime cost = %ld seconds\n",(endClock - startClock)/CLOCKS_PER_SEC);
 
 	return(EXIT_SUCCESS);

@@ -1,3 +1,6 @@
+#ifdef LIU_OMP_PATCH_LOCK
+#include <omp.h>
+#endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +23,10 @@ double perc[] = {   0.2,
                     0.1,
                     0.1,
                     0.1};
-
+#ifdef LIU_OMP_PATCH_LOCK
+int num_patches;
+omp_lock_t* locks_patch;
+#endif
 param * readParamFile(int *paramCnt, char *filename)
 {
 
