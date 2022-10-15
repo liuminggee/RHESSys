@@ -989,7 +989,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             /* final stream flow calculations				*/
             /*--------------------------------------------------------------*/
 
-            #pragma omp critical
+            #pragma omp critical (test1)
             {
             hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
             hillslope[0].hillslope_outflow += (patch[0].streamflow) * patch[0].area;

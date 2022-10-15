@@ -951,7 +951,7 @@ void compute_subsurface_routing_hourly(
 			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 		      				+ patch[0].hourly_sur2stream_flow;
 
-            #pragma omp critical
+            #pragma omp critical (test2)
             {
 			hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
             }
