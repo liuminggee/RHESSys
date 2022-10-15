@@ -133,8 +133,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
 
-  #pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
-  for (int i = 0; i < hillslope->route_list->num_patches; i++) {
+    #pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
+    for (int i = 0; i < hillslope->route_list->num_patches; i++) {
         struct patch_object *patch = hillslope->route_list->list[i];
 		patch[0].streamflow = 0.0;
 		patch[0].return_flow = 0.0;

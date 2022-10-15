@@ -92,7 +92,7 @@ void		hillslope_hourly(
 	/*--------------------------------------------------------------*/
 	/*	Simulate zones requested.								*/
 	/*--------------------------------------------------------------*/
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int zone=0 ; zone < hillslope[0].num_zones ; zone++ ){
 		if ( hillslope[0].zones[zone][0].Kdown_diffuse > 1.0e100)
 			printf("\n Date %d %d %d %d is Zone Hourly Diffuse is %10.6f",
