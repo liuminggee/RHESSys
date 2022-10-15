@@ -286,7 +286,7 @@ void compute_subsurface_routing_hourly(
         for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
 #ifdef LIU_OMP_PATCH_LOCK
-            omp_set_lock(&locks_patch[patch[1].Unique_ID_index]);
+            omp_set_lock(&locks_patch[1][patch[1].Unique_ID_index]);
 #endif
 
 			/*--------------------------------------------------------------*/
@@ -526,7 +526,7 @@ void compute_subsurface_routing_hourly(
 								Nout = NO3_out + NH4_out + DON_out;
 							}
 #ifdef LIU_OMP_PATCH_LOCK
-                            omp_set_lock(&locks_patch[neigh[1].Unique_ID_index]);
+                            omp_set_lock(&locks_patch[1][neigh[1].Unique_ID_index]);
 #endif
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
@@ -575,7 +575,7 @@ void compute_subsurface_routing_hourly(
 
 							}
 #ifdef LIU_OMP_PATCH_LOCK
-                            omp_unset_lock(&locks_patch[neigh[1].Unique_ID_index]);
+                            omp_unset_lock(&locks_patch[1][neigh[1].Unique_ID_index]);
 #endif
                         } //j
 						if (grow_flag > 0) {
@@ -970,7 +970,7 @@ void compute_subsurface_routing_hourly(
 		    
 
 #ifdef LIU_OMP_PATCH_LOCK
-            omp_unset_lock(&locks_patch[patch[1].Unique_ID_index]);
+            omp_unset_lock(&locks_patch[1][patch[1].Unique_ID_index]);
 #endif
 		} /* end i */
 
