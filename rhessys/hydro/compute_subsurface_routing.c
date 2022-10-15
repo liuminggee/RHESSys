@@ -231,11 +231,11 @@ void compute_subsurface_routing(struct command_line_object *command_line,
         #pragma omp parallel for
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
-#ifdef LIU_OMP_PATCH_LOCK
-            omp_set_lock(&locks_patch[patch[0].Unique_ID_index]);
-            printf("compute_subsurface_routing:locked_patch:%d,thread:%d num_streads:%d\n"
-                   ,patch[0].ID,omp_get_thread_num(),omp_get_num_threads());
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+//            printf("compute_subsurface_routing:locked_patch:%d,thread:%d num_streads:%d\n"
+//                   ,patch[0].ID,omp_get_thread_num(),omp_get_num_threads());
+//#endif
             patch[0].hourly_subsur2stream_flow = 0;
 			patch[0].hourly_sur2stream_flow = 0;
 			patch[0].hourly_stream_flow = 0;
@@ -262,17 +262,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				update_drainage_land(patch, command_line, time_int,
 						verbose_flag);
 			}
-#ifdef LIU_OMP_PATCH_LOCK
-            omp_unset_lock(&locks_patch[patch[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+//#endif
 		} /* end i */
 
 		/*--------------------------------------------------------------*/
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-        //10102022LML #pragma omp parallel for
-		for (i = 0; i < hillslope->route_list->num_patches; i++) {
+        #pragma omp parallel for
+        for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
 
 			/*--------------------------------------------------------------*/
@@ -411,9 +411,16 @@ void compute_subsurface_routing(struct command_line_object *command_line,
         if (k == (n_timesteps -1))
         {
             double leached[LEACH_ELEMENT_counts];
-            for (i = 0; i < hillslope->route_list->num_patches; i++) {
+            #pragma omp parallel for
+            for (int i = 0; i < hillslope->route_list->num_patches; i++) {
               struct patch_object *patch = hillslope->route_list->list[i];
               double excess = 0;
+#ifdef LIU_OMP_PATCH_LOCK
+              omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+              //            printf("compute_subsurface_routing:locked_patch:%d,thread:%d num_streads:%d\n"
+              //                   ,patch[0].ID,omp_get_thread_num(),omp_get_num_threads());
+#endif
+
               if ((patch[0].sat_deficit
                     - (patch[0].unsat_storage + patch[0].rz_storage))
                     < -1.0 * ZERO) {
@@ -973,11 +980,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 patch[0].streamflow += patch[0].return_flow
                     + patch[0].base_flow;
             }
+#ifdef LIU_OMP_PATCH_LOCK
+            omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+#endif
+
 
             /*--------------------------------------------------------------*/
             /* final stream flow calculations				*/
             /*--------------------------------------------------------------*/
 
+            #pragma omp critical
+            {
             hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
             hillslope[0].hillslope_outflow += (patch[0].streamflow) * patch[0].area;
             hillslope[0].hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
@@ -985,6 +998,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             hillslope[0].hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
             hillslope[0].hillslope_detention_store += patch[0].detention_store
                     * patch[0].area;
+            }
 
 
 

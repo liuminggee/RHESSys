@@ -247,9 +247,9 @@ void compute_subsurface_routing_hourly(
         #pragma omp parallel for
         for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
-#ifdef LIU_OMP_PATCH_LOCK
-            omp_set_lock(&locks_patch[patch[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_set_lock(&locks_patch[patch[0].Unique_ID_index]);
+//#endif
             struct litter_object *litter=&(patch[0].litter);
 			/*--------------------------------------------------------------*/
 			/*	for roads, saturated throughflow beneath road cut	*/
@@ -273,17 +273,21 @@ void compute_subsurface_routing_hourly(
 			}
 
 
-#ifdef LIU_OMP_PATCH_LOCK
-            omp_unset_lock(&locks_patch[patch[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_unset_lock(&locks_patch[patch[0].Unique_ID_index]);
+//#endif
 		} /* end i */
 
 		/*--------------------------------------------------------------*/
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-		for (i = 0; i < hillslope->route_list->num_patches; i++) {
-			patch = hillslope->route_list->list[i];
+        #pragma omp parallel for private(excess,rz_drainage,add_field_capacity,infiltration,unsat_drainage)
+        for (int i = 0; i < hillslope->route_list->num_patches; i++) {
+            struct patch_object *patch = hillslope->route_list->list[i];
+#ifdef LIU_OMP_PATCH_LOCK
+            omp_set_lock(&locks_patch[patch[1].Unique_ID_index]);
+#endif
 
 			/*--------------------------------------------------------------*/
 			/*	update subsurface 				*/
@@ -508,7 +512,7 @@ void compute_subsurface_routing_hourly(
 						}
 
 						for (j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
-							neigh = patch->surface_innundation_list[d].neighbours[j].patch;
+                            struct patch_object *neigh = patch->surface_innundation_list[d].neighbours[j].patch;
 							Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
 							if (grow_flag > 0) {
 								NO3_out = Qout / patch[0].detention_store
@@ -521,6 +525,9 @@ void compute_subsurface_routing_hourly(
 										* patch[0].surface_DOC;
 								Nout = NO3_out + NH4_out + DON_out;
 							}
+#ifdef LIU_OMP_PATCH_LOCK
+                            omp_set_lock(&locks_patch[neigh[1].Unique_ID_index]);
+#endif
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
 										/ neigh[0].area;
@@ -567,7 +574,10 @@ void compute_subsurface_routing_hourly(
 								}
 
 							}
-						}
+#ifdef LIU_OMP_PATCH_LOCK
+                            omp_unset_lock(&locks_patch[neigh[1].Unique_ID_index]);
+#endif
+                        } //j
 						if (grow_flag > 0) {
 							patch[0].surface_DOC -= (excess
 									/ patch[0].detention_store)
@@ -584,11 +594,11 @@ void compute_subsurface_routing_hourly(
 							patch[0].surface_ns_leach += (excess
 									/ patch[0].detention_store)
 									* patch[0].surface_NO3;
-						}
+                        } //if
 						patch[0].detention_store -= excess;
 						patch[0].Qout_total += excess;
-					}
-				}
+                    } //else
+                } //if
 				/*-------------------------------------------------------------------------*/
 				/*Recompute current actual depth to water table				*/
 				/*-------------------------------------------------------------------------*/
@@ -941,7 +951,9 @@ void compute_subsurface_routing_hourly(
 			patch[0].hourly_stream_flow += patch[0].hourly_subsur2stream_flow
 		      				+ patch[0].hourly_sur2stream_flow;
 
+            #pragma omp critical
 			hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
+
 
 
 
@@ -956,9 +968,9 @@ void compute_subsurface_routing_hourly(
 			}
 		    
 
-			
-	
-
+#ifdef LIU_OMP_PATCH_LOCK
+            omp_unset_lock(&locks_patch[patch[1].Unique_ID_index]);
+#endif
 		} /* end i */
 
 

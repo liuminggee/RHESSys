@@ -123,13 +123,13 @@ void  update_drainage_land(
 	double route_to_surface;  /* m3 */
 	double return_flow,route_to_patch ;  /* m3 */
 	double available_sat_water; /* m3 */
-	double Qin, Qout;  /* m */
-	double innundation_depth, infiltration; /* m */
+    double Qin, Qout;  /* m */
+    double innundation_depth, infiltration; /* m */
 	double total_gamma;
-	double Nin, Nout; /* kg/m2 */ 
+    double Nin, Nout; /* kg/m2 */
     //double t1,t2,t3;
 
-	struct patch_object *neigh;
+    //struct patch_object *neigh;
 	route_to_patch = 0.0;
 	route_to_surface = 0.0;
 	return_flow=0.0;
@@ -151,7 +151,7 @@ void  update_drainage_land(
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
 
-	m = patch[0].m ;
+    //m = patch[0].m ;
     //Ksat = patch[0].soil_defaults[0][0].Ksat_0 ;
 	d=0;
 
@@ -202,8 +202,12 @@ void  update_drainage_land(
                       patch[0].soil_cs.DOC
                       };
     double leached[LEACH_ELEMENT_counts];
-	if (command_line[0].grow_flag > 0) {
 
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+#endif
+
+	if (command_line[0].grow_flag > 0) {
         //double *Nout =
         double t = compute_N_leached(
 			verbose_flag,
@@ -277,7 +281,7 @@ void  update_drainage_land(
 	/*	we assume that only nitrate follows return flow		*/
 	/*	lost in subsurface flow routing				*/
 	/*--------------------------------------------------------------*/
-		if (command_line[0].grow_flag > 0) {
+    if (command_line[0].grow_flag > 0) {
             for (int i = 0; i < LEACH_ELEMENT_counts; i++) {
                 switch(i) {
                 case LNO3:
@@ -324,7 +328,7 @@ void  update_drainage_land(
             patch[0].surface_DOC += leached[LDOC];
             patch[0].soil_cs.DOC_Qout += leached[LDOC];
             //free(pNout);
-		}
+    }
 	
 	/*--------------------------------------------------------------*/
 	/*	route water and nitrogen lossed due to infiltration excess */
@@ -360,7 +364,11 @@ void  update_drainage_land(
         }
 
     }//if
-			
+
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+#endif
+
 
 	if (NO3_leached_to_surface < 0.0)
 		printf("WARNING %d %lf",patch[0].ID, NO3_leached_to_surface);
@@ -374,11 +382,11 @@ void  update_drainage_land(
 	/* regular downslope routing */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].noredist_flag == 0) {
-    #pragma omp parallel for
-    for (int j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
+    //#pragma omp parallel for
+      for (int j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
         struct  patch_object *neigh = patch[0].innundation_list[d].neighbours[j].patch;
 #ifdef LIU_OMP_PATCH_LOCK
-        omp_set_lock(&locks_patch[neigh[0].Unique_ID_index]);
+        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 #endif
         double fgamma = patch[0].innundation_list[d].neighbours[j].gamma
                         / neigh[0].area;
@@ -395,9 +403,9 @@ void  update_drainage_land(
         }
 		neigh[0].Qin += Qin;
 #ifdef LIU_OMP_PATCH_LOCK
-        omp_unset_lock(&locks_patch[neigh[0].Unique_ID_index]);
+        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 #endif
-	}
+      } //j
 
 	/*--------------------------------------------------------------*/
 	/* surface downslope routing */
@@ -405,18 +413,18 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/* determine which innundation depth to consider		*/
 	/*--------------------------------------------------------------*/
-    d = 0;
-    if (patch[0].num_innundation_depths > 0) {
+      d = 0;
+      if (patch[0].num_innundation_depths > 0) {
 		  innundation_depth = patch[0].detention_store + route_to_surface/patch[0].area; 
 		  while ((innundation_depth > patch[0].innundation_list[d].critical_depth) 
 			  && (d < patch[0].num_innundation_depths-1)) {
 			  d++;}
-    }
-    #pragma omp parallel for
-    for (int j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
+      }
+    //#pragma omp parallel for
+      for (int j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
         struct  patch_object *neigh = patch[0].surface_innundation_list[d].neighbours[j].patch;
 #ifdef LIU_OMP_PATCH_LOCK
-        omp_set_lock(&locks_patch[neigh[0].Unique_ID_index]);
+        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 #endif
         double fgamma = patch[0].surface_innundation_list[d].neighbours[j].gamma
                         / neigh[0].area;
@@ -527,13 +535,13 @@ void  update_drainage_land(
 
 		neigh[0].detention_store -= infiltration;
 #ifdef LIU_OMP_PATCH_LOCK
-        omp_unset_lock(&locks_patch[neigh[0].Unique_ID_index]);
+        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 #endif
-	}
+      }//j
 
-	} /* end if redistribution flag */
+    } /* end if redistribution flag */
 
-	return;
+    return;
 
 } /*end update_drainage_land.c*/
 

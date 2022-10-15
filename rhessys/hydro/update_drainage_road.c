@@ -31,6 +31,7 @@
 /*											*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include "params.h"
 #include "rhessys.h"
 #include "functions.h"
 
@@ -168,6 +169,9 @@ void  update_drainage_road(
                       };
     double leached_to_patch[LEACH_ELEMENT_counts];
     double tot_leached[LEACH_ELEMENT_counts];
+#ifdef LIU_OMP_PATCH_LOCK
+     omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+#endif
 	if (road_int_depth > patch[0].sat_deficit) {
 	/*------------------------------------------------------------*/
 	/*	calculate amuount of water output to patches			*/
@@ -473,6 +477,9 @@ void  update_drainage_road(
 	d=0;
 	for (j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
 		neigh = patch[0].innundation_list[d].neighbours[j].patch;  
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+#endif
 		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
@@ -492,9 +499,14 @@ void  update_drainage_road(
 			neigh[0].soil_cs.DOC_Qin += Nin;
 			}
 		neigh[0].Qin += Qin;
-
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+#endif
 
 	}
+#ifdef LIU_OMP_PATCH_LOCK
+        omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+#endif
 
 
 } /*end update_drainage_road.c*/

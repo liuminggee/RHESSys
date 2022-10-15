@@ -25,7 +25,7 @@ double perc[] = {   0.2,
                     0.1};
 #ifdef LIU_OMP_PATCH_LOCK
 int num_patches;
-omp_lock_t* locks_patch;
+omp_lock_t* locks_patch[NUMLOCKS];
 #endif
 param * readParamFile(int *paramCnt, char *filename)
 {

@@ -35,6 +35,7 @@ double getDoubleWorldfile(int *paramCnt, param **paramPtr , char *paramName, cha
 extern double normal[9], perc[9];
 #ifdef LIU_OMP_PATCH_LOCK
 extern int num_patches;
-extern omp_lock_t* locks_patch;
+#define NUMLOCKS 3
+extern omp_lock_t* locks_patch[NUMLOCKS];
 #endif
 #endif

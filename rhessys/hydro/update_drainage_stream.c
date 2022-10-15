@@ -31,6 +31,7 @@
 /*											*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include "params.h"
 #include "rhessys.h"
 #include "functions.h"
 
@@ -162,6 +163,9 @@ void  update_drainage_stream(
                       patch[0].soil_cs.DOC
                       };
     double leached[LEACH_ELEMENT_counts];
+#ifdef LIU_OMP_PATCH_LOCK
+     omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+#endif
 	if (command_line[0].grow_flag > 0) {
 
             double t = compute_N_leached(
@@ -305,6 +309,8 @@ void  update_drainage_stream(
 		patch[0].return_flow += Qout; 
 		patch[0].hourly_sur2stream_flow += Qout;
 		}
-
+#ifdef LIU_OMP_PATCH_LOCK
+     omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+#endif
 } /*end update_drainage_stream.c*/
 

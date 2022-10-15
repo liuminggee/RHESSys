@@ -978,9 +978,11 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		fclose(header_file);
 	}
 #ifdef LIU_OMP_PATCH_LOCK
-    locks_patch = (omp_lock_t *)malloc(num_patches * sizeof(omp_lock_t));
-    #pragma omp parallel for
-    for (int i = 0; i < num_patches; i++) omp_init_lock(&locks_patch[i]);
+    for (int l = 0; l < NUMLOCKS; l++) {
+      locks_patch[l] = (omp_lock_t *)malloc(num_patches * sizeof(omp_lock_t));
+      #pragma omp parallel for
+      for (int i = 0; i < num_patches; i++) omp_init_lock(&locks_patch[l][i]);
+    }
 #endif
 
 	return(world);
