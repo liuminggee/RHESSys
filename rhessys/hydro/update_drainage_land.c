@@ -203,9 +203,9 @@ void  update_drainage_land(
                       };
     double leached[LEACH_ELEMENT_counts];
 
-#ifdef LIU_OMP_PATCH_LOCK
-        omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//        omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+//#endif
 
 	if (command_line[0].grow_flag > 0) {
         //double *Nout =
@@ -365,9 +365,9 @@ void  update_drainage_land(
 
     }//if
 
-#ifdef LIU_OMP_PATCH_LOCK
-        omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//        omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+//#endif
 
 
 	if (NO3_leached_to_surface < 0.0)
@@ -385,9 +385,9 @@ void  update_drainage_land(
     //#pragma omp parallel for
       for (int j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
         struct  patch_object *neigh = patch[0].innundation_list[d].neighbours[j].patch;
-#ifdef LIU_OMP_PATCH_LOCK
-        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+//#endif
         double fgamma = patch[0].innundation_list[d].neighbours[j].gamma
                         / neigh[0].area;
 		/*--------------------------------------------------------------*/
@@ -402,9 +402,9 @@ void  update_drainage_land(
             neigh[0].soil_ns.NH4_Qin += fgamma * NH4_leached_to_patch;
         }
 		neigh[0].Qin += Qin;
-#ifdef LIU_OMP_PATCH_LOCK
-        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+//#endif
       } //j
 
 	/*--------------------------------------------------------------*/
@@ -423,9 +423,9 @@ void  update_drainage_land(
     //#pragma omp parallel for
       for (int j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
         struct  patch_object *neigh = patch[0].surface_innundation_list[d].neighbours[j].patch;
-#ifdef LIU_OMP_PATCH_LOCK
-        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+//#endif
         double fgamma = patch[0].surface_innundation_list[d].neighbours[j].gamma
                         / neigh[0].area;
 		/*--------------------------------------------------------------*/
@@ -534,9 +534,9 @@ void  update_drainage_land(
 		}
 
 		neigh[0].detention_store -= infiltration;
-#ifdef LIU_OMP_PATCH_LOCK
-        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+//#endif
       }//j
 
     } /* end if redistribution flag */

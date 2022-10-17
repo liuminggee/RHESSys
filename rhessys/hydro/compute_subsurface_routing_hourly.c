@@ -141,7 +141,7 @@ void compute_subsurface_routing_hourly(
 		d = 0;
 		// Note: this assumes that the set of patches in the surface routing table is identical to
 		//       the set of patches in the subsurface flow table
-        #pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
+        //#pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
         for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
 
@@ -226,7 +226,7 @@ void compute_subsurface_routing_hourly(
 	/*	calculate Qout for each patch and add appropriate	*/
 	/*	proportion of subsurface outflow to each neighbour	*/
 	/*--------------------------------------------------------------*/
-        #pragma omp parallel for
+        //#pragma omp parallel for
         for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
 						
@@ -244,7 +244,7 @@ void compute_subsurface_routing_hourly(
 			patch[0].hourly[0].streamflow_NO3_from_sub = 0;
 			patch[0].hourly[0].streamflow_NO3_from_surface = 0;
 		}
-        #pragma omp parallel for
+        //10172022LML seems no benifit #pragma omp parallel for
         for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
 //#ifdef LIU_OMP_PATCH_LOCK
@@ -282,12 +282,12 @@ void compute_subsurface_routing_hourly(
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-        #pragma omp parallel for private(excess,rz_drainage,add_field_capacity,infiltration,unsat_drainage)
+        //10172022LML seems no benifit #pragma omp parallel for private(excess,rz_drainage,add_field_capacity,infiltration,unsat_drainage)
         for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
-#ifdef LIU_OMP_PATCH_LOCK
-            omp_set_lock(&locks_patch[1][patch[1].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_set_lock(&locks_patch[1][patch[1].Unique_ID_index]);
+//#endif
 
 			/*--------------------------------------------------------------*/
 			/*	update subsurface 				*/
@@ -511,9 +511,9 @@ void compute_subsurface_routing_hourly(
 							d = 0;
 						}
 
-						for (j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
+                        for (int j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
                             struct patch_object *neigh = patch->surface_innundation_list[d].neighbours[j].patch;
-							Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
+                            double Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
 							if (grow_flag > 0) {
 								NO3_out = Qout / patch[0].detention_store
 										* patch[0].surface_NO3;
@@ -525,9 +525,9 @@ void compute_subsurface_routing_hourly(
 										* patch[0].surface_DOC;
 								Nout = NO3_out + NH4_out + DON_out;
 							}
-#ifdef LIU_OMP_PATCH_LOCK
-                            omp_set_lock(&locks_patch[1][neigh[1].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//                            omp_set_lock(&locks_patch[1][neigh[1].Unique_ID_index]);
+//#endif
 							if (neigh[0].drainage_type == STREAM) {
 								neigh[0].Qin_total += Qout * patch[0].area
 										/ neigh[0].area;
@@ -574,9 +574,9 @@ void compute_subsurface_routing_hourly(
 								}
 
 							}
-#ifdef LIU_OMP_PATCH_LOCK
-                            omp_unset_lock(&locks_patch[1][neigh[1].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//                            omp_unset_lock(&locks_patch[1][neigh[1].Unique_ID_index]);
+//#endif
                         } //j
 						if (grow_flag > 0) {
 							patch[0].surface_DOC -= (excess
@@ -969,9 +969,9 @@ void compute_subsurface_routing_hourly(
 			}
 		    
 
-#ifdef LIU_OMP_PATCH_LOCK
-            omp_unset_lock(&locks_patch[1][patch[1].Unique_ID_index]);
-#endif
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_unset_lock(&locks_patch[1][patch[1].Unique_ID_index]);
+//#endif
 		} /* end i */
 
 
