@@ -481,9 +481,11 @@ int	main( int main_argc, char **main_argv)
     clock_t endClock =clock();
 	
 #ifdef LIU_OMP_PATCH_LOCK
-    #pragma omp parallel for
-    for (int i = 0; i < num_patches; i++) omp_destroy_lock(&locks_patch[i]);
-    free(locks_patch);
+    for (int l = 0; l < NUMLOCKS; l++) {
+      for (int i = 0; i < num_patches; i++)
+        omp_destroy_lock(&locks_patch[l][i]);
+      free(locks_patch[l])
+    }
 #endif
 
     printf("\ntime cost = %ld seconds\n",(endClock - startClock)/CLOCKS_PER_SEC);
