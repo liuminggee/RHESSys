@@ -101,7 +101,8 @@ void		hillslope_daily_I(
 	/*	hourly processes for objects below it; however this woukld 	*/
 	/*	mean storing all of the (numerous) daily parameters .		*/
 	/*--------------------------------------------------------------*/
-	for ( zone=0 ; zone<hillslope[0].num_zones; zone++ ){
+    //#pragma omp parallel for
+    for (int zone=0 ; zone<hillslope[0].num_zones; zone++ ){
 		zone_daily_I( 	day,
 			world,
 			basin,
