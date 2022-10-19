@@ -33,7 +33,11 @@ void	output_yearly_patch(
 				int basinID, int hillID, int zoneID,
 				struct	patch_object	*patch,
 				struct	date	current_date,
-				FILE *outfile)
+                FILE *outfile
+#ifdef JMG_TRACKING
+                ,struct simtime *simtime
+#endif
+        )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -49,13 +53,29 @@ void	output_yearly_patch(
 	if (patch[0].acc_year.recharge > ZERO)
 		patch[0].acc_year.recharge_wyd /= patch[0].acc_year.recharge;
 
-    fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-            "%lf %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic[] = "%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-            "%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%lf %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n";
 #endif
-			current_date.year,
+
+#ifdef JMG_TRACKING
+    char out_format[] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+            simtime->sday,
+            simtime->smth,
+            simtime->syr,
+#endif
+
+            current_date.year,
 			basinID,
 			hillID,
 			zoneID,

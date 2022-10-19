@@ -46,32 +46,52 @@ void	execute_monthly_output_event(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
-	void output_monthly_basin(
+    void output_monthly_basin(
 		struct	basin_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 	
-	void output_monthly_hillslope(	int,
+    void output_monthly_hillslope(int,
 		struct	hillslope_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                                  );
 	
-	void output_monthly_zone(	int, int,
+    void output_monthly_zone(int, int,
 		struct	zone_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                             );
 	
 	void output_monthly_patch(
 		int, int, int,
 		struct	patch_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 	
 	void output_monthly_canopy_stratum(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -96,7 +116,11 @@ void	execute_monthly_output_event(
 					output_monthly_basin(
 					world[0].basins[b],
 					date,
-					outfile->basin->monthly);
+                    outfile->basin->monthly
+#ifdef JMG_TRACKING
+                    ,&world[0].track_simtime
+#endif
+                            );
 			}
 			/*--------------------------------------------------------------*/
 			/*	check to see if there are any lower print options			*/
@@ -121,7 +145,11 @@ void	execute_monthly_output_event(
 								world[0].basins[b][0].ID,
 								world[0].basins[b]->hillslopes[h],
 								date,
-								outfile->hillslope->monthly);
+                                outfile->hillslope->monthly
+#ifdef JMG_TRACKING
+                                ,&world[0].track_simtime
+#endif
+                                        );
 					}
 					/*------------------------------------------------------------*/
 					/*	check to see if there are any lower print options			*/
@@ -152,7 +180,11 @@ void	execute_monthly_output_event(
 											world[0].basins[b][0].hillslopes[h][0].ID,
 											world[0].basins[b]->hillslopes[h]->zones[z],
 											date,
-											outfile->zone->monthly);
+                                            outfile->zone->monthly
+#ifdef JMG_TRACKING
+                                            ,&world[0].track_simtime
+#endif
+                                                    );
 							}
 							/*------------------------------------------------------*/
 							/*	check to see if there are any lower print options	  */
@@ -187,7 +219,11 @@ void	execute_monthly_output_event(
 														world[0].basins[b]->hillslopes[h]->zones[z]->ID,
 														world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 														date,
-														outfile->patch->monthly);
+                                                        outfile->patch->monthly
+#ifdef JMG_TRACKING
+                                                        ,&world[0].track_simtime
+#endif
+                                                                );
 									}
 									/*-----------------------------------------------*/
 									/*	Construct the canopy_stratum output_monthly file*/
@@ -221,7 +257,11 @@ void	execute_monthly_output_event(
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date,
-																outfile->canopy_stratum->monthly);
+                                                                outfile->canopy_stratum->monthly
+#ifdef JMG_TRACKING
+                                                                ,&world[0].track_simtime
+#endif
+                                                                        );
 										} /* end stratum (c) for loop */
 									} /* end if options */
 								} /* end patch (p) for loop */

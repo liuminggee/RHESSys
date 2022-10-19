@@ -36,7 +36,11 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 			struct	canopy_strata_object	*stratum,
 			struct	date	current_date,
 			struct	command_line_object *command_line,
-			FILE *outfile)
+            FILE *outfile
+#ifdef JMG_TRACKING
+            ,struct simtime *simtime
+#endif
+                                             )
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/
@@ -61,13 +65,28 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 
 #endif
 
-
-    fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-           "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic[] = "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-            "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format[] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+            simtime->sday,
+            simtime->smth,
+            simtime->syr,
+#endif
+
         	current_date.year,
         	basinID,
         	hillID,

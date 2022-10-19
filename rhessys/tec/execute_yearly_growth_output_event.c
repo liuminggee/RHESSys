@@ -46,29 +46,50 @@ void	execute_yearly_growth_output_event(
 	void output_yearly_growth_basin(
 		struct	basin_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 
 	void output_yearly_growth_hillslope( int,
 		struct	hillslope_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                                         );
 
 	void output_yearly_growth_zone( 	int, int,
 		struct	zone_object *,
 		struct	date,
-		FILE	*);
+        FILE *
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                                        );
 
 	void output_yearly_growth_patch(	int, int, int,
 		struct	patch_object *,
 		struct	date,
-		FILE	*);
+        FILE *
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                                        );
 
 	void output_yearly_growth_canopy_stratum(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
 		struct  command_line_object *,
-		FILE	*);
+        FILE *
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
+
     void output_yearly_growth_fire(
         int, int, int, int,
 		struct	canopy_strata_object *,
@@ -101,7 +122,11 @@ void	execute_yearly_growth_output_event(
 					output_yearly_growth_basin(
 					world[0].basins[b],
 					date,
-					outfile->basin->yearly);
+                    outfile->basin->yearly
+#ifdef JMG_TRACKING
+                    ,&world[0].track_simtime
+#endif
+                            );
 			}
 			/*--------------------------------------------------------------*/
 			/*	output_growth hillslopes 											*/
@@ -120,7 +145,11 @@ void	execute_yearly_growth_output_event(
 							world[0].basins[b][0].ID,
 							world[0].basins[b]->hillslopes[h],
 							date,
-							outfile->hillslope->yearly);
+                            outfile->hillslope->yearly
+#ifdef JMG_TRACKING
+                            ,&world[0].track_simtime
+#endif
+                                    );
 				}
 				/*--------------------------------------------------------------*/
 				/*	output_growth zones												*/
@@ -143,7 +172,11 @@ void	execute_yearly_growth_output_event(
 									world[0].basins[b][0].hillslopes[h][0].ID,
 									world[0].basins[b]->hillslopes[h]->zones[z],
 									date,
-									outfile->zone->yearly);
+                                    outfile->zone->yearly
+#ifdef JMG_TRACKING
+                                    ,&world[0].track_simtime
+#endif
+                                            );
 					}
 					/*------------------------------------------------------------*/
 					/*	output_growth patches 												*/
@@ -173,7 +206,11 @@ void	execute_yearly_growth_output_event(
 											world[0].basins[b]->hillslopes[h]->zones[z]->ID,
 											world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 											date,
-											outfile->patch->yearly);
+                                            outfile->patch->yearly
+#ifdef JMG_TRACKING
+                                            ,&world[0].track_simtime
+#endif
+                                                    );
 						}
 						/*----------------------------------------------------------*/
 						/*	Construct the canopy_stratum output_growth files			*/
@@ -208,7 +245,11 @@ void	execute_yearly_growth_output_event(
 													world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 													date,
 													command_line,
-													outfile->canopy_stratum->yearly);
+                                                    outfile->canopy_stratum->yearly
+#ifdef JMG_TRACKING
+                                                    ,&world[0].track_simtime
+#endif
+                                                            );
 							} /* end if options */
 									/*------------------------------------------------*/
 									/*	Construct the fire yearly growth output files */

@@ -46,28 +46,49 @@ void	execute_yearly_output_event( int reset_flag,
 	void output_yearly_basin(
 		struct	basin_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 
-	void output_yearly_hillslope( int,
+    void output_yearly_hillslope(int,
 		struct	hillslope_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+      ,struct simtime *
+#endif
+                                  );
 
-	void output_yearly_zone( 	int, int,
+    void output_yearly_zone(int, int,
 		struct	zone_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                                );
 
-	void output_yearly_patch(	int, int, int,
+    void output_yearly_patch(int, int, int,
 		struct	patch_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                             );
 
 	void output_yearly_canopy_stratum(
 		int, int, int, int,int,
 		struct	canopy_strata_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
+
     void output_yearly_fire(
 		int, int, int, int,
 		struct	canopy_strata_object *,
@@ -98,7 +119,11 @@ void	execute_yearly_output_event( int reset_flag,
 					output_yearly_basin(
 					world[0].basins[b],
 					date,
-					outfile->basin->yearly);
+                    outfile->basin->yearly
+#ifdef JMG_TRACKING
+                    ,&world[0].track_simtime
+#endif
+                            );
 			}
 			/*--------------------------------------------------------------*/
 			/*	check to see if there are any lower print options			*/
@@ -124,7 +149,11 @@ void	execute_yearly_output_event( int reset_flag,
 								world[0].basins[b][0].ID,
 								world[0].basins[b]->hillslopes[h],
 								date,
-								outfile->hillslope->yearly);
+                                outfile->hillslope->yearly
+#ifdef JMG_TRACKING
+                                ,&world[0].track_simtime
+#endif
+                                        );
 					}
 					/*--------------------------------------------------*/
 					/*check to see if there are any lower print options */
@@ -155,7 +184,11 @@ void	execute_yearly_output_event( int reset_flag,
 											world[0].basins[b][0].hillslopes[h][0].ID,
 											world[0].basins[b]->hillslopes[h]->zones[z],
 											date,
-											outfile->zone->yearly);
+                                            outfile->zone->yearly
+#ifdef JMG_TRACKING
+                                            ,&world[0].track_simtime
+#endif
+                                                    );
 							}
 							/*----------------------------------*/
 							/*check to see if there are any	lower print options*/
@@ -190,7 +223,11 @@ void	execute_yearly_output_event( int reset_flag,
 														world[0].basins[b]->hillslopes[h]->zones[z]->ID,
 														world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 														date,
-														outfile->patch->yearly);
+                                                        outfile->patch->yearly
+#ifdef JMG_TRACKING
+                                                        ,&world[0].track_simtime
+#endif
+                                                                );
 									}
 									/*------------------------------------------*/
 									/*	Construct the canopy_stratum output files*/
@@ -225,7 +262,11 @@ void	execute_yearly_output_event( int reset_flag,
 																reset_flag,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date,
-																outfile->canopy_stratum->yearly);
+                                                                outfile->canopy_stratum->yearly
+#ifdef JMG_TRACKING
+                                                                ,&world[0].track_simtime
+#endif
+                                                                        );
 										} /* end stratum (c) for loop */
 									} /* end if options */
 

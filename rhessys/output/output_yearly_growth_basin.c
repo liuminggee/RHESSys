@@ -32,7 +32,11 @@
 void	output_yearly_growth_basin(
 								   struct	basin_object	*basin,
 								   struct	date	date,
-								   FILE *outfile)
+                                   FILE *outfile
+#ifdef JMG_TRACKING
+                                    ,struct simtime *simtime
+#endif
+        )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -132,7 +136,25 @@ void	output_yearly_growth_basin(
 	astreamflow_N /= aarea;
 	adenitrif /= aarea;
 	ard /= aarea;
-	fprintf(outfile,"%d %d %lf %lf %lf %lf %lf %lf %lf %lf \n",
+
+    char out_basic[] = "%d %d %lf %lf %lf %lf %lf %lf %lf %lf \n";
+
+#ifdef JMG_TRACKING
+    char out_format[] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
+#endif
+
 		date.year,
 		basin[0].ID,
 		agpsn,

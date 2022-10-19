@@ -32,7 +32,11 @@
 void	output_yearly_basin(
                              struct	basin_object	*basin,
                              struct	date	current_date,
-                             FILE *outfile)
+                             FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+        )
 {
     /*------------------------------------------------------*/
     /*	Local Function Declarations.						*/
@@ -58,14 +62,28 @@ void	output_yearly_basin(
 
     if (basin[0].acc_year.length == 0) basin[0].acc_year.length = 1;
 
-
-
-    check = fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-        "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %lf %lf\n",
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic[] = "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-        "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %lf %lf\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format[] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    check = fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
+#endif
+
         current_date.year,
         basin[0].ID,
 #ifndef JMG_MORE_YEARLY_OUTPUT

@@ -32,7 +32,11 @@
 void	output_basin(			int routing_flag,
 					 struct	basin_object	*basin,
 					 struct	date	date,
-					 FILE *outfile)
+                     FILE *outfile
+#ifdef JMG_TRACKING
+                     ,struct simtime *simtime
+#endif
+                                )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -82,6 +86,7 @@ void	output_basin(			int routing_flag,
 	struct	zone_object	*zone;
 	struct hillslope_object *hillslope;
 	double alitr_decomp, adecom_daily;
+
 	/*--------------------------------------------------------------*/
 	/*	Initialize Accumlating variables.								*/
 	/*--------------------------------------------------------------*/
@@ -442,9 +447,25 @@ void	output_basin(			int routing_flag,
 	var_trans /= aarea;
 	var_acctrans /= aarea;
 
+    char out_basic[] = "%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 
-	fprintf(outfile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
-		date.day,
+#ifdef JMG_TRACKING
+    char out_format[] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+            simtime->sday,
+            simtime->smth,
+            simtime->syr,
+#endif
+
+        date.day,
 		date.month,
 		date.year,
 		basin[0].ID,

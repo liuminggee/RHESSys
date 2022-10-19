@@ -240,6 +240,14 @@ struct date
         long    hour;
         };
 
+#ifdef JMG_TRACKING
+struct simtime
+{
+    int syr;
+    int smth;
+    int sday;
+};
+#endif
 /*----------------------------------------------------------*/
 /*      Define default object.                              */
 /*----------------------------------------------------------*/
@@ -327,6 +335,9 @@ struct world_object
         struct  date                    start_date;
         struct  date                    end_date;
         struct  date                    duration;
+#ifdef JMG_TRACKING
+        struct simtime  track_simtime;
+#endif
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;

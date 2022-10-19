@@ -32,7 +32,11 @@
 void	output_monthly_zone(	int basinID, int hillID,
 							struct	zone_object	*zone,
 							struct	date	current_date,
-							FILE *outfile)
+                            FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+                                )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -46,8 +50,26 @@ void	output_monthly_zone(	int basinID, int hillID,
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
 	if (zone[0].acc_month.length == 0) zone[0].acc_month.length = 1;
-	fprintf(outfile,"%4d %4d %3d %3d %3d %8.5f %8.5f %8.5f %8.3f %8.3f\n ",
-		current_date.month,
+
+    char out_basic[] = "%4d %4d %3d %3d %3d %8.5f %8.5f %8.5f %8.3f %8.3f\n ";
+
+#ifdef JMG_TRACKING
+    char out_format[] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+            simtime->sday,
+            simtime->smth,
+            simtime->syr,
+#endif
+
+        current_date.month,
 		current_date.year,
 		basinID,
 		hillID,

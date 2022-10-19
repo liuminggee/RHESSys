@@ -205,6 +205,12 @@ void	execute_tec(
 	struct	date	next_date;
 	struct	tec_entry	*event;
 
+#ifdef JMG_TRACKING
+    world[0].track_simtime.syr = 1;
+    world[0].track_simtime.smth = 1;
+    world[0].track_simtime.sday = 1;
+#endif
+
 	/*--------------------------------------------------------------*/
 	/*	Initialize the indices into the base station clime sequences*/
 	/*--------------------------------------------------------------*/
@@ -235,7 +241,7 @@ void	execute_tec(
 		/*--------------------------------------------------------------*/
 		/*		Perform the tec event.									*/
 		/*--------------------------------------------------------------*/
-		handle_event(event,command_line,current_date,world);
+        handle_event(event,command_line,current_date,world);
 #ifdef LIU_BURN_ALL_AT_ONCE
         //printf("Event: year:%d mon:%d day:%d command:%s\n",event[0].cal_date.year,
         //        event[0].cal_date.month,event[0].cal_date.day,event[0].command);
@@ -332,10 +338,14 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			Check if this is a day end.							*/
 			/*--------------------------------------------------------------*/
-			if ( current_date.hour == 25 ){
+			if ( current_date.hour == 25 ){                
 				/*--------------------------------------------------------------*/
 				/*			Simulate the world for the end of this day e		*/
 				/*--------------------------------------------------------------*/
+//#ifdef JMG_TRACKING
+//        /* Update simulation day count */
+//                world[0].track_simtime.sday += 1;
+//#endif
                 world_daily_F(
 					day,
 					world,
@@ -422,15 +432,23 @@ void	execute_tec(
 				if (command_line[0].verbose_flag > 0)
 					fprintf(stderr,"\n\nYEAR %d MONTH %d DAY %d\n\n",
 					current_date.year,current_date.month,current_date.day);
+
+#ifdef JMG_TRACKING
+                /* Update simulation day count */
+                world[0].track_simtime.sday += 1;
+#endif
 			} /*end if*/
 			/*--------------------------------------------------------------*/
 			/*			Check if this is a month end.						*/
 			/*--------------------------------------------------------------*/
-			if ( next_date.month !=	current_date.month ){
+			if ( next_date.month !=	current_date.month ){                
 				/*--------------------------------------------------------------*/
 				/*				Do monthly stuff.								*/
 				/*--------------------------------------------------------------*/
-
+//#ifdef JMG_TRACKING
+//        /* Update simulation month count */
+//                world[0].track_simtime.smth += 1;
+//#endif
 				/*--------------------------------------------------------------*/
 				/* if fire spread is called - initiate fire spread routine 	*/
 				/*--------------------------------------------------------------*/
@@ -448,17 +466,23 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested monthly output				*/
 				/*--------------------------------------------------------------*/
-				if (command_line[0].output_flags.monthly == 1)
+                if (command_line[0].output_flags.monthly == 1){
 						execute_monthly_output_event(
 						world,
 						command_line,
 						current_date,
 						outfile);
+                }
 				/*--------------------------------------------------------------*/
 				/*				increment month 								*/
 				/*--------------------------------------------------------------*/
 				month = month + 1;
 				current_date.month = next_date.month;
+
+#ifdef JMG_TRACKING
+                /* Update simulation month count */
+                world[0].track_simtime.smth += 1;
+#endif
 			} /* end if */
 			/*--------------------------------------------------------------*/
 			/*			Check if this is a year end.						*/
@@ -467,7 +491,10 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				Do yearly stuff.								*/
 				/*--------------------------------------------------------------*/
-
+//#ifdef JMG_TRACKING
+//        /* Update simulation */
+//                world[0].track_simtime.syr += 1;
+//#endif
 				/*--------------------------------------------------------------*/
 				/* if beetle spread is called - initiate beetle spread routine 	*/
 				/*--------------------------------------------------------------*/
@@ -478,10 +505,6 @@ void	execute_tec(
 						current_date);
 				}
 
-
-
-
-
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/
@@ -489,7 +512,12 @@ void	execute_tec(
                 printf("\nYear %d\n", current_date.year);
 #endif
 				year = year + 1;
-				current_date.year= next_date.year;
+                current_date.year= next_date.year;
+
+#ifdef JMG_TRACKING
+                /*Update simulation */
+                world[0].track_simtime.syr += 1;
+#endif
 
 //#ifdef LIU_BURN_ALL_AT_ONCE
                 if (command_line[0].fire_spin_flag != 0) {
@@ -524,7 +552,12 @@ void	execute_tec(
                 }
 //#endif
 
-			}  /*end if*/
+/*#ifdef JMG_TRACKING*/
+                /* Update simulation */
+/*                world[0].track_simtime.syr += 1;
+#endif */
+
+            }  /*end if*/
 			} /*end while*/
 		} /*end while*/
 		return;
