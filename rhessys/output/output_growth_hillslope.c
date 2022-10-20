@@ -284,10 +284,10 @@ void	output_growth_hillslope(              int  basinID,
     char out_basic[] = "%ld %ld %ld %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 
 #ifdef JMG_TRACKING
-    char out_format[] = "%d %d %d ";
+    char out_format[1000] = "%d %d %d ";
     strcat(out_format,out_basic);
 #else
-    char out_format[] = "";
+    char out_format[1000] = "";
     strcat(out_format, out_basic);
 #endif
 

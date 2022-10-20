@@ -54,10 +54,10 @@ void	output_monthly_zone(	int basinID, int hillID,
     char out_basic[] = "%4d %4d %3d %3d %3d %8.5f %8.5f %8.5f %8.3f %8.3f\n ";
 
 #ifdef JMG_TRACKING
-    char out_format[] = "%d %d %d ";
+    char out_format[1000] = "%d %d %d ";
     strcat(out_format,out_basic);
 #else
-    char out_format[] = "";
+    char out_format[1000] = "";
     strcat(out_format, out_basic);
 #endif
 

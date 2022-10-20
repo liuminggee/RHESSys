@@ -140,10 +140,10 @@ void	output_yearly_growth_basin(
     char out_basic[] = "%d %d %lf %lf %lf %lf %lf %lf %lf %lf \n";
 
 #ifdef JMG_TRACKING
-    char out_format[] = "%d %d %d ";
+    char out_format[1000] = "%d %d %d ";
     strcat(out_format,out_basic);
 #else
-    char out_format[] = "";
+    char out_format[1000] = "";
     strcat(out_format, out_basic);
 #endif
 

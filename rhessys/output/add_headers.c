@@ -106,10 +106,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_basin_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_basin_daily[] = "%s %s %s ";
+    char out_format_basin_daily[1000] = "%s %s %s ";
     strcat(out_format_basin_daily,out_basic_basin_daily);
 #else
-    char out_format_basin_daily[] = "";
+    char out_format_basin_daily[1000] = "";
     strcat(out_format_basin_daily, out_basic_basin_daily);
 #endif
 
@@ -195,10 +195,10 @@ void add_headers(struct world_output_file_object *world_output_files,
 #endif
 
 #ifdef JMG_TRACKING
-    char out_format_basin_monthly[] = "%s %s %s ";
+    char out_format_basin_monthly[1000] = "%s %s %s ";
     strcat(out_format_basin_monthly,out_basic_basin_monthly);
 #else
-    char out_format_basin_monthly[] = "";
+    char out_format_basin_monthly[1000] = "";
     strcat(out_format_basin_monthly, out_basic_basin_monthly);
 #endif
 
@@ -249,10 +249,10 @@ void add_headers(struct world_output_file_object *world_output_files,
 #endif
 
 #ifdef JMG_TRACKING
-    char out_format_basin_yearly[] = "%s %s %s ";
+    char out_format_basin_yearly[1000] = "%s %s %s ";
     strcat(out_format_basin_yearly,out_basic_basin_yearly);
 #else
-    char out_format_basin_yearly[] = "";
+    char out_format_basin_yearly[1000] = "";
     strcat(out_format_basin_yearly, out_basic_basin_yearly);
 #endif
 
@@ -316,10 +316,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_hillslope_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_hillslope_daily[] = "%s %s %s ";
+    char out_format_hillslope_daily[1000] = "%s %s %s ";
     strcat(out_format_hillslope_daily,out_basic_hillslope_daily);
 #else
-    char out_format_hillslope_daily[] = "";
+    char out_format_hillslope_daily[1000] = "";
     strcat(out_format_hillslope_daily, out_basic_hillslope_daily);
 #endif
 
@@ -384,10 +384,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_hillslope_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_hillslope_monthly[] = "%s %s %s ";
+    char out_format_hillslope_monthly[1000] = "%s %s %s ";
     strcat(out_format_hillslope_monthly,out_basic_hillslope_monthly);
 #else
-    char out_format_hillslope_monthly[] = "";
+    char out_format_hillslope_monthly[1000] = "";
     strcat(out_format_hillslope_monthly, out_basic_hillslope_monthly);
 #endif
 
@@ -426,10 +426,10 @@ void add_headers(struct world_output_file_object *world_output_files,
 #endif
 
 #ifdef JMG_TRACKING
-    char out_format_hillslope_yearly[] = "%s %s %s ";
+    char out_format_hillslope_yearly[1000] = "%s %s %s ";
     strcat(out_format_hillslope_yearly,out_basic_hillslope_yearly);
 #else
-    char out_format_hillslope_yearly[] = "";
+    char out_format_hillslope_yearly[1000] = "";
     strcat(out_format_hillslope_yearly, out_basic_hillslope_yearly);
 #endif
 
@@ -479,10 +479,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_zone_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_zone_daily[] = "%s %s %s ";
+    char out_format_zone_daily[1000] = "%s %s %s ";
     strcat(out_format_zone_daily,out_basic_zone_daily);
 #else
-    char out_format_zone_daily[] = "";
+    char out_format_zone_daily[1000] = "";
     strcat(out_format_zone_daily, out_basic_zone_daily);
 #endif
 
@@ -524,10 +524,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_zone_monthly[] = "%s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_zone_monthly[] = "%s %s %s ";
+    char out_format_zone_monthly[1000] = "%s %s %s ";
     strcat(out_format_zone_monthly,out_basic_zone_monthly);
 #else
-    char out_format_zone_monthly[] = "";
+    char out_format_zone_monthly[1000] = "";
     strcat(out_format_zone_monthly, out_basic_zone_monthly);
 #endif
 
@@ -587,10 +587,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_patch_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_patch_daily[] = "%s %s %s ";
+    char out_format_patch_daily[1000] = "%s %s %s ";
     strcat(out_format_patch_daily,out_basic_patch_daily);
 #else
-    char out_format_patch_daily[] = "";
+    char out_format_patch_daily[1000] = "";
     strcat(out_format_patch_daily, out_basic_patch_daily);
 #endif
 
@@ -656,10 +656,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_patch_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_patch_monthly[] = "%s %s %s ";
+    char out_format_patch_monthly[1000] = "%s %s %s ";
     strcat(out_format_patch_monthly,out_basic_patch_monthly);
 #else
-    char out_format_patch_monthly[] = "";
+    char out_format_patch_monthly[1000] = "";
     strcat(out_format_patch_monthly, out_basic_patch_monthly);
 #endif
 
@@ -696,10 +696,10 @@ void add_headers(struct world_output_file_object *world_output_files,
 #endif
 
 #ifdef JMG_TRACKING
-    char out_format_patch_yearly[] = "%s %s %s ";
+    char out_format_patch_yearly[1000] = "%s %s %s ";
     strcat(out_format_patch_yearly,out_basic_patch_yearly);
 #else
-    char out_format_patch_yearly[] = "";
+    char out_format_patch_yearly[1000] = "";
     strcat(out_format_patch_yearly, out_basic_patch_yearly);
 #endif
 
@@ -776,10 +776,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_stratum_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_stratum_daily[] = "%s %s %s ";
+    char out_format_stratum_daily[1000] = "%s %s %s ";
     strcat(out_format_stratum_daily,out_basic_stratum_daily);
 #else
-    char out_format_stratum_daily[] = "";
+    char out_format_stratum_daily[1000] = "";
     strcat(out_format_stratum_daily, out_basic_stratum_daily);
 #endif
 
@@ -827,10 +827,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_stratum_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_stratum_monthly[] = "%s %s %s ";
+    char out_format_stratum_monthly[1000] = "%s %s %s ";
     strcat(out_format_stratum_monthly,out_basic_stratum_monthly);
 #else
-    char out_format_stratum_monthly[] = "";
+    char out_format_stratum_monthly[1000] = "";
     strcat(out_format_stratum_monthly, out_basic_stratum_monthly);
 #endif
 
@@ -864,10 +864,10 @@ void add_headers(struct world_output_file_object *world_output_files,
     char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
-    char out_format_stratum_yearly[] = "%s %s %s ";
+    char out_format_stratum_yearly[1000] = "%s %s %s ";
     strcat(out_format_stratum_yearly,out_basic_stratum_yearly);
 #else
-    char out_format_stratum_yearly[] = "";
+    char out_format_stratum_yearly[1000] = "";
     strcat(out_format_stratum_yearly, out_basic_stratum_yearly);
 #endif
 
