@@ -38,7 +38,9 @@ DEFINES += NO_UPDATE_160419 \
            xLIU_HIGH_NDEP \
            LIU_GAMMA_TRANSMISSIVITY_NEW \
            JMG_MORE_YEARLY_OUTPUT \
-           xLIU_OMP_PATCH_LOCK
+           xLIU_OMP_PATCH_LOCK \
+           JMG_TRACKING
+
 
 
 

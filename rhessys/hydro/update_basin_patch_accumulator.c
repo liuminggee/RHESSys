@@ -59,12 +59,12 @@ void update_basin_patch_accumulator(
 //#ifndef JMG_MORE_YEARLY_OUTPUT
 //    #pragma omp parallel for private(h,z,p)
 //#else
-//    #pragma omp parallel for private(h,z,p,layer,c)
+    #pragma omp parallel for
 //#endif
     //10102022LML #pragma omp parallel for private(h,z,p)
-    for (h=0; h < basin->num_hillslopes; ++h) {
-      for(z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
-        for (p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
+    for (int h=0; h < basin->num_hillslopes; ++h) {
+      for(int z=0; z < basin->hillslopes[h][0].num_zones; ++z) {
+        for (int p=0; p < basin->hillslopes[h][0].zones[z][0].num_patches; p++) {
             struct patch_object *patch=basin->hillslopes[h]->zones[z]->patches[p];
 
              patch[0].acc_year_trans += (patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone);
