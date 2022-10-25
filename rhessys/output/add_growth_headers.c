@@ -91,9 +91,27 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_basin_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_basin_daily[1000] = "%s %s %s ";
+    strcat(out_format_basin_daily,out_basic_basin_daily);
+#else
+    char out_format_basin_daily[1000] = "";
+    strcat(out_format_basin_daily, out_basic_basin_daily);
+#endif
+
     outfile = world_output_files[0].basin[0].daily;
 
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+    fprintf(outfile, out_format_basin_daily,
+            //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -104,7 +122,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
         "pai_b",
         "gpsn",
         "plant_resp",
-                "leaf_resp",
+        "leaf_resp",
         "soil_resp",
         "nitrate",
         "sminn",
@@ -172,9 +190,26 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Yearly 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_basin_yearly[] = "%s %s %s %s %s %s %s %s %s %s \n";
+
+#ifdef JMG_TRACKING
+    char out_format_basin_yearly[1000] = "%s %s %s ";
+    strcat(out_format_basin_yearly,out_basic_basin_yearly);
+#else
+    char out_format_basin_yearly[1000] = "";
+    strcat(out_format_basin_yearly, out_basic_basin_yearly);
+#endif
+
     outfile = world_output_files[0].basin[0].yearly;
-    fprintf(outfile,
-        "%s %s %s %s %s %s %s %s %s %s \n",
+    fprintf(outfile, out_format_basin_yearly,
+        //"%s %s %s %s %s %s %s %s %s %s \n",
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "year",
         "basinID",
         "gpsn",
@@ -194,9 +229,27 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_hillslope_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_hillslope_daily[1000] = "%s %s %s ";
+    strcat(out_format_hillslope_daily,out_basic_hillslope_daily);
+#else
+    char out_format_hillslope_daily[1000] = "";
+    strcat(out_format_hillslope_daily, out_basic_hillslope_daily);
+#endif
+
     outfile = world_output_files[0].hillslope[0].daily;
 
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+    fprintf(outfile, out_format_hillslope_daily,
+            //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -247,8 +300,26 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_zone_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_zone_daily[1000] = "%s %s %s ";
+    strcat(out_format_zone_daily,out_basic_zone_daily);
+#else
+    char out_format_zone_daily[1000] = "";
+    strcat(out_format_zone_daily, out_basic_zone_daily);
+#endif
+
     outfile = world_output_files[0].zone[0].daily;
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n ",
+    fprintf(outfile, out_format_zone_daily,
+            //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n ",
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -273,13 +344,30 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
-    outfile = world_output_files[0].patch[0].daily;
-    check = fprintf(outfile,
-#ifndef LIU_BURN_ALL_AT_ONCE
-                    "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+
+#ifdef LIU_BURN_ALL_AT_ONCE
+    char out_basic_patch_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-                    "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    char out_basic_patch_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format_patch_daily[1000] = "%s %s %s ";
+    strcat(out_format_patch_daily,out_basic_patch_daily);
+#else
+    char out_format_patch_daily[1000] = "";
+    strcat(out_format_patch_daily, out_basic_patch_daily);
+#endif
+
+    outfile = world_output_files[0].patch[0].daily;
+    check = fprintf(outfile, out_format_patch_daily,
+
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -340,13 +428,30 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Yearly 							*/
     /*--------------------------------------------------------------*/
-    outfile = world_output_files[0].patch[0].yearly;
-    fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic_patch_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    char out_basic_patch_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format_patch_yearly[1000] = "%s %s %s ";
+    strcat(out_format_patch_yearly,out_basic_patch_yearly);
+#else
+    char out_format_patch_yearly[1000] = "";
+    strcat(out_format_patch_yearly, out_basic_patch_yearly);
+#endif
+
+    outfile = world_output_files[0].patch[0].yearly;
+    fprintf(outfile, out_format_patch_yearly,
+
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "year",
         "basinID",
         "hillID",
@@ -375,9 +480,26 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_stratum_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_stratum_daily[1000] = "%s %s %s ";
+    strcat(out_format_stratum_daily,out_basic_stratum_daily);
+#else
+    char out_format_stratum_daily[1000] = "";
+    strcat(out_format_stratum_daily, out_basic_stratum_daily);
+#endif
+
     outfile = world_output_files[0].canopy_stratum[0].daily;
-    fprintf(outfile,
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+    fprintf(outfile, out_format_stratum_daily,
+        //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -441,9 +563,26 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /* Shadow	Daily 			                                   				*/
     /*--------------------------------------------------------------*/
     if (command_line[0].vegspinup_flag > 0){
+
+    char out_basic_shadow_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_shadow_daily[1000] = "%s %s %s ";
+    strcat(out_format_shadow_daily,out_basic_shadow_daily);
+#else
+    char out_format_shadow_daily[1000] = "";
+    strcat(out_format_shadow_daily, out_basic_shadow_daily);
+#endif
+
     outfile = world_output_files[0].shadow_strata[0].daily;
-      fprintf(outfile,
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+      fprintf(outfile, out_format_shadow_daily,
+        //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -480,13 +619,30 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Yearly 							*/
     /*--------------------------------------------------------------*/
-    outfile = world_output_files[0].canopy_stratum[0].yearly;
-    fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format_stratum_yearly[1000] = "%s %s %s ";
+    strcat(out_format_stratum_yearly,out_basic_stratum_yearly);
+#else
+    char out_format_stratum_yearly[1000] = "";
+    strcat(out_format_stratum_yearly, out_basic_stratum_yearly);
+#endif
+
+    outfile = world_output_files[0].canopy_stratum[0].yearly;
+    fprintf(outfile, out_format_stratum_yearly,
+
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
          "year",
          "basinID",
          "hillID",

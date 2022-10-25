@@ -34,7 +34,11 @@ void	output_yearly_growth_hillslope(
 				int basinID,
 				struct	hillslope_object	*hillslope,
 				struct	date	date,
-				FILE *outfile)
+                FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+        )
 {
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/

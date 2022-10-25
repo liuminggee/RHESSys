@@ -32,7 +32,11 @@
 void	output_hillslope(				int basinID,
 						 struct	hillslope_object	*hillslope,
 						 struct	date	date,
-						 FILE *outfile)
+                         FILE *outfile
+#ifdef JMG_TRACKING
+                         ,struct simtime *simtime
+#endif
+                                        )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -279,10 +283,25 @@ void	output_hillslope(				int basinID,
     asoil_exfiltration_sat_zone /= aarea;
     asoil_exfiltration_unsat_zone /= aarea;
 
+    char out_basic[] = "%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
 
-	fprintf(outfile,"%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
-		date.day,
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+            simtime->sday,
+            simtime->smth,
+            simtime->syr,
+#endif
+
+        date.day,
 		date.month,
 		date.year,
 		basinID,

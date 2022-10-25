@@ -32,7 +32,11 @@
 void	output_growth_zone(	int basinID, int hillID,
 						   struct	zone_object	*zone,
 						   struct	date	current_date,
-						   FILE *outfile)
+                           FILE *outfile
+#ifdef JMG_TRACKING
+                           ,struct simtime *simtime
+#endif
+                            )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -41,10 +45,26 @@ void	output_growth_zone(	int basinID, int hillID,
 	/*------------------------------------------------------*/
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
+
+    char out_basic[] = "%4d %4d %4d %3d %3d %3d %8.5f %8.5f %8.3f %8.3f %8.5f %f %f %f %f \n ";
+
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
 	
-	fprintf(outfile,
-		"%4d %4d %4d %3d %3d %3d %8.5f %8.5f %8.3f %8.3f %8.5f %f %f %f %f \n ",
-		current_date.day,
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+            simtime->sday,
+            simtime->smth,
+            simtime->syr,
+#endif
+
+        current_date.day,
 		current_date.month,
 		current_date.year,
 		basinID,

@@ -102,8 +102,25 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_basin_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_basin_daily[1000] = "%s %s %s ";
+    strcat(out_format_basin_daily,out_basic_basin_daily);
+#else
+    char out_format_basin_daily[1000] = "";
+    strcat(out_format_basin_daily, out_basic_basin_daily);
+#endif
+
     outfile = world_output_files[0].basin[0].daily;
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+    fprintf(outfile, out_format_basin_daily,
+            //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+            "sday",
+            "smth",
+            "syr",
+#endif
         "day",
         "month",
         "year",
@@ -170,13 +187,30 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Monthly							*/
     /*--------------------------------------------------------------*/
-    outfile = world_output_files[0].basin[0].monthly;
-    check = fprintf(outfile,
-#ifndef LIU_TRACKING_BASIN_LITTERC
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+
+#ifdef LIU_TRACKING_BASIN_LITTERC
+    char out_basic_basin_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    char out_basic_basin_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format_basin_monthly[1000] = "%s %s %s ";
+    strcat(out_format_basin_monthly,out_basic_basin_monthly);
+#else
+    char out_format_basin_monthly[1000] = "";
+    strcat(out_format_basin_monthly, out_basic_basin_monthly);
+#endif
+
+    outfile = world_output_files[0].basin[0].monthly;
+    check = fprintf(outfile, out_format_basin_monthly,
+
+#ifdef JMG_TRACKING
+                    "sday",
+                    "smth",
+                    "syr",
+#endif
+
         "month",
         "year",
         "basinID",
@@ -207,15 +241,33 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Yearly 							*/
     /*--------------------------------------------------------------*/
-    outfile = world_output_files[0].basin[0].yearly;
-    check = fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic_basin_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    char out_basic_basin_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format_basin_yearly[1000] = "%s %s %s ";
+    strcat(out_format_basin_yearly,out_basic_basin_yearly);
+#else
+    char out_format_basin_yearly[1000] = "";
+    strcat(out_format_basin_yearly, out_basic_basin_yearly);
+#endif
+
+    outfile = world_output_files[0].basin[0].yearly;
+    check = fprintf(outfile, out_format_basin_yearly,
+
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "year",
         "basinID",
+#ifndef JMG_MORE_YEARLY_OUTPUT
         "streamflow",
         "streamflow_NO3",
         "denitrif",
@@ -224,16 +276,31 @@ void add_headers(struct world_output_file_object *world_output_files,
         "et",
         "psn","lai","nitrif",
         "mineralized", "uptake", "num_thresh","tpet","pet","pe"
-#ifdef JMG_MORE_YEARLY_OUTPUT
-        ,"n_dep",
-        "soilc",
-        "soiln",
-        "litrc",
-        "litrn",
-        "plantc",
-        "plantn",
-        "AGBc",
-        "BGBc"
+#else
+                    "pcp",
+                    "et",
+                    "TPET",
+                    "PET",
+                    "PE",
+                    "streamflow",
+                    "hill_base_flow",
+                    "gw_drainage",
+                    "rz_storage",
+                    "unsat_storage",
+                    "hill_gw_storage",
+                    "n_deposition",
+                    "denitrif",
+                    "soilc",
+                    "soiln",
+                    "litrc",
+                    "litrn",
+                    "plantc",
+                    "plantn",
+                    "AGBc",
+                    "BGBc",
+                    "lai",
+                    "sat_deficit",
+                    "sat_deficit_z"
 #endif
                     );
     }
@@ -245,8 +312,25 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_hillslope_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_hillslope_daily[1000] = "%s %s %s ";
+    strcat(out_format_hillslope_daily,out_basic_hillslope_daily);
+#else
+    char out_format_hillslope_daily[1000] = "";
+    strcat(out_format_hillslope_daily, out_basic_hillslope_daily);
+#endif
+
     outfile = world_output_files[0].hillslope[0].daily;
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+    fprintf(outfile, out_format_hillslope_daily,
+            //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
         "day",
         "month",
         "year",
@@ -296,9 +380,25 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Monthly							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_hillslope_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_hillslope_monthly[1000] = "%s %s %s ";
+    strcat(out_format_hillslope_monthly,out_basic_hillslope_monthly);
+#else
+    char out_format_hillslope_monthly[1000] = "";
+    strcat(out_format_hillslope_monthly, out_basic_hillslope_monthly);
+#endif
+
     outfile = world_output_files[0].hillslope[0].monthly;
-    check = fprintf(outfile,
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    check = fprintf(outfile, out_format_hillslope_monthly,
+        //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
         "month",
         "year",
         "basinID",
@@ -318,13 +418,30 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Yearly 							*/
     /*--------------------------------------------------------------*/
-    outfile = world_output_files[0].hillslope[0].yearly;
-    check = fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic_hillslope_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    char out_basic_hillslope_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format_hillslope_yearly[1000] = "%s %s %s ";
+    strcat(out_format_hillslope_yearly,out_basic_hillslope_yearly);
+#else
+    char out_format_hillslope_yearly[1000] = "";
+    strcat(out_format_hillslope_yearly, out_basic_hillslope_yearly);
+#endif
+
+    outfile = world_output_files[0].hillslope[0].yearly;
+    check = fprintf(outfile, out_format_hillslope_yearly,
+
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "year",
         "basinID",
         "hillslopeID",
@@ -358,8 +475,26 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_zone_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_zone_daily[1000] = "%s %s %s ";
+    strcat(out_format_zone_daily,out_basic_zone_daily);
+#else
+    char out_format_zone_daily[1000] = "";
+    strcat(out_format_zone_daily, out_basic_zone_daily);
+#endif
+
     outfile = world_output_files[0].zone[0].daily;
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+    fprintf(outfile, out_format_zone_daily,
+            //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -385,9 +520,26 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Monthly							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_zone_monthly[] = "%s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_zone_monthly[1000] = "%s %s %s ";
+    strcat(out_format_zone_monthly,out_basic_zone_monthly);
+#else
+    char out_format_zone_monthly[1000] = "";
+    strcat(out_format_zone_monthly, out_basic_zone_monthly);
+#endif
+
     outfile = world_output_files[0].zone[0].monthly;
-    check = fprintf(outfile,
-        "%s %s %s %s %s %s %s %s %s %s\n" ,
+    check = fprintf(outfile, out_format_zone_monthly,
+        //"%s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "month",
         "year",
         "basinID",
@@ -431,9 +583,25 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_patch_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_patch_daily[1000] = "%s %s %s ";
+    strcat(out_format_patch_daily,out_basic_patch_daily);
+#else
+    char out_format_patch_daily[1000] = "";
+    strcat(out_format_patch_daily, out_basic_patch_daily);
+#endif
+
     outfile = world_output_files[0].patch[0].daily;
-        check = fprintf(outfile,
-                        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+        check = fprintf(outfile, out_format_patch_daily,
+                        //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+                        "sday",
+                        "smth",
+                        "syr",
+#endif
                         "day",
                         "month",
                         "year",
@@ -484,9 +652,26 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Monthly							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_patch_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_patch_monthly[1000] = "%s %s %s ";
+    strcat(out_format_patch_monthly,out_basic_patch_monthly);
+#else
+    char out_format_patch_monthly[1000] = "";
+    strcat(out_format_patch_monthly, out_basic_patch_monthly);
+#endif
+
     outfile = world_output_files[0].patch[0].monthly;
-    check = fprintf(outfile,
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    check = fprintf(outfile, out_format_patch_monthly,
+        //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "month",
         "year",
         "basinID",
@@ -503,13 +688,30 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Yearly							*/
     /*--------------------------------------------------------------*/
-    outfile = world_output_files[0].patch[0].yearly;
-    fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic_patch_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-            "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    char out_basic_patch_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format_patch_yearly[1000] = "%s %s %s ";
+    strcat(out_format_patch_yearly,out_basic_patch_yearly);
+#else
+    char out_format_patch_yearly[1000] = "";
+    strcat(out_format_patch_yearly, out_basic_patch_yearly);
+#endif
+
+    outfile = world_output_files[0].patch[0].yearly;
+    fprintf(outfile, out_format_patch_yearly,
+
+#ifdef JMG_TRACKING
+            "sday",
+            "smth",
+            "syr",
+#endif
+
             "year",
             "basinID",
             "hillID",
@@ -556,7 +758,9 @@ void add_headers(struct world_output_file_object *world_output_files,
             "DON_loss",
             "denitrif",
             "nitrif",
-            "mineralized"
+            "mineralized",
+            "sat_deficit",
+            "sat_deficit_z"
 #endif
             );
     }
@@ -568,9 +772,26 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_stratum_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_stratum_daily[1000] = "%s %s %s ";
+    strcat(out_format_stratum_daily,out_basic_stratum_daily);
+#else
+    char out_format_stratum_daily[1000] = "";
+    strcat(out_format_stratum_daily, out_basic_stratum_daily);
+#endif
+
     outfile = world_output_files[0].canopy_stratum[0].daily;
-    fprintf(outfile,
-        "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+    fprintf(outfile, out_format_stratum_daily,
+        //"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n" ,
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "day",
         "month",
         "year",
@@ -602,8 +823,27 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
     /*	Monthly							*/
     /*--------------------------------------------------------------*/
+
+    char out_basic_stratum_monthly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_stratum_monthly[1000] = "%s %s %s ";
+    strcat(out_format_stratum_monthly,out_basic_stratum_monthly);
+#else
+    char out_format_stratum_monthly[1000] = "";
+    strcat(out_format_stratum_monthly, out_basic_stratum_monthly);
+#endif
+
     outfile = world_output_files[0].canopy_stratum[0].monthly;
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+    fprintf(outfile, out_format_stratum_monthly,
+            //"%s %s %s %s %s %s %s %s %s %s %s %s %s\n",
+
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "month",
         "year",
         "basinID",
@@ -621,8 +861,25 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*	Yearly							*/
     /*--------------------------------------------------------------*/
 
+    char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s\n";
+
+#ifdef JMG_TRACKING
+    char out_format_stratum_yearly[1000] = "%s %s %s ";
+    strcat(out_format_stratum_yearly,out_basic_stratum_yearly);
+#else
+    char out_format_stratum_yearly[1000] = "";
+    strcat(out_format_stratum_yearly, out_basic_stratum_yearly);
+#endif
+
     outfile = world_output_files[0].canopy_stratum[0].yearly;
-    fprintf(outfile,"%s %s %s %s %s %s %s %s %s\n",
+    fprintf(outfile, out_format_stratum_yearly,
+            //"%s %s %s %s %s %s %s %s %s\n",
+#ifdef JMG_TRACKING
+        "sday",
+        "smth",
+        "syr",
+#endif
+
         "year",
         "basinID",
         "hillID",

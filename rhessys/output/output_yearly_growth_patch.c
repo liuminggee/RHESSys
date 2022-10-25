@@ -33,7 +33,11 @@ void	output_yearly_growth_patch(
                 int basinID, int hillID, int zoneID,
                 struct	patch_object	*patch,
                 struct	date	current_date,
-                FILE *outfile)
+                FILE *outfile
+#ifdef JMG_TRACKING
+                ,struct simtime *simtime
+#endif
+        )
 {
     /*--------------------------------------------------------------*/
     /*	Local function definition.									*/
@@ -91,11 +95,26 @@ void	output_yearly_growth_patch(
     denitrif += patch[0].soil_ns.nvolatilized_snk;
 #endif
 
-     fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-        "%4d %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic[] = "%4d %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-        "%4d %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%4d %4d %4d %4d %3d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
+#endif
+
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
+
+     fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
 #endif
         current_date.year,
         basinID,

@@ -32,7 +32,11 @@
 void	output_growth_hillslope(              int  basinID,
 							struct	hillslope_object	*hillslope,
 							struct	date	current_date,
-							FILE *outfile)
+                            FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+                                              )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -275,11 +279,27 @@ void	output_growth_hillslope(              int  basinID,
 	acloss /= aarea;
 	anuptake /= aarea;
     alitr_decomp /= aarea;//debug
-	adecom_daily /= aarea;
+    adecom_daily /= aarea;
 
+    char out_basic[] = "%ld %ld %ld %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 
-	fprintf(outfile,"%ld %ld %ld %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %11.9lf %11.9lf %11.9lf %11.9lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
-		current_date.day,
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+            simtime->sday,
+            simtime->smth,
+            simtime->syr,
+#endif
+
+        current_date.day,
 		current_date.month,
 		current_date.year,
 		hillslope[0].ID,

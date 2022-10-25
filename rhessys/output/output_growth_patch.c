@@ -33,7 +33,11 @@ void	output_growth_patch(
 							int basinID, int hillID, int zoneID,
 							struct	patch_object	*patch,
 							struct	date	current_date,
-							FILE *outfile)
+                            FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+        )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -125,12 +129,29 @@ void	output_growth_patch(
 			aheight += strata->cover_fraction * (strata->epv.height) ;
 		}
 	}
-	check = fprintf(outfile,
+
 #ifdef LIU_BURN_ALL_AT_ONCE
-		"%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-        "%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    check = fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
+#endif
+
 		current_date.day,
 		current_date.month,
 		current_date.year,

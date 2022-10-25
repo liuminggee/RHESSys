@@ -33,7 +33,11 @@ void	output_monthly_patch(
 							 int basinID, int hillID, int zoneID,
 							 struct	patch_object	*patch,
 							 struct	date	current_date,
-							 FILE *outfile)
+                             FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+        )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -47,9 +51,25 @@ void	output_monthly_patch(
 
 	if (patch[0].acc_month.leach > 0.0)
 		patch[0].acc_month.leach = log(patch[0].acc_month.leach*1000.0*1000.0);
+
+    char out_basic[] = "%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %8.3f %f %f %f %f %f %f \n";
+
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
 		
-	check = fprintf(outfile,
-		"%d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %8.3f %f %f %f %f %f %f \n",
+    check = fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
+#endif
+
 		current_date.month,
 		current_date.year,
 		basinID,

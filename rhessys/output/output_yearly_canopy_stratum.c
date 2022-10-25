@@ -36,7 +36,11 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 									 int reset_flag,
 									 struct	canopy_strata_object	*stratum,
 									 struct	date	current_date,
-									 FILE *outfile)
+                                     FILE *outfile
+#ifdef JMG_TRACKING
+                                    ,struct simtime *simtime
+#endif
+                                      )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -51,7 +55,25 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	/*--------------------------------------------------------------*/
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
-	fprintf(outfile,"%4d %d %d %d %d %d %lf %lf %lf \n",
+
+    char out_basic[] = "%4d %d %d %d %d %d %lf %lf %lf\n";
+
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
+#endif
+
 		current_date.year,
 		basinID,
 		hillID,

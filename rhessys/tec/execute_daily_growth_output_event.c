@@ -49,29 +49,49 @@ void	execute_daily_growth_output_event(
 	void output_growth_basin(
 		struct	basin_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 	
 	void output_growth_hillslope(	int,
 		struct	hillslope_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                                    );
 	
 	void output_growth_zone(	int, int,
 		struct	zone_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                                );
 	
 	void output_growth_patch(
 		int, int, int,
 		struct	patch_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 	
 	void output_growth_canopy_stratum(
 		int, int, int, int,
 		struct	canopy_strata_object *,
 		struct	date,
-		FILE	*);
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
@@ -96,7 +116,11 @@ void	execute_daily_growth_output_event(
 					output_growth_basin(
 					world[0].basins[b],
 					date,
-					outfile->basin->daily);
+                    outfile->basin->daily
+#ifdef JMG_TRACKING
+                    ,&world[0].track_simtime
+#endif
+                            );
 			}
 			/*--------------------------------------------------------------*/
 			/*	check to see if there are any lower print options			*/
@@ -121,7 +145,11 @@ void	execute_daily_growth_output_event(
 								world[0].basins[b][0].ID,
 								world[0].basins[b]->hillslopes[h],
 								date,
-								outfile->hillslope->daily);
+                                outfile->hillslope->daily
+#ifdef JMG_TRACKING
+                                ,&world[0].track_simtime
+#endif
+                                        );
 					}
 					/*-------------------------------------------------------------*/
 					/*	check to see if there are any lower print options			*/
@@ -152,7 +180,11 @@ void	execute_daily_growth_output_event(
 											world[0].basins[b][0].hillslopes[h][0].ID,
 											world[0].basins[b]->hillslopes[h]->zones[z],
 											date,
-											outfile->zone->daily);
+                                            outfile->zone->daily
+#ifdef JMG_TRACKING
+                                            ,&world[0].track_simtime
+#endif
+                                                    );
 							}
 							/*-----------------------------------------------------*/
 							/*	check to see if there are any lower print options	  */
@@ -185,7 +217,11 @@ void	execute_daily_growth_output_event(
 															world[0].basins[b]->hillslopes[h]->zones[z]->ID,
 															world[0].basins[b]->hillslopes[h]->zones[z]->patches[p],
 															date,
-															outfile->patch->daily);
+                                                            outfile->patch->daily
+#ifdef JMG_TRACKING
+                                                            ,&world[0].track_simtime
+#endif
+                                                                );
 													}
 									}
 									/*--------------------------------------------*/
@@ -220,7 +256,12 @@ void	execute_daily_growth_output_event(
 																world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->canopy_strata[c],
 																date,
-																outfile->canopy_stratum->daily);
+                                                                outfile->canopy_stratum->daily
+#ifdef JMG_TRACKING
+                                                                ,&world[0].track_simtime
+#endif
+                                                                        );
+
 																if (command_line[0].vegspinup_flag > 0)  {
 															    output_growth_canopy_stratum(
 															   	world[0].basins[b][0].ID,
@@ -228,7 +269,11 @@ void	execute_daily_growth_output_event(
 																  world[0].basins[b][0].hillslopes[h][0].zones[z][0].ID,
 																  world[0].basins[b][0].hillslopes[h][0].zones[z][0].patches[p][0].ID,
 																  world[0].basins[b]->hillslopes[h]->zones[z]->patches[p]->shadow_strata[c],
-																  date, outfile->shadow_strata->daily);
+                                                                  date, outfile->shadow_strata->daily
+#ifdef JMG_TRACKING
+                                                                ,&world[0].track_simtime
+#endif
+                                                                        );
 																}
 										} /* end stratum (c) for loop */
 									} /* end if options */

@@ -241,6 +241,14 @@ struct date
         long    hour;
         };
 
+#ifdef JMG_TRACKING
+struct simtime
+{
+    int syr;
+    int smth;
+    int sday;
+};
+#endif
 /*----------------------------------------------------------*/
 /*      Define default object.                              */
 /*----------------------------------------------------------*/
@@ -328,6 +336,9 @@ struct world_object
         struct  date                    start_date;
         struct  date                    end_date;
         struct  date                    duration;
+#ifdef JMG_TRACKING
+        struct simtime  track_simtime;
+#endif
         struct  default_object          *defaults;
         struct  world_hourly_object     *hourly;
         struct  fire_object             **fire_grid;
@@ -528,6 +539,8 @@ struct accumulate_patch_object
    double unsat_storage; // JMG09082022
    double gw_drainage; // JMG09122022
    double overland_flow; // JMG09122022
+   double  sat_deficit;  /* meters water */
+   double  sat_deficit_z; /* meters depth from surface */
 
    double pch_pcp; //JMG09122022
    double pch_et; //JMG09122022

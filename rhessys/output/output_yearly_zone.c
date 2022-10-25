@@ -32,7 +32,11 @@
 void	output_yearly_zone( int basinID, int hillID,
 							struct	zone_object	*zone,
 							struct	date	current_date,
-							FILE *outfile)
+                            FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+                            )
 {
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.									*/

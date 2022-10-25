@@ -32,7 +32,11 @@
 void	output_yearly_hillslope(	int basinID,
 							 struct	hillslope_object	*hillslope,
 							 struct	date	current_date,
-							 FILE *outfile)
+                             FILE *outfile
+#ifdef JMG_TRACKING
+                             ,struct simtime *simtime
+#endif
+                                    )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -46,12 +50,28 @@ void	output_yearly_hillslope(	int basinID,
 
 	if (hillslope[0].acc_year.length == 0) hillslope[0].acc_year.length = 1;
 
-	check = fprintf(outfile,
-#ifndef JMG_MORE_YEARLY_OUTPUT
-        "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n",
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic[] = "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-        "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    check = fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
+#endif
+
 		current_date.year-1,
 		basinID,
 		hillslope[0].ID,

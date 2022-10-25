@@ -317,6 +317,25 @@ struct hillslope_object *construct_hillslope(
     hillslope[0].acc_year.pch_unsat_storage = 0.0; // JMG09122022
     hillslope[0].acc_year.hill_gw_storage = 0.0; // JMG09122022
     hillslope[0].acc_year.hill_base_flow = 0.0; // JMG09122022
+
+    hillslope[0].acc_year.baseflow = 0.0; // JMG10132022
+    hillslope[0].acc_year.returnflow = 0.0; // JMG10132022
+    hillslope[0].acc_year.rz_storage = 0.0; // JMG10132022
+    hillslope[0].acc_year.unsat_storage = 0.0; // JMG10132022
+    hillslope[0].acc_year.gw_drainage = 0.0; // JMG10132022
+    hillslope[0].acc_year.overland_flow = 0.0; // JMG10132022
+    hillslope[0].acc_year.sat_deficit = 0.0; // JMG10132022
+    hillslope[0].acc_year.sat_deficit_z = 0.0; // JMG10132022
+
+    hillslope[0].acc_year.soilc = 0.0; // JMG10132022
+    hillslope[0].acc_year.soiln = 0.0; // JMG10132022
+    hillslope[0].acc_year.litrc = 0.0; // JMG10132022
+    hillslope[0].acc_year.litrn = 0.0; // JMG10132022
+    hillslope[0].acc_year.plantc = 0.0; // JMG10132022
+    hillslope[0].acc_year.plantn = 0.0; // JMG10132022
+    hillslope[0].acc_year.AGBc = 0.0; // JMG10132022
+    hillslope[0].acc_year.BGBc = 0.0; // JMG10132022
+    hillslope[0].acc_year.n_deposition = 0.0; // JMG10132022
 #endif
 
 

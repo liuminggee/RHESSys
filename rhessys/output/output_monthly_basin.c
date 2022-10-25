@@ -32,7 +32,11 @@
 void	output_monthly_basin(
 							 struct	basin_object	*basin,
 							 struct	date	current_date,
-							 FILE *outfile)
+                             FILE *outfile
+#ifdef JMG_TRACKING
+                            ,struct simtime *simtime
+#endif
+        )
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -73,12 +77,28 @@ void	output_monthly_basin(
   double litrc_to_soilc = cdf->litterc_to_soilc;
 #endif
 
-	check = fprintf(outfile,
-#ifndef LIU_TRACKING_BASIN_LITTERC
-		"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+#ifdef LIU_TRACKING_BASIN_LITTERC
+    char out_basic[] = "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-        "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    char out_basic[] = "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #endif
+
+#ifdef JMG_TRACKING
+    char out_format[1000] = "%d %d %d ";
+    strcat(out_format,out_basic);
+#else
+    char out_format[1000] = "";
+    strcat(out_format, out_basic);
+#endif
+
+    check = fprintf(outfile, out_format,
+
+#ifdef JMG_TRACKING
+        simtime->sday,
+        simtime->smth,
+        simtime->syr,
+#endif
+
 		current_date.month,
 		current_date.year,
 		basin[0].ID,
