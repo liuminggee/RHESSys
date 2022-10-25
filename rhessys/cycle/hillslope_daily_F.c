@@ -94,7 +94,7 @@ void		hillslope_daily_F(
 	struct patch_object *patch;
 	
     //#pragma omp parallel for
-	for ( zone=0 ; zone<hillslope[0].num_zones; zone++ ){
+    for (int zone=0 ; zone<hillslope[0].num_zones; zone++ ){
 
 
         //printf("omp_in_parallel?:%d Total_processes:%d this process:%d\n",

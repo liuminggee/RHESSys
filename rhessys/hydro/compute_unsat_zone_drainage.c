@@ -92,9 +92,9 @@ double	compute_unsat_zone_drainage(
 		Ksat_0);
 
 	if (curve == 1)
-		Ksat2 = Ksat_0 * pow(S,(2*1/p2+3));
+        Ksat2 = Ksat_0 * pow(S,(2./p2+3.));
 	else
-		Ksat2 = Ksat_0 * sqrt(S) * pow(1 - pow(1-pow(S,1/p2),p2),2);
+        Ksat2 = Ksat_0 * sqrt(S) * pow(1. - pow(1.-pow(S,1./p2),p2),2.);
 
 	Ksat = min(Ksat1,Ksat2);
 

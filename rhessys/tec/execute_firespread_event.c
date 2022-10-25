@@ -74,7 +74,7 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
     if(world[0].defaults[0].fire[0].fire_verbose == 3) { //NREN 20190912
 	printf("In WMFire\n");}
-    #pragma omp parallel for private(i,j) reduction(+ : denom_for_mean,mean_fuel_veg,mean_fuel_litter,mean_fuel_moist,mean_soil_moist,mean_relative_humidity,mean_wind_direction,mean_wind,mean_temp,mean_et,mean_pet,mean_understory_et,mean_understory_pet,mean_trans)
+    //10102022LML #pragma omp parallel for private(i,j) reduction(+ : denom_for_mean,mean_fuel_veg,mean_fuel_litter,mean_fuel_moist,mean_soil_moist,mean_relative_humidity,mean_wind_direction,mean_wind,mean_temp,mean_et,mean_pet,mean_understory_et,mean_understory_pet,mean_trans)
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   	  for (j=0; j < world[0].num_fire_grid_col; j++) {
 		  world[0].fire_grid[i][j].fire_size=0; // reset grid to no fire
@@ -256,7 +256,7 @@ void execute_firespread_event(
 
 	//	printf("mean pet, mean et: %lf\t%lf\n",mean_pet,mean_et);
 	//	printf("mean wind: %lf, mean direction %lf \n",mean_wind,mean_wind_direction);
-        #pragma omp parallel for
+        //10102022LML #pragma omp parallel for
 		for  (i=0; i< world[0].num_fire_grid_row; i++) {
 		  for (j=0; j < world[0].num_fire_grid_col; j++) {
 			  if(world[0].patch_fire_grid[i][j].occupied_area==0) // and here we fill in the buffer
@@ -302,7 +302,7 @@ void execute_firespread_event(
 //#ifdef LIU_BURN_ALL_AT_ONCE
 //    double total_pspread = 0;                                                   //No real meaning, just for counting
 //#endif
-    #pragma omp parallel for private(i,j,p,pspread)
+    //10102022LML #pragma omp parallel for private(i,j,p,pspread)
 	for  (i=0; i< world[0].num_fire_grid_row; i++) {
   		for (j=0; j < world[0].num_fire_grid_col; j++) {
             //if(patch_fire_grid[i][j].num_patches > 0)

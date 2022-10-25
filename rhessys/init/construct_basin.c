@@ -397,11 +397,10 @@ struct basin_object *construct_basin(
     for (int i=0; i<num_hillslopes; i++){
       fscanf( routing_file, "%d", &hillslope_ID );
       hillslope = find_hillslope_in_basin( hillslope_ID, basin );
-      if ( command_line[0].ddn_routing_flag == 1 ) {
+      if ( command_line[0].ddn_routing_flag == 1 && (hillslope != 0)) {
         hillslope->route_list = construct_ddn_routing_topology( routing_file, hillslope);
-      } else {
+      } else if (hillslope != 0) {
         hillslope->route_list = construct_routing_topology( routing_file, hillslope, command_line, false);
-
         if ( command_line->surface_routing_flag == 1 ) {
           printf("\tReading surface routing table\n");
           hillslope->surface_route_list = construct_routing_topology( surface_routing_file, hillslope, command_line, true);
@@ -441,7 +440,8 @@ struct basin_object *construct_basin(
       for (int i=0; i<num_hillslopes; i++){
         fscanf( routing_file, "%d", &hillslope_ID );
         hillslope = find_hillslope_in_basin( hillslope_ID, basin );
-        hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true );
+        if (hillslope != 0)
+          hillslope->surface_route_list = construct_routing_topology( routing_file, hillslope, command_line, true );
       }
     }
   } else { // command_line[0].routing_flag != 1

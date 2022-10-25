@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
+#include "params.h"
 #include "phys_constants.h"
 
 double	compute_varbased_flow(
@@ -61,7 +62,6 @@ double	compute_varbased_flow(
 	/*--------------------------------------------------------------*/
 
 	double	flow, accum,thre_flow,abovthre_flow;
-	double	normal[9], perc[9];
 	int i;
 	int didx,didthr;
 	
@@ -69,9 +69,9 @@ double	compute_varbased_flow(
 	// soil deficit threshold, not the soil moisture threshold, fs_threshold is defined as the soil moiture threshold as
 	// percentage of the max soil moisture holding capacity
 	double threshold;
-	double p;
-	double n_0;
-	double soil_depth;
+    //double p;
+    //double n_0;
+    //double soil_depth;
 	double fs_spill;
 	double fs_percolation;
 
@@ -79,28 +79,13 @@ double	compute_varbased_flow(
 	/*--------------------------------------------------------------*/
 	/* calculate or initialize value    				*/
 	/*--------------------------------------------------------------*/
-	p = patch[0].soil_defaults[0][0].porosity_decay;
-	n_0 = patch[0].soil_defaults[0][0].porosity_0;
-	soil_depth = patch[0].soil_defaults[0][0].soil_depth;
-	threshold = n_0 * p * (1 - exp(-soil_depth/p))*(1 - patch[0].soil_defaults[0][0].fs_threshold);
+    //p = patch[0].soil_defaults[0][0].porosity_decay;
+    //n_0 = patch[0].soil_defaults[0][0].porosity_0;
+    //soil_depth = patch[0].soil_defaults[0][0].soil_depth;
+    threshold = patch[0].soil_defaults[0][0].soil_deficit_threshold; //n_0 * p * (1 - exp(-soil_depth/p))*(1 - patch[0].soil_defaults[0][0].fs_threshold);  10112022LML
 	fs_spill = patch[0].soil_defaults[0][0].fs_spill;
 	fs_percolation = patch[0].soil_defaults[0][0].fs_percolation;
 
-	normal[0] = 0;
-	normal[1] = 0.253;
-	normal[2] = 0.524;
-	normal[3] = 0.842;
-	normal[4] = 1.283;
-	normal[5] = -0.253;
-	normal[6] = -0.524;
-	normal[7] = -0.842;
-	normal[8] = -1.283;
-
-	perc[0] = 0.2;
-	for (i=1; i<9; i++)
-		perc[i] = 0.1;
-
-	
 	flow = 0.0;
 	if (s1 < 0.0) s1 = 0.0;	
 
@@ -109,10 +94,10 @@ double	compute_varbased_flow(
 		didx = (int) lround((s1 + normal[i]*std)/interval_size);
 		if (didx > num_soil_intervals) didx = num_soil_intervals;
 
-		accum = transmissivity[didx] * 1;
+        accum = transmissivity[didx];
 		/* fill and spill */
 		if ((patch[0].sat_deficit <= threshold) && ((s1 + normal[i]*std) <= threshold)){
-		    accum=transmissivity[didx] * 1;
+            accum=transmissivity[didx];
 		}
 
 		flow += accum * perc[i];
@@ -149,7 +134,7 @@ double	compute_varbased_flow(
 	
 	}
 
-    flow = flow*gamma; /*m3*/ //09122022LML note: flow:(m2/day) gamma (m boundary length X tan(slope))
+    flow *= gamma; /*m3*/ //09122022LML note: flow:(m2/day) gamma (m boundary length X tan(slope))
 
-	  return(flow);
+    return(flow);
 } /*compute_varbased_flow*/

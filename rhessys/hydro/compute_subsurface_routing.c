@@ -31,7 +31,9 @@
 /*											*/
 /*--------------------------------------------------------------*/
 #include <stdio.h>
+#include "params.h"
 #include "rhessys.h"
+#include "functions.h"
 #include <omp.h>
 
 void compute_subsurface_routing(struct command_line_object *command_line,
@@ -54,8 +56,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 	double compute_z_final(int, double, double, double, double, double);
 
-	double compute_N_leached(int, double, double, double, double, double,
-			double, double, double, double, double, double, double,double *);
+//	double compute_N_leached(int, double, double, double, double, double,
+//			double, double, double, double, double, double, double,double *);
 
 	double compute_layer_field_capacity(int, int, double, double, double,
 			double, double, double, double, double, double);
@@ -131,8 +133,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	// Note: this assumes that the set of patches in the surface routing table is identical to
 	//       the set of patches in the subsurface flow table
 
-  #pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
-  for (i = 0; i < hillslope->route_list->num_patches; i++) {
+    //#pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
+    for (int i = 0; i < hillslope->route_list->num_patches; i++) {
         struct patch_object *patch = hillslope->route_list->list[i];
 		patch[0].streamflow = 0.0;
 		patch[0].return_flow = 0.0;
@@ -226,9 +228,14 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				-1.0 * patch[0].sat_deficit);
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;*/
 
-        //#pragma omp parallel for
+        //10172022LML seems no benifit #pragma omp parallel for
 		for (i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+//            printf("compute_subsurface_routing:locked_patch:%d,thread:%d num_streads:%d\n"
+//                   ,patch[0].ID,omp_get_thread_num(),omp_get_num_threads());
+//#endif
             patch[0].hourly_subsur2stream_flow = 0;
 			patch[0].hourly_sur2stream_flow = 0;
 			patch[0].hourly_stream_flow = 0;
@@ -255,15 +262,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				update_drainage_land(patch, command_line, time_int,
 						verbose_flag);
 			}
-
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+//#endif
 		} /* end i */
 
 		/*--------------------------------------------------------------*/
 		/*	update soil moisture and nitrogen stores		*/
 		/*	check water balance					*/
 		/*--------------------------------------------------------------*/
-        #pragma omp parallel for
-		for (i = 0; i < hillslope->route_list->num_patches; i++) {
+        //#pragma omp parallel for
+        for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
 
 			/*--------------------------------------------------------------*/
@@ -401,9 +410,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
         if (k == (n_timesteps -1))
         {
-            for (i = 0; i < hillslope->route_list->num_patches; i++) {
+            double leached[LEACH_ELEMENT_counts];
+            //10172022LML seems no benifit #pragma omp parallel for
+            for (int i = 0; i < hillslope->route_list->num_patches; i++) {
               struct patch_object *patch = hillslope->route_list->list[i];
               double excess = 0;
+//#ifdef LIU_OMP_PATCH_LOCK
+//              omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+              ////            printf("compute_subsurface_routing:locked_patch:%d,thread:%d num_streads:%d\n"
+              ////                   ,patch[0].ID,omp_get_thread_num(),omp_get_num_threads());
+//#endif
+
               if ((patch[0].sat_deficit
                     - (patch[0].unsat_storage + patch[0].rz_storage))
                     < -1.0 * ZERO) {
@@ -414,76 +431,41 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 patch[0].sat_deficit = 0.0;
                 patch[0].unsat_storage = 0.0;
                 patch[0].rz_storage = 0.0;
-                double Nout = 0;
+                //double Nout = 0;
 
                 if (grow_flag > 0) {
-                    Nout =
-                            compute_N_leached(verbose_flag,
-                                    patch[0].soil_cs.DOC, excess, 0.0, 0.0,
-                                    patch[0].m,
-                                    patch[0].innundation_list[d].gamma
-                                            / patch[0].area * time_int,
+                    double lpools[] = {patch[0].soil_ns.nitrate,
+                                      patch[0].soil_ns.sminn,
+                                      patch[0].soil_ns.DON,
+                                      patch[0].soil_cs.DOC
+                                      };
+                    //double *Nout =
+                    double t = compute_N_leached(verbose_flag,
+                                    lpools, excess, 0.0, 0.0,
+                                    //patch[0].m,
+                                    //patch[0].innundation_list[d].gamma
+                                    //        / patch[0].area * time_int,
                                     patch[0].soil_defaults[0][0].porosity_0,
                                     patch[0].soil_defaults[0][0].porosity_decay,
-                                    patch[0].soil_defaults[0][0].DOM_decay_rate,
+                                    patch[0].soil_defaults[0][0].decay_rate,
                                     patch[0].soil_defaults[0][0].active_zone_z,
                                     patch[0].soil_defaults[0][0].soil_depth,
-                                    patch[0].soil_defaults[0][0].DOC_adsorption_rate,
-                                    patch[0].transmissivity_profile);
-                    patch[0].surface_DOC += Nout;
-                    patch[0].soil_cs.DOC -= Nout;
-                }
-                if (grow_flag > 0) {
-                    Nout =
-                            compute_N_leached(verbose_flag,
-                                    patch[0].soil_ns.DON, excess, 0.0, 0.0,
-                                    patch[0].m,
-                                    patch[0].innundation_list[d].gamma
-                                            / patch[0].area * time_int,
-                                    patch[0].soil_defaults[0][0].porosity_0,
-                                    patch[0].soil_defaults[0][0].porosity_decay,
-                                    patch[0].soil_defaults[0][0].DOM_decay_rate,
-                                    patch[0].soil_defaults[0][0].active_zone_z,
-                                    patch[0].soil_defaults[0][0].soil_depth,
-                                    patch[0].soil_defaults[0][0].DON_adsorption_rate,
-                                    patch[0].transmissivity_profile);
-                    patch[0].surface_DON += Nout;
-                    patch[0].soil_ns.DON -= Nout;
-                }
-                if (grow_flag > 0) {
-                    Nout =
-                            compute_N_leached(verbose_flag,
-                                    patch[0].soil_ns.nitrate, excess, 0.0,
-                                    0.0, patch[0].m,
-                                    patch[0].innundation_list[d].gamma
-                                            / patch[0].area * time_int,
-                                    patch[0].soil_defaults[0][0].porosity_0,
-                                    patch[0].soil_defaults[0][0].porosity_decay,
-                                    patch[0].soil_defaults[0][0].N_decay_rate,
-                                    patch[0].soil_defaults[0][0].active_zone_z,
-                                    patch[0].soil_defaults[0][0].soil_depth,
-                                    patch[0].soil_defaults[0][0].NO3_adsorption_rate,
-                                    patch[0].transmissivity_profile);
-                    patch[0].surface_NO3 += Nout;
-                    patch[0].soil_ns.nitrate -= Nout;
-                }
+                                    patch[0].soil_defaults[0][0].adsorption_rate,
+                                    leached
+                                    //patch[0].transmissivity_profile
+                                    );
+                    patch[0].surface_DOC += leached[LDOC];
+                    patch[0].soil_cs.DOC -= leached[LDOC];
 
-                if (grow_flag > 0) {
-                    Nout =
-                            compute_N_leached(verbose_flag,
-                                    patch[0].soil_ns.sminn, excess, 0.0,
-                                    0.0, patch[0].m,
-                                    patch[0].innundation_list[d].gamma
-                                            / patch[0].area * time_int,
-                                    patch[0].soil_defaults[0][0].porosity_0,
-                                    patch[0].soil_defaults[0][0].porosity_decay,
-                                    patch[0].soil_defaults[0][0].N_decay_rate,
-                                    patch[0].soil_defaults[0][0].active_zone_z,
-                                    patch[0].soil_defaults[0][0].soil_depth,
-                                    patch[0].soil_defaults[0][0].NH4_adsorption_rate,
-                                    patch[0].transmissivity_profile);
-                    patch[0].surface_NH4 += Nout;
-                    patch[0].soil_ns.sminn -= Nout;
+                    patch[0].surface_DON += leached[LDON];
+                    patch[0].soil_ns.DON -= leached[LDON];
+
+                    patch[0].surface_NO3 += leached[LNO3];
+                    patch[0].soil_ns.nitrate -= leached[LNO3];
+
+                    patch[0].surface_NH4 += leached[LNH4];
+                    patch[0].soil_ns.sminn -= leached[LNH4];
+                    //free(Nout);
                 }
             }
 
@@ -558,7 +540,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                         d = 0;
                     }
 
-                    for (j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
+                    for (int j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
                         struct patch_object *neigh = patch->surface_innundation_list[d].neighbours[j].patch;
                         double Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
                         double NO3_out,NH4_out,DON_out,DOC_out,Nout;
@@ -573,6 +555,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                                     * patch[0].surface_DOC;
                             Nout = NO3_out + NH4_out + DON_out;
                         }
+//#ifdef LIU_OMP_PATCH_LOCK
+//                        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+//#endif
                         if (neigh[0].drainage_type == STREAM) {
                             neigh[0].Qin_total += Qout * patch[0].area
                                     / neigh[0].area;
@@ -620,6 +605,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                             }
 
                         }
+//#ifdef LIU_OMP_PATCH_LOCK
+//                        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
+//#endif
                     }
                     if (grow_flag > 0) {
                         patch[0].surface_DOC -= (excess
@@ -998,11 +986,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 patch[0].streamflow += patch[0].return_flow
                     + patch[0].base_flow;
             }
+//#ifdef LIU_OMP_PATCH_LOCK
+//            omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
+//#endif
+
 
             /*--------------------------------------------------------------*/
             /* final stream flow calculations				*/
             /*--------------------------------------------------------------*/
 
+            #pragma omp critical (test1)
+            {
             hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
             hillslope[0].hillslope_outflow += (patch[0].streamflow) * patch[0].area;
             hillslope[0].hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
@@ -1010,6 +1004,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             hillslope[0].hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
             hillslope[0].hillslope_detention_store += patch[0].detention_store
                     * patch[0].area;
+            }
 
 
 

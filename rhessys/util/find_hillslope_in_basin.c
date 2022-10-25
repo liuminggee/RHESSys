@@ -62,7 +62,7 @@ struct hillslope_object *find_hillslope_in_basin(
 				hillslope_ID,
 				basin[0].ID);		
 		hillslope = NULL;
-		/*exit(EXIT_FAILURE);*/
+        exit(EXIT_FAILURE);
 	}
 
 	return(hillslope);

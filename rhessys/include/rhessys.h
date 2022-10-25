@@ -199,6 +199,7 @@
 #define P1HIGH 5
 #define P2HIGH 6
 
+enum LEACH_ELEMENT {LNO3,LNH4,LDON,LDOC,LEACH_ELEMENT_counts};                                       //10122022LML for N leaching
 
 /*----------------------------------------------------------*/
 /*      Define min and max macros                           */
@@ -1350,6 +1351,7 @@ struct	soil_default
     double	mz_v;						/* m^-1	*/
     double	porosity_0;						/* unitless */
     double	porosity_decay;						/* m^-1 */ //09092022LML: should be in unit of meter
+    double  Dingman_coef;            //eqn in Dingman p. 235 10112022LML for computing efficiency
     double	p3;						/* unitless */
     double	p4;						/* unitless */
     double	pore_size_index;				/* unitless */
@@ -1370,6 +1372,7 @@ struct	soil_default
     double	fs_spill;					/* multiplier*/
     double	fs_percolation;					/* multiplier */
     double	fs_threshold;					/* percent of max sat_deficit, for fill and spill  */
+    double	soil_deficit_threshold;         /*10112022LML*/
     int	snow_albedo_flag;	/* (DIM) set as 1 for age model and 2 for BATS model */
     double  bats_b;				/* unitless */
     double  bats_r3;				/* unitless */
@@ -1378,9 +1381,14 @@ struct	soil_default
     double  DON_adsorption_rate;				/* kg /kg soil */
     double  DOC_adsorption_rate;				/* kg /kg soil */
     double  N_decay_rate;					/* kg N /m */
+
     double  NO3_adsorption_rate;				/* kg /kg soil */
     double  NH4_adsorption_rate;				/* kg /kg soil */
     double  denitrif_proportion;				/* (DIM) 0-1 */
+
+    double  decay_rate[LEACH_ELEMENT_counts];      //10122022LML LNO3,LNH4,LDON,LDOC
+    double  adsorption_rate[LEACH_ELEMENT_counts]; //10122022LML LNO3,LNH4,LDON,LDOC
+
     double	DON_production_rate;					/* (DIM) 0-1 */
     double	gl_c;						/* m/s */
     double	gsurf_slope;					/* (DIM) */
@@ -1721,6 +1729,9 @@ struct patch_object
         int             zone_ID;
         int             default_flag;
         int             ID;
+#ifdef LIU_OMP_PATCH_LOCK
+        int Unique_ID_index;
+#endif
         int             num_base_stations;
         int             num_innundation_depths;
         int             num_canopy_strata;

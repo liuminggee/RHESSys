@@ -4,7 +4,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#ifdef LIU_OMP_PATCH_LOCK
+#include <omp.h>
+#endif
 typedef struct {
     char name[32];    /* The name field of the parameter. */
     char strVal[1024]; /* The parameter as it was read in from the file. */
@@ -29,5 +31,11 @@ int    getIntWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *
 float  getFloatWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, float defaultVal, int useDefaultVal);
 double getDoubleWorldfile(int *paramCnt, param **paramPtr , char *paramName, char *readFormat, double defaultVal, int useDefaultVal);
 
-
+//10112022LML
+extern double normal[9], perc[9];
+#ifdef LIU_OMP_PATCH_LOCK
+extern int num_patches;
+#define NUMLOCKS 3
+extern omp_lock_t* locks_patch[NUMLOCKS];
+#endif
 #endif

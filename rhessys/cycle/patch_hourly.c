@@ -89,6 +89,7 @@ void		patch_hourly(
 		double,
 		double,
 		double,
+        double,
 		double);
 	
 	double  compute_unsat_zone_drainage(
@@ -141,7 +142,7 @@ void		patch_hourly(
 	double  net_inflow, duration, infiltration;
 	double 	rz_drainage, unsat_drainage;
 	double  theta;
-	struct 	litter_object *litter;
+    //struct 	litter_object *litter;
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/
@@ -167,7 +168,7 @@ void		patch_hourly(
 	/*	Cycle through the canopy strata								*/
 	/*	above the snowpack					*/
 	/*--------------------------------------------------------------*/
-	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+    for ( int layer=0 ; layer<patch[0].num_layers; layer++ ){
 		if ( (patch[0].layers[layer].height > patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
 			/* NO3_throughfall_final collects NO3_throughfall first from null_cover area */
@@ -278,7 +279,7 @@ void		patch_hourly(
 		/*      melt  assume full daytime duration                      */
 		/*--------------------------------------------------------------*/
 		if (zone[0].hourly[0].rain_duration <= ZERO)
-			duration = 60*60/(86400);
+            duration = 0.0416; //1-hr
 		else
 			duration = zone[0].hourly[0].rain_duration/(86400);
 		
@@ -346,28 +347,22 @@ void		patch_hourly(
 	/* aggregate the hourly recharge */ 
 	patch[0].recharge += infiltration;
 
+
 		/*--------------------------------------------------------------*/
 		/* added an surface N flux to surface N pool	and		*/
 		/* allow infiltration of surface N				*/
 		/*--------------------------------------------------------------*/
 		if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
-			patch[0].soil_ns.DON += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_DON);
-			patch[0].soil_cs.DOC += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_DOC);
-			patch[0].soil_ns.nitrate += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NO3);
-			patch[0].surface_NO3 -= ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NO3);
-			patch[0].soil_ns.sminn += ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NH4);
-			patch[0].surface_NH4 -= ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_NH4);
-			patch[0].surface_DOC -= ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_DOC);
-			patch[0].surface_DON -= ((infiltration
-					/ patch[0].detention_store) * patch[0].surface_DON);
-				}
+            double finf = infiltration / patch[0].detention_store;
+            patch[0].soil_ns.DON += finf * patch[0].surface_DON;
+            patch[0].soil_cs.DOC += finf * patch[0].surface_DOC;
+            patch[0].soil_ns.nitrate += finf * patch[0].surface_NO3;
+            patch[0].surface_NO3 -= finf * patch[0].surface_NO3;
+            patch[0].soil_ns.sminn += finf * patch[0].surface_NH4;
+            patch[0].surface_NH4 -= finf * patch[0].surface_NH4;
+            patch[0].surface_DOC -= finf * patch[0].surface_DOC;
+            patch[0].surface_DON -= finf * patch[0].surface_DON;
+        }
 	
 	} /* end if rain throughfall */
 	/*--------------------------------------------------------------*/
@@ -408,6 +403,7 @@ void		patch_hourly(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
+            patch[0].soil_defaults[0][0].Dingman_coef,
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);				
 			
@@ -424,6 +420,7 @@ void		patch_hourly(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
+            patch[0].soil_defaults[0][0].Dingman_coef,
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);	
 
@@ -436,6 +433,7 @@ void		patch_hourly(
 			patch[0].soil_defaults[0][0].p4,
 			patch[0].soil_defaults[0][0].porosity_0,
 			patch[0].soil_defaults[0][0].porosity_decay,
+            patch[0].soil_defaults[0][0].Dingman_coef,
 			patch[0].sat_deficit_z,
 			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.field_capacity;
 

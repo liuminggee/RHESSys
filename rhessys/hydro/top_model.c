@@ -137,20 +137,20 @@ double	top_model(
 		struct litter_object *);
 
 
-	double compute_N_leached(int,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double *);
+//	double compute_N_leached(int,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double,
+//		double *);
 
 	double	compute_layer_field_capacity(
 		int,

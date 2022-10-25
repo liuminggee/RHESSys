@@ -1,8 +1,32 @@
+#ifdef LIU_OMP_PATCH_LOCK
+#include <omp.h>
+#endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "params.h"
-
+double normal[] = { 0.,
+                    0.253,
+                    0.524,
+                    0.842,
+                    1.283,
+                    -0.253,
+                    -0.524,
+                    -0.842,
+                    -1.283};
+double perc[] = {   0.2,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1};
+#ifdef LIU_OMP_PATCH_LOCK
+int num_patches;
+omp_lock_t* locks_patch[NUMLOCKS];
+#endif
 param * readParamFile(int *paramCnt, char *filename)
 {
 
