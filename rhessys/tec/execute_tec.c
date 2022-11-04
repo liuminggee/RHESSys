@@ -522,7 +522,10 @@ void	execute_tec(
 //#ifdef LIU_BURN_ALL_AT_ONCE
                 if (command_line[0].fire_spin_flag != 0) {
                     if(spins_index < command_line[0].fire_spins) {
-                        if (spin_year_index < command_line[0].fire_spin_period) {
+#ifdef LIU_DISPLY_RUN_INFO
+                        printf("Spins:%d Spin_year:%d\n",spins_index,spin_year_index);
+#endif
+                        if (spin_year_index < (command_line[0].fire_spin_period - 1)) {
                             spin_year_index++;
 
                             //07272022LML select random climate data year from spin-up period
@@ -545,9 +548,6 @@ void	execute_tec(
                             next_date.year = current_date.year;
                             day = 0;
                         }
-#ifdef LIU_DISPLY_RUN_INFO
-                        printf("Spins:%d Spin_year:%d\n",spins_index,spin_year_index);
-#endif
                     }
                 }
 //#endif
@@ -558,7 +558,7 @@ void	execute_tec(
 #endif */
 
             }  /*end if*/
-			} /*end while*/
+        } /*end while*/
 		} /*end while*/
 		return;
 } /*end execute_tec.c*/

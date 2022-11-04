@@ -2269,6 +2269,7 @@ struct  command_line_object
         int             fire_spin_flag;
         int             fire_spin_period;                                       //years per spin (weather start from first year)
         int             fire_spins;                                             //number of spins
+        double          N_decayrate;                                            //N decay rate along soil profile
 
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];

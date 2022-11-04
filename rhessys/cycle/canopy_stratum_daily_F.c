@@ -880,15 +880,21 @@ void	canopy_stratum_daily_F(
 
 	if (stratum[0].epv.proj_lai_shade > ZERO && zone[0].metv.dayl > ZERO)
 		stratum[0].ppfd_shade = (stratum[0].APAR_diffuse * (1-perc_sunlit)) /
-                    zone[0].metv.dayl /stratum[0].epv.proj_lai_shade;
+                    zone[0].metv.dayl / max(1.0,stratum[0].epv.proj_lai_shade); //11022022LML add max(1.0)
     else
 		stratum[0].ppfd_shade = 0.0;
 
 	if (stratum[0].epv.proj_lai_sunlit > ZERO && zone[0].metv.dayl > ZERO)
 		stratum[0].ppfd_sunlit = (stratum[0].APAR_direct + stratum[0].APAR_diffuse * perc_sunlit) /
-                    zone[0].metv.dayl /stratum[0].epv.proj_lai_sunlit;
+                    zone[0].metv.dayl / max(1.0,stratum[0].epv.proj_lai_sunlit); //11022022LML add max(1.0)
 	else
 		stratum[0].ppfd_sunlit = 0.0;
+
+
+    //printf("month:%d day:%d StrataID:%d APAR_direct(W/m2):%lf APAR_diffuse:%lf LAI_sunlit:%lf\n",
+    //       (int)current_date.month,(int)current_date.day,stratum[0].ID
+    //        ,stratum[0].APAR_direct*0.21739/zone[0].metv.dayl,stratum[0].APAR_diffuse*0.21739/zone[0].metv.dayl,
+    //        stratum[0].epv.proj_lai_sunlit);
 
 	/*--------------------------------------------------------------*/
 	/*	Compute stratum conductance	m/s			*/
@@ -1859,8 +1865,8 @@ void	canopy_stratum_daily_F(
 
 
             //if (stratum[0].ID == 179708){
-            //    printf("psn_to_cpool:%f assim_sunlit_pot:%f assim_sunlit:%f lai_sunlit:%f ppfd_sunlit:%lf assim_shade_pot:%lf assim_shade:%f lai_shade:%f ppfd_shade:%lf dayl:%f day_mr:%f leafc:%f leafn:%f proj_sla_sunlit:%f proj_sla_shade:%f gs_sunlit:%lf gs_shade:%lf\n",
-            //            stratum[0].cdf.psn_to_cpool,assim_sunlit_pot,assim_sunlit,stratum[0].epv.proj_lai_sunlit,stratum[0].ppfd_sunlit
+            //    printf("mon:%d\tday:%d\tID:%d\tpsn_to_cpool(gC/m2/day):%f\tassim_sunlit_pot:%f\tassim_sunlit:%f\tlai_sunlit:%f\tppfd_sunlit:%lf\tassim_shade_pot:%lf\tassim_shade:%f\tlai_shade:%f\tppfd_shade:%lf\tdayl:%f\tday_mr:%f\tleafc:%f\tleafn:%f\tproj_sla_sunlit:%f\tproj_sla_shade:%f\tgs_sunlit:%lf\tgs_shade:%lf\n",
+            //            current_date.month,current_date.day,stratum[0].ID,stratum[0].cdf.psn_to_cpool*1000.0,assim_sunlit_pot,assim_sunlit,stratum[0].epv.proj_lai_sunlit,stratum[0].ppfd_sunlit
             //            ,assim_shade_pot,assim_shade,stratum[0].epv.proj_lai_shade,stratum[0].ppfd_shade,zone[0].metv.dayl,stratum[0].cdf.leaf_day_mr
             //            ,stratum[0].cs.leafc,stratum[0].ns.leafn,stratum[0].epv.proj_sla_sunlit,stratum[0].epv.proj_sla_shade
             //            ,stratum[0].gs_sunlit,stratum[0].gs_shade);

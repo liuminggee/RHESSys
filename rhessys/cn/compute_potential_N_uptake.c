@@ -91,13 +91,15 @@ double compute_potential_N_uptake(
 		to restore a negative cpool.
 			-----------------------------------------------*/
 			cs->availc += cs->cpool;
+            cs->cpool = 0;  //11032022LML
 		}
 		else{
 		/*---------------------------------------------------------
 		cpool deficit is >= available C, so all of the
 		daily GPP, if any, is used to alleviate negative cpool
 			------------------------------------------------------------*/
-			cs->availc = 0.0;
+            cs->cpool += cs->availc; //11032022LML
+            cs->availc = 0.0;
 		}
 	} /* end if negative cpool */
 

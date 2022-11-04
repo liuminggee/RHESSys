@@ -208,6 +208,10 @@ void		surface_daily_F(
 	water_density = 1000;	/* density of water in kg/m^3 */
 	
 	double daylength = zone[0].metv.dayl;
+
+    if (close_enough(daylength,0))
+      printf("zoneID:%d,daylength:%lf\n",zone[0].ID,daylength);
+
 	double nightlength = SECONDS_PER_DAY - daylength;
 	double day_proportion = daylength / SECONDS_PER_DAY;
 
@@ -802,7 +806,6 @@ void		surface_daily_F(
 				+ (PE_rainy_rate_day
 				* rain_duration_day);
 		patch[0].PE = PE_night + PE_day;
-
 
 		/*--------------------------------------------------------------*/
 		/*	Update rain storage ( this also updates the patch level	*/

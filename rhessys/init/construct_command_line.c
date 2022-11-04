@@ -147,11 +147,11 @@ struct	command_line_object	*construct_command_line(
         command_line[0].fire_sc_kcons = -9999.0;
         command_line[0].fire_sc_ko_mort1 = -9999.0;
         command_line[0].fire_sc_ko_mort2 = -9999.0;
-
+#endif
         command_line[0].fire_spin_flag = 0;
         command_line[0].fire_spin_period = 0;
         command_line[0].fire_spins = 0;
-#endif
+        command_line[0].N_decayrate = -9999.0;
 
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/
@@ -443,6 +443,21 @@ struct	command_line_object	*construct_command_line(
                 command_line[0].fire_spin_period = (double)atof(main_argv[i]);
                 i++;
                 command_line[0].fire_spins = (double)atof(main_argv[i]);
+                i++;
+            }/* end if */
+            /*-------------------------------------------------*/
+            /*	set N decayrate (distribution along soil profile)	  */
+            /*-------------------------------------------------*/
+            else if ( strcmp(main_argv[i],"-Ndecayrate") == 0 ){
+                i++;
+                if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
+                    fprintf(stderr,"FATAL ERROR: Values for N decay rate not specified\n");
+                    exit(EXIT_FAILURE);
+                } /*end if*/
+                /*-------------------------------*/
+                /*Read in the loss to gw rate multiplier values		*/
+                /*-------------------------------*/
+                command_line[0].N_decayrate = (double)atof(main_argv[i]);
                 i++;
             }/* end if */
 

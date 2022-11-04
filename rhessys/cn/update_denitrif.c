@@ -138,9 +138,6 @@ int update_denitrif(
         //printf("\nDEBUG DENITRIFICATION! denitrify(gN):%lf w_scalar:%lf theta:%lf fCO2:%lf fnitrate(gN):%lf nitrate_ratio(ugN-NO3/gC):%lf NO3:%lf SoilC:%lf hr:%lf",
         //        denitrify*1000., water_scalar,theta,fCO2*1000.,fnitrate*1000.,nitrate_ratio,
         //        ns_soil->nitrate*1000.,cs_soil->totalc*1000., hr*1000.);
-
-
-
         //fprintf(stderr,"Testing!\n");
 
 

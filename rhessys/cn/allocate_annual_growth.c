@@ -455,8 +455,9 @@ int allocate_annual_growth(				int id,
 		if (cs->num_resprout < epc.max_years_resprout) {
 		cs->num_resprout += 1;
 		cs->age = 0.0;
-		cs->cpool = 0.0;
-		ns->npool = 0.0;
+        //11032022LML commented out reinitial C&N pools
+        //cs->cpool = 0.0;
+        //ns->npool = 0.0;
 		cs->leafc_store = epc.resprout_leaf_carbon;
 		cs->frootc_store = cs->leafc_store * epc.alloc_frootc_leafc;
 		cdf->leafc_store_to_leafc_transfer = cs->leafc_store;
@@ -465,13 +466,13 @@ int allocate_annual_growth(				int id,
 		ns->frootn_store = cs->frootc_store / epc.froot_cn;
 		ndf->leafn_store_to_leafn_transfer = ns->leafn_store;
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
-		cs->leafc_transfer = 0.0;
-		cs->leafc = 0.0;
-		cs->frootc_transfer = 0.0;
-		ns->leafn_transfer = 0.0;
-		ns->frootn_transfer = 0.0;
-		ns->leafn = 0.0;
-		cdf->gresp_store_to_gresp_transfer = 0.0;
+        //cs->leafc_transfer = 0.0;
+        //cs->leafc = 0.0;
+        //cs->frootc_transfer = 0.0;
+        //ns->leafn_transfer = 0.0;
+        //ns->frootn_transfer = 0.0;
+        //ns->leafn = 0.0;
+        //cdf->gresp_store_to_gresp_transfer = 0.0;
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
 		if (epc.veg_type == TREE) {

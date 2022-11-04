@@ -141,6 +141,9 @@ struct soil_default *construct_soil_defaults(
         defobj[0].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.28, 1);
         defobj[0].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1);
         defobj[0].N_decay_rate = 	getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1);
+
+        if (command_line[0].N_decayrate > 0)
+            defobj[0].N_decay_rate = command_line[0].N_decayrate; //11042022LML original soil parameter of 0.12 is too low
 		 // this is for controling co2 effect on stomatal conductance
         defobj[0].m_CO2_effect = getIntParam(&paramCnt, &paramPtr, "m_CO2_effect", "%d", 0, 1); //default is off
         printf("\n The CO2 effect on plants conductance is : %d", defobj[0].m_CO2_effect);
@@ -274,6 +277,10 @@ struct soil_default *construct_soil_defaults(
         defobj[0].adsorption_rate[LNH4] = defobj[0].NH4_adsorption_rate;
         defobj[0].adsorption_rate[LDON] = defobj[0].DON_adsorption_rate;
         defobj[0].adsorption_rate[LDOC] = defobj[0].DOC_adsorption_rate;
+
+        //11012022LML test
+        //if (defobj[0].adsorption_rate[LNO3] < (defobj[0].adsorption_rate[LNH4] / 3.0))
+        //    defobj[0].adsorption_rate[LNO3] = defobj[0].adsorption_rate[LNH4] / 3.0;
 
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/

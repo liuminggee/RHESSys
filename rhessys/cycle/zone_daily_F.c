@@ -226,7 +226,9 @@ void		zone_daily_F(
 		/*		which is likely more accurate.			*/
 		/*--------------------------------------------------------------*/
 		zone[0].metv.dayl = basin[0].daylength;
-	}
+    } else if (close_enough(zone[0].metv.dayl,0)) {
+        zone[0].metv.dayl = 3600.;  //10272022LML in case no day time
+    }
 
 	/*--------------------------------------------------------------*/
 	/* MOVED TEMP AND PRECIP CALCS UP SO CAN BE USED FOR CLOUD FRAC */

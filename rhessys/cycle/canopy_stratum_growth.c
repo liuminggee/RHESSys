@@ -106,6 +106,11 @@ void	canopy_stratum_growth(
 		else
 			pnow = stratum[0].phen.daily_allocation * stratum[0].defaults[0][0].epc.storage_transfer_prop;
 
+
+        //printf("mon:%d\tday:%d\tstrata:%d\tns_retransn_gN:%lf\n"
+        //       ,current_date.month,current_date.day,stratum[0].ID
+        //       ,stratum[0].ns.retransn*1000);
+
 		if (allocate_daily_growth(
 			patch[0].soil_ns.nlimit,
 			pnow,

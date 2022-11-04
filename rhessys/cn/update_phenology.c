@@ -369,7 +369,6 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	if (litfall_flag == 1) {
 		remdays_transfer = max(1.0,(epc.ndays_litfall + 1 - phen->lfseasonday));
-
 		leaflitfallc = 2.0*phen->leaflitfallc / remdays_transfer;
 		if (leaflitfallc > cs->leafc)
 			leaflitfallc = cs->leafc;
