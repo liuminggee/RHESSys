@@ -2214,7 +2214,26 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = stratum[0].cs.cpool;
 		else
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
-		stratum[0].acc_year.length += 1;
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+        stratum[0].acc_year.LAIx += (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc) * stratum[0].defaults[0][0].epc.proj_sla;
+        stratum[0].acc_year.height += stratum[0].epv.height;
+        stratum[0].acc_year.AGBc += ( // above ground biomass carbon weight (kgC/m2)
+                stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc + // leafc
+                stratum[0].cs.live_stemc + stratum[0].cs.dead_stemc + stratum[0].cs.livestemc_store + stratum[0].cs.deadstemc_store + stratum[0].cs.livestemc_transfer + stratum[0].cs.deadstemc_transfer + // stemc
+                stratum[0].cs.cwdc + stratum[0].cs.cpool); // remaining biomass
+        stratum[0].acc_year.BGBc += ( // below ground biomass carbon weight (kgC/m2), root carbon mainly
+                stratum[0].cs.frootc + stratum[0].cs.live_crootc + stratum[0].cs.dead_crootc); // live croot + live froot + dead croot
+        //stratum[0].acc_year.gpp += stratum[0].cs.net_psn - (stratum[0].cdf.total_mr + stratum[0].cdf.total_gr); // check on this
+        //stratum[0].acc_year.gpp += stratum[0].cdf.psn_to_cpool;
+        //stratum[0].acc_year.resp += stratum[0].cdf.total_mr + stratum[0].cdf.total_gr;
+        //stratum[0].acc_year.resp += stratum[0].cdf.total_mr + stratum[0].cdf.total_gr;
+        //stratum[0].acc_year.npp += stratum[0].cs.net_psn;
+        //stratum[0].acc_year.npp += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr - stratum[0].cdf.total_gr;
+        stratum[0].acc_year.rootdepth += stratum[0].rootzone.depth;
+#endif
+
+        stratum[0].acc_year.length += 1;
 	}
 	return;
 } /*end canopy_stratum_daily_F.c*/

@@ -861,7 +861,11 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*	Yearly							*/
     /*--------------------------------------------------------------*/
 
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+#else
     char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s\n";
+#endif
 
 #ifdef JMG_TRACKING
     char out_format_stratum_yearly[1000] = "%s %s %s ";
@@ -885,10 +889,23 @@ void add_headers(struct world_output_file_object *world_output_files,
         "hillID",
         "zoneID",
         "patchID",
-        "stratumID",
-        "lai",
+        "stratumID"
+
+#ifndef JMG_MORE_YEARLY_OUTPUT
+        ,"lai",
         "psn",
-        "lwp");
+        "lwp"
+#else
+            ,"gpp",
+            "resp",
+            "npp",
+            "AGBc",
+            "BGBc",
+            "LAI",
+            "height",
+            "rootdepth"
+#endif
+            );
 }
 
 

@@ -434,6 +434,16 @@ struct canopy_strata_object *construct_canopy_strata(
 	canopy_strata[0].acc_month.psn = 0.0;
 	canopy_strata[0].acc_month.lwp = 0.0;
 	canopy_strata[0].acc_month.length = 0;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    canopy_strata[0].acc_year.LAIx = 0.0;
+    canopy_strata[0].acc_year.height = 0.0;
+    canopy_strata[0].acc_year.AGBc = 0.0;
+    canopy_strata[0].acc_year.BGBc = 0.0;
+    canopy_strata[0].acc_year.gpp = 0.0;
+    canopy_strata[0].acc_year.resp = 0.0;
+    canopy_strata[0].acc_year.npp = 0.0;
+    canopy_strata[0].acc_year.rootdepth = 0.0;
+#endif
 
 	//fire
 	canopy_strata[0].fe.acc_year.length = 0.0;
