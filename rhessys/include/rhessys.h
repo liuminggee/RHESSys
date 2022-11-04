@@ -3055,15 +3055,26 @@ struct  stratum_default
         struct accumulate_strata_object {
 
         int length;
-        double psn;
-        double mr;                                                              //06012022LML
-        double gr;                                                              //06012022LML
+        double psn; // photosynthesis
+        double mr;  //maintainance resp                                                            //06012022LML
+        double gr;  // growth respiration                                                            //06012022LML
         double lai;
         double lwp;
         double minNSC;
-    double stemc;
-    double rootc;
-    double leafc;
+        double stemc;
+        double rootc;
+        double leafc;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+        double LAIx;
+        double height;
+        double AGBc;
+        double BGBc;
+        double rootdepth;
+        double gpp;
+        double resp;
+        double npp;
+        double nuptake;
+#endif
         };
 
 

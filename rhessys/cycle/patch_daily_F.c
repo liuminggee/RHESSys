@@ -2029,6 +2029,11 @@ void		patch_daily_F(
             strata->acc_year.mr += strata->cdf.total_mr;                        //06012022LML
             strata->acc_year.gr += strata->cdf.total_gr;                        //06012022LML
 			patch[0].lai += strata->cover_fraction * strata->epv.proj_lai;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+            strata->acc_year.npp += strata->cs.net_psn; // make sure reset is correct in all output_yearly_files
+            strata->acc_year.gpp += strata->cs.net_psn + (strata->cdf.total_mr + strata->cdf.total_gr); // make sure reset is correct in all output_yearly_files
+            strata->acc_year.resp += (strata->cdf.total_mr + strata->cdf.total_gr); // make sure reset is correct in all output_yearly_files
+#endif
 		}
 	}
 	/*-------------------------------------------------------------------------*/

@@ -258,8 +258,8 @@ void update_basin_patch_accumulator(
                 patch[0].acc_year.baseflow += patch[0].base_flow; // JMG10112022
                 patch[0].acc_year.pch_base_flow += patch[0].base_flow; // JMG10112022
 
-                patch[0].acc_year.sat_deficit += patch[0].sat_deficit; // JMG10132022
-                patch[0].acc_year.sat_deficit_z += patch[0].sat_deficit_z; // JMG10132022
+                //patch[0].acc_year.sat_deficit += patch[0].sat_deficit; // JMG10132022
+                //patch[0].acc_year.sat_deficit_z += patch[0].sat_deficit_z; // JMG10132022
 #endif
 
             }

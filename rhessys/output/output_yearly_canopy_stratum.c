@@ -56,7 +56,11 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	/*	output variables					*/
 	/*--------------------------------------------------------------*/
 
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    char out_basic[] = "%4d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
+#else
     char out_basic[] = "%4d %d %d %d %d %d %lf %lf %lf\n";
+#endif
 
 #ifdef JMG_TRACKING
     char out_format[1000] = "%d %d %d ";
@@ -79,17 +83,42 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 		hillID,
 		zoneID,
 		patchID,
-		stratum[0].ID,
-		(stratum[0].acc_year.psn) / stratum[0].acc_year.length,
+        stratum[0].ID
+#ifndef JMG_MORE_YEARLY_OUTPUT
+        ,(stratum[0].acc_year.psn) / stratum[0].acc_year.length,
 		(stratum[0].acc_year.lwp) / stratum[0].acc_year.length,
-		stratum[0].rootzone.depth*1000.0);
+        stratum[0].rootzone.depth*1000.0
+#else
+            ,stratum[0].acc_year.gpp,
+            stratum[0].acc_year.resp,
+            stratum[0].acc_year.npp,
+            //stratum[0].acc_year.psn,
+            stratum[0].acc_year.AGBc / stratum[0].acc_year.length,
+            stratum[0].acc_year.BGBc / stratum[0].acc_year.length,
+            stratum[0].acc_year.LAIx / stratum[0].acc_year.length,
+            stratum[0].acc_year.height / stratum[0].acc_year.length,
+            stratum[0].acc_year.rootdepth / stratum[0].acc_year.length,
+            stratum[0].acc_year.nuptake
+#endif
+            );
 	/*--------------------------------------------------------------*/
 	/*	reset accumulator variables				*/
 	/*--------------------------------------------------------------*/
 	if (reset_flag == 1) {
 	stratum[0].acc_year.psn = 0.0;
 	stratum[0].acc_year.lwp = 0.0;
-	stratum[0].acc_year.length = 0;
+    stratum[0].acc_year.length = 0.0;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    stratum[0].acc_year.LAIx = 0.0;
+    stratum[0].acc_year.height = 0.0;
+    stratum[0].acc_year.AGBc = 0.0;
+    stratum[0].acc_year.BGBc = 0.0;
+    stratum[0].acc_year.gpp = 0.0;
+    stratum[0].acc_year.resp = 0.0;
+    stratum[0].acc_year.npp = 0.0;
+    stratum[0].acc_year.rootdepth = 0.0;
+    stratum[0].acc_year.nuptake = 0.0;
+#endif
 	}
 	return;
 	

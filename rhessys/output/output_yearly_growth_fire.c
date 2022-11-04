@@ -74,6 +74,18 @@ void	output_yearly_growth_fire( int basinID, int hillID, int zoneID,
 
 	stratum[0].acc_year.psn = 0.0;
 	stratum[0].acc_year.minNSC = -999;
+#ifdef JMG_MORE_YEARLY_OUTPUT
+    stratum[0].acc_year.LAIx = 0.0;
+    stratum[0].acc_year.height = 0.0;
+    stratum[0].acc_year.AGBc = 0.0;
+    stratum[0].acc_year.BGBc = 0.0;
+    stratum[0].acc_year.gpp = 0.0;
+    stratum[0].acc_year.resp = 0.0;
+    stratum[0].acc_year.npp = 0.0;
+    stratum[0].acc_year.rootdepth = 0.0;
+    stratum[0].acc_year.nuptake = 0.0;
+    stratum[0].acc_year.length = 0.0;
+#endif
 
 	return;
 } /*end output_yearly_growth_fire*/

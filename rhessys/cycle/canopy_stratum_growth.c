@@ -128,6 +128,11 @@ void	canopy_stratum_growth(
 			fprintf(stderr,"FATAL ERROR: in allocate_daily_growth");
 			exit(EXIT_FAILURE);
 			}
+
+#ifdef JMG_MORE_YEARLY_OUTPUT
+        stratum[0].acc_year.nuptake += stratum[0].ndf.sminn_to_npool; // track stratum accumulators for growth
+#endif
+
 	}
 	/*--------------------------------------------------------------*/
 	/*	compute growth respiration (if grow option is on_)	*/
