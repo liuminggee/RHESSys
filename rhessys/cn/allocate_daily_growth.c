@@ -47,8 +47,7 @@ int allocate_daily_growth(int nlimit,
 						  struct ndayflux_patch_struct *ndf_patch,
 						  struct epvar_struct *epv,
 						  struct epconst_struct epc,
-						  struct date current_date)
-{
+						  struct date current_date){
 	/*------------------------------------------------------*/
 	/*	Local function declarations.						*/
 	/*------------------------------------------------------*/
@@ -128,22 +127,26 @@ int allocate_daily_growth(int nlimit,
 	/*	by fract_potential_uptake which is calculated in resolve_N_competition */
 	/*	based on available soil mineralized nitrogen				*/
 	/*--------------------------------------------------------------*/
+
 	if (nlimit == 1)
 		if (total_soil_frootc > ZERO)
 			soil_nsupply = min(ndf->potential_N_uptake,
 			(ndf_patch->plant_avail_uptake *
-			cs->frootc / total_soil_frootc));
+            max(0.1,min(0.9,cover_fraction * cs->frootc / total_soil_frootc)))); //11012022LML added the cover_fraction
+                                                                                 //and set the limitation for under and over canopy
+                                                                                 //in some cases, the undercanopy has so significant N limitation that it can't grow
 		else
 			soil_nsupply = ndf->potential_N_uptake;
 	else
 		soil_nsupply = ndf->potential_N_uptake;
 		
 	soil_nsupply = max(soil_nsupply, 0.0);
-		/*----------------------------------------------------------------
+
+    /*----------------------------------------------------------------
 		now compare the combined decomposition immobilization and plant
 		growth N demands against the available soil mineral N pool.
 	--------------------------------------------------------------------*/
-	if (nlimit == 0){
+    if (nlimit == 0){
 	/* N availability is not limiting so plant
 		uptake, and both can proceed at  potential rates */
 		/* Determine the split between retranslocation N and soil mineral
@@ -230,7 +233,8 @@ int allocate_daily_growth(int nlimit,
 	plant_nalloc = max(plant_nalloc, 0.0);
 	plant_calloc = max(plant_calloc, 0.0);
 	
-	
+    //printf("mon:%d day:%d plant_calloc:%lf height:%lf\n"
+    //       ,current_date.month,current_date.day,plant_calloc*1000,epv->height);
 
 	/* pnow is the proportion of this day's growth that is displayed now,
 	the remainder going into storage for display next year through the

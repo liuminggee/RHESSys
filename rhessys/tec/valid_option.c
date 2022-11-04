@@ -87,8 +87,9 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-fs") == 0) ||
 #ifdef LIU_BURN_ALL_AT_ONCE
         (strcmp(command_line,"-firemort") == 0) ||
-        (strcmp(command_line,"-firespin") == 0) ||
 #endif
+        (strcmp(command_line,"-firespin") == 0) ||
+        (strcmp(command_line,"-Ndecayrate") == 0) ||
 		(strcmp(command_line,"-vegspinup") == 0) ||
         (strcmp(command_line,"-template") == 0) ||
         (strcmp(command_line,"-start_from_zero_soilpools") == 0) ||
