@@ -3072,6 +3072,7 @@ struct  stratum_default
         double gpp;
         double resp;
         double npp;
+        double nuptake;
 #endif
         };
 

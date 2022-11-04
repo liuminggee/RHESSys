@@ -57,7 +57,7 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
 	/*--------------------------------------------------------------*/
 
 #ifdef JMG_MORE_YEARLY_OUTPUT
-    char out_basic[] = "%4d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf\n";
+    char out_basic[] = "%4d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
     char out_basic[] = "%4d %d %d %d %d %d %lf %lf %lf\n";
 #endif
@@ -97,7 +97,8 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
             stratum[0].acc_year.BGBc / stratum[0].acc_year.length,
             stratum[0].acc_year.LAIx / stratum[0].acc_year.length,
             stratum[0].acc_year.height / stratum[0].acc_year.length,
-            stratum[0].acc_year.rootdepth / stratum[0].acc_year.length
+            stratum[0].acc_year.rootdepth / stratum[0].acc_year.length,
+            stratum[0].acc_year.nuptake
 #endif
             );
 	/*--------------------------------------------------------------*/
@@ -116,6 +117,7 @@ void	output_yearly_canopy_stratum( int basinID, int hillID,
     stratum[0].acc_year.resp = 0.0;
     stratum[0].acc_year.npp = 0.0;
     stratum[0].acc_year.rootdepth = 0.0;
+    stratum[0].acc_year.nuptake = 0.0;
 #endif
 	}
 	return;

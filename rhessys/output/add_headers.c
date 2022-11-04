@@ -862,7 +862,7 @@ void add_headers(struct world_output_file_object *world_output_files,
     /*--------------------------------------------------------------*/
 
 #ifdef JMG_MORE_YEARLY_OUTPUT
-    char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+    char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
     char out_basic_stratum_yearly[] = "%s %s %s %s %s %s %s %s %s\n";
 #endif
@@ -903,7 +903,8 @@ void add_headers(struct world_output_file_object *world_output_files,
             "BGBc",
             "LAI",
             "height",
-            "rootdepth"
+            "rootdepth",
+            "nuptake"
 #endif
             );
 }

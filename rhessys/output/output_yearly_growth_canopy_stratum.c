@@ -151,6 +151,7 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
     stratum[0].acc_year.resp = 0.0;
     stratum[0].acc_year.npp = 0.0;
     stratum[0].acc_year.rootdepth = 0.0;
+    stratum[0].acc_year.nuptake = 0.0;
     stratum[0].acc_year.length = 0.0;
 #endif
   }

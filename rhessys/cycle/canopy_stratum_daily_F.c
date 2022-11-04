@@ -2230,7 +2230,7 @@ void	canopy_stratum_daily_F(
         //stratum[0].acc_year.resp += stratum[0].cdf.total_mr + stratum[0].cdf.total_gr;
         //stratum[0].acc_year.npp += stratum[0].cs.net_psn;
         //stratum[0].acc_year.npp += stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr - stratum[0].cdf.total_gr;
-        stratum[0].acc_year.rootdepth += stratum[0].rootzone.depth;
+        stratum[0].acc_year.rootdepth += stratum[0].rootzone.depth;        
 #endif
 
         stratum[0].acc_year.length += 1;

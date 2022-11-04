@@ -443,6 +443,7 @@ struct canopy_strata_object *construct_canopy_strata(
     canopy_strata[0].acc_year.resp = 0.0;
     canopy_strata[0].acc_year.npp = 0.0;
     canopy_strata[0].acc_year.rootdepth = 0.0;
+    canopy_strata[0].acc_year.nuptake = 0.0;
 #endif
 
 	//fire
