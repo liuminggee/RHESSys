@@ -89,6 +89,7 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].sen_flag = 0;
 	command_line[0].vsen_flag = 0;
 	command_line[0].vsen_alt_flag = 0;
+    command_line[0].snowmelt_tcoef = -9999;
 	command_line[0].precip_scale_flag = 0;
 	command_line[0].snow_scale_flag = 0;
 	command_line[0].noredist_flag = 0;
@@ -613,6 +614,19 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].vsen_alt[PO] = (double)atof(main_argv[i]);
 				i++;
 			} /* end if */
+            else if ( strcmp(main_argv[i],"-snowmelt_tcoef") == 0 ){
+                i++;
+                if (  (i == main_argc) || (valid_option(main_argv[i])==1) ){
+                    fprintf(stderr,
+                        "FATAL ERROR: Sensitivity perturbation not specified\n");
+                    exit(EXIT_FAILURE);
+                }/*end if*/
+                /*--------------------------------------------------------------*/
+                /*			Read in the sensitivity parameter values. */
+                /*--------------------------------------------------------------*/
+                command_line[0].snowmelt_tcoef = (double)atof(main_argv[i]);
+                i++;
+            } /* end if */
 
 			/*-----------------------------------------------------------*/
 			/*Check if the vegetation  sensitivity analysis option is next.				*/

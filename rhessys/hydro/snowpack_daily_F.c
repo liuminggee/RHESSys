@@ -481,6 +481,7 @@ double	snowpack_daily_F(
 		T_melt = melt_Tcoef * T_air * v_factor;
 	else
 		T_melt = 0.0;
+
 	/*--------------------------------------------------------------*/
 	/*	Calculate Rain on Snow melting				*/
 	/*--------------------------------------------------------------*/
@@ -506,28 +507,33 @@ double	snowpack_daily_F(
 	}
 	/*--------------------------------------------------------------*/
 	/*  Calculate Total Melt										*/
-	/*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/\
+
+    //11202022LML need check precip_melt for latter time!!
+    double twet_bulb = T_air - (T_air - zone[0].tdewpoint) / 3.0;
+    if (twet_bulb < 0) precip_melt = 0;
+    else precip_melt = (cw / latent_heat_melt) * twet_bulb * rain;   //https://www.cnrfc.noaa.gov/publications/Rain_on_snow.pdf
+
 	melt = min((T_melt + rad_melt + precip_melt), 
 			   snowpack_total_water_depth * area_fraction);
-	
+
 	/*--------------------------------------------------------------*/
 	/*  Perform Degree day accumulation								*/
 	/*--------------------------------------------------------------*/
 	energy_deficit = min(max((energy_deficit+T_air),
 						 maximum_energy_deficit),0.001);
 	
-	
-	
-	if ( verbose_flag == -5 ){
-		printf("\nSNOWPACK end: swe=%lf melt=%lf T_melt=%lf rad_melt=%lf precip_melt=%lf Qmelt=%lf Kupsnow=%lf",
-			   snowpack_total_water_depth*area_fraction*1000,
+    if ( verbose_flag == -5 ){
+        printf("\nSNOWPACK month:%d day:%d end: swe=%lf melt=%lf T_melt=%lf rad_melt=%lf precip_melt=%lf Qmelt=%lf Kupsnow=%lf energy_deficit=%lf",
+               current_date.month,current_date.day,snowpack_total_water_depth*area_fraction*1000,
 			   melt*1000,
 			   T_melt*1000,
 			   rad_melt*1000,
 			   precip_melt*1000,
 			   Q_melt/86.4,
-			   (*Kup_direct_snow+*Kup_diffuse_snow)/86.4);
-	}
+               (*Kup_direct_snow+*Kup_diffuse_snow)/86.4,
+                energy_deficit);
+    }
 	
 			
 	/*--------------------------------------------------------------*/

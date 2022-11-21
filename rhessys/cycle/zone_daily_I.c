@@ -231,10 +231,12 @@ void zone_daily_I(
 		/*		lapse rate amount for this base station to the zone.	*/
 		/*--------------------------------------------------------------*/
 		/* If netcdf climate data used and no elevation grid provided, assume base station and zone are same z */
-        if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)) {
+        if ((command_line[0].gridded_netcdf_flag == 1) && (world[0].base_station_ncheader[0].elevflag == 0)
+                && (zone[0].base_stations[i][0].valid_z == 0)) {
 			z_delta = 0.0;
 		}
 		else z_delta = zone[0].z - zone[0].base_stations[i][0].z;
+
 		/*--------------------------------------------------------------*/
 		/*		compute isohyet difference adjustment					*/
 		/*--------------------------------------------------------------*/

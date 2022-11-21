@@ -107,6 +107,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
         basestation[0].proj_y           = -9999;
         basestation[0].lat              = -9999;
         basestation[0].lon              = -9999;
+        basestation[0].valid_z          = 0;                                    //11202022LML
         //basestation[0].has_constructed  = 0;
     }
     #endif
@@ -186,6 +187,7 @@ struct base_station_ncheader_object *construct_netcdf_header (
                 world[0].base_stations[baseid][0].proj_y = atof(first);
             } else if (strcmp(second, "z_coordinate") == 0) {
                 world[0].base_stations[baseid][0].z = atof(first);
+                world[0].base_stations[baseid][0].valid_z = 1;                  //11202022LML
             } else if (strcmp(second, "lon") == 0) {
                 world[0].base_stations[baseid][0].lon = atof(first);
             } else if (strcmp(second, "lat") == 0) {

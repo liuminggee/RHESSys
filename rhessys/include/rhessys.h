@@ -791,6 +791,8 @@ typedef struct base_station_object
         double  proj_x;                                                          /* (meters) x coordinate of projection     */
         double  proj_y;                                                          /* (meters) y coordinate of projection     */
         double  z;                                                               /*   meters     */
+        int     valid_z;                                                         /*11202022LML elevation provided from base station info file */
+
         double  effective_lai;                                                   /* m^2/m^2      */
         double  screen_height;                                                   /* meters       */
         struct  hourly_clim_object       *hourly_clim;
@@ -2226,6 +2228,7 @@ struct  command_line_object
         int             road_flag;
         int             vsen_flag;
         int             vsen_alt_flag;
+        double          snowmelt_tcoef;                                         //11202022LML mmSWE/Celsius degree
         int             sen_flag;
         int             vgsen_flag;
         int             prefix_flag;

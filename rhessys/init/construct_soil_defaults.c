@@ -128,11 +128,13 @@ struct soil_default *construct_soil_defaults(
         defobj[0].maximum_snow_energy_deficit = 	getDoubleParam(&paramCnt, &paramPtr, "maximum_snow_energy_deficit", "%lf", -10.0, 1);
         defobj[0].snow_water_capacity = 		getDoubleParam(&paramCnt, &paramPtr, "snow_water_capacity", "%lf", 0.0, 1);
         defobj[0].snow_light_ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_light_ext_coef", "%lf", 10000.0, 1);
-        defobj[0].snow_melt_Tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_melt_Tcoef", "%lf", 0.05, 1);
-         printf("snow melting coef: %lf\n",defobj[0].snow_melt_Tcoef);
+        defobj[0].snow_melt_Tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_melt_Tcoef", "%lf", 0.005, 1);  //11202022LML 1.6-6.0 mm/degree-dayC  E11-5 USDA Part 630 Hydrology National ENgineering Handbook
+        printf("snow melting coef: %lf\n",defobj[0].snow_melt_Tcoef);
         defobj[0].snow_albedo_flag = 	parse_albedo_flag(getStrParam(&paramCnt, &paramPtr, "snow_albedo_flag", "%s", "age", 1));
         defobj[0].bats_b = 		getDoubleParam(&paramCnt, &paramPtr, "bats_b", "%lf", 2.0, 1);
         defobj[0].bats_r3 = 		getDoubleParam(&paramCnt, &paramPtr, "bats_r3", "%lf", 0.3, 1);
+        if (command_line[0].snowmelt_tcoef > 0)
+            defobj[0].snow_melt_Tcoef = command_line[0].snowmelt_tcoef;
 /*
              defobj[0].snow_melt_Tcoef *= command_line[0].tmp_value;
 */
