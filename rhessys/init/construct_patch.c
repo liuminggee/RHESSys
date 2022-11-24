@@ -215,6 +215,8 @@ struct patch_object *construct_patch(
               getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.sminn","%lf",0.0,1);
     patch[0].soil_ns.nitrate =
               getDoubleWorldfile(&paramCnt,&paramPtr,"soil_ns.nitrate","%lf",0.0,1);
+    if (patch[0].soil_ns.nitrate < 0)
+        patch[0].soil_ns.nitrate = 0;
     patch[0].soil_cs.soil2c =
               getDoubleWorldfile(&paramCnt,&paramPtr,"soil_cs.soil2c","%lf",0.0,1);
     patch[0].soil_cs.soil3c =

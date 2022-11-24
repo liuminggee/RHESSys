@@ -451,7 +451,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                                     patch[0].soil_defaults[0][0].active_zone_z,
                                     patch[0].soil_defaults[0][0].soil_depth,
                                     patch[0].soil_defaults[0][0].adsorption_rate,
-                                    leached
+                                    leached,
+                                    LEACH_ELEMENT_counts
                                     //patch[0].transmissivity_profile
                                     );
                     patch[0].surface_DOC += leached[LDOC];

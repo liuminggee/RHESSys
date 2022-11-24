@@ -222,7 +222,8 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
                 patch[0].soil_defaults[0][0].adsorption_rate,
-                leached_to_patch
+                leached_to_patch,
+                LEACH_ELEMENT_counts
                 //patch[0].transmissivity_profile
                     );
             //double *tot_leached
@@ -240,7 +241,8 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
                 patch[0].soil_defaults[0][0].adsorption_rate,
-                tot_leached
+                tot_leached,
+                LEACH_ELEMENT_counts
                 //patch[0].transmissivity_profile
                     );
             NO3_leached_to_stream = tot_leached[LNO3] - leached_to_patch[LNO3];
@@ -302,7 +304,8 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].active_zone_z,
 				patch[0].soil_defaults[0][0].soil_depth,
                 patch[0].soil_defaults[0][0].adsorption_rate,
-                leached_to_patch
+                leached_to_patch,
+                LEACH_ELEMENT_counts
                 //patch[0].transmissivity_profile
                 );
             NH4_leached_to_patch = leached_to_patch[LNO3];
@@ -389,7 +392,8 @@ void  update_drainage_road(
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
             patch[0].soil_defaults[0][0].adsorption_rate,
-            tot_leached
+            tot_leached,
+            LEACH_ELEMENT_counts
             //patch[0].transmissivity_profile
                 );
         patch[0].surface_NO3 += tot_leached[LNO3];

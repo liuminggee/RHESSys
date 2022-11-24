@@ -40,8 +40,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 #include <cstdlib>
 #include <math.h> //NREN 20190227
 #include <iomanip>
-
-
 using std::cout;
 using std::stringstream;
 using std::fstream;
@@ -49,11 +47,17 @@ using std::ifstream;
 using std::ofstream;
 
 using boost::shared_ptr;
-int close_enough(double a, double b)
-{
-    if (fabs(a - b) <= DBL_EPSILON * fmax(fabs(a), fabs(b))) return 1;
-    return 0;
-}
+#ifndef DBL_EPSILON
+#define DBL_EPSILON 2.2204460492503131e-16
+#endif
+#ifndef close_enough
+#define close_enough(x,y) ( ( (x)*(x) - (y)*(y) <= DBL_EPSILON ) ? 1 : 0 )
+#endif
+//int close_enough(double a, double b)
+//{
+//    if (fabs(a - b) <= DBL_EPSILON * fmax(fabs(a), fabs(b))) return 1;
+//    return 0;
+//}
 // WMFire is used by models that pass values defined in the rhessys_fire.h file.
 // The calling model passes a 2D grid of fire_objects, of size nrow X ncol
 //					world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year

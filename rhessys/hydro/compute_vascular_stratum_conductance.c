@@ -127,7 +127,7 @@ double	compute_vascular_stratum_conductance(
 	/*--------------------------------------------------------------*/
 	/*	soil-LWP multiplier					*/
 	/*--------------------------------------------------------------*/
-    if (!close_enough(LWP_predawn,  9999.0)) {
+    if (! close_enough(LWP_predawn,  9999.0)) {
 		m_LWP = leaf_conductance_LWP_curve(LWP_curve, LWP_predawn,
 			LWP_min_spring,LWP_stom_closure,LWP_threshold, LWP_slp, LWP_intercpt );
 

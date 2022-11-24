@@ -222,18 +222,18 @@ void		hillslope_hourly(
 			hourly_gw_Qout = 0.0;
 		}
 
-  		for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
-			for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
-				patch = hillslope[0].zones[i][0].patches[j];
-				if (patch[0].soil_defaults[0][0].ID == 42) {
-						patch[0].sat_deficit -= hourly_gw_Qout;
-						patch[0].soil_ns.sminn += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.NH4;
-						patch[0].soil_ns.nitrate += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.NO3;
-						patch[0].soil_ns.DON += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.DON;
-						patch[0].soil_cs.DOC += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.DOC;
-						}
-			}
-		}
+        //for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
+        //	for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
+        //		patch = hillslope[0].zones[i][0].patches[j];
+        //		if (patch[0].soil_defaults[0][0].ID == 42) {
+        //				patch[0].sat_deficit -= hourly_gw_Qout;
+        //				patch[0].soil_ns.sminn += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.NH4;
+        //				patch[0].soil_ns.nitrate += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.NO3;
+        //				patch[0].soil_ns.DON += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.DON;
+        //				patch[0].soil_cs.DOC += hourly_gw_Qout * gw_Qout_ratio * hillslope[0].gw.DOC;
+        //				}
+        //	}
+        //}
 
 
 		hillslope[0].gw.storage -= hillslope[0].gw.hourly_Qout;	

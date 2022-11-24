@@ -53,7 +53,7 @@ double	compute_stability_correction(
 	/* Resistances should be divided by these correction factors */
 	
 	correction = 1.0;
-    if (!close_enough(Tsurf, Tair)) {
+    if (! close_enough(Tsurf, Tair)) {
 		ri = 9.8 * (Tair - Tsurf) * (zair - zsurf) / (((Tair + 273.15) + (Tsurf + 273.15)) / 2.0 * uair * uair);
 		ri_lim = (Tair + 273.15) / (((Tair + 273.15) + (Tsurf + 273.15)) / 2.0 * (log((zair - zsurf) / Z0) + 5));
 	

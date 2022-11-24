@@ -59,7 +59,7 @@ void sort_patch_layers( struct patch_object *patch)
 		/*		Check if this height alread exists.		*/
 		/*--------------------------------------------------------------*/
 		j = 0;
-        while( (j<list_bottom) && !close_enough(patch[0].canopy_strata[i][0].epv.height,
+        while( (j<list_bottom) && ! close_enough(patch[0].canopy_strata[i][0].epv.height,
             patch[0].layers[j].height) ){
 			j++;
 		}

@@ -91,7 +91,7 @@ double	compute_delta_water(
 	/*--------------------------------------------------------------*/
 	z_final = min(max(z_final,0),soil_depth);
 	z_initial = max(z_initial,0);
-    if ( !close_enough(p,0) && (p < 999.0) ){
+    if ( ! close_enough(p,0) && (p < 999.0) ){
 		delta_water += n_0 * p *
 			(exp(-z_final/p) - exp(-z_initial/p));
 	}

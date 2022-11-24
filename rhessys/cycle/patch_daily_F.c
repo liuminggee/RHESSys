@@ -2248,6 +2248,9 @@ void		patch_daily_F(
 			fprintf(stderr,"fATAL ERROR: in update_denitrif() ... Exiting\n");
 			exit(EXIT_FAILURE);
 		}
+
+        if (patch[0].soil_ns.nitrate < 0)
+            fprintf(stderr,"soil_ns.nitrate < 0");
         //fprintf(stderr," p_rt_zone_d:%lf sat_deficit_z:%lf fc:%lf ",
         //        patch[0].rootzone.depth, patch[0].sat_deficit_z, patch[0].field_capacity);
 

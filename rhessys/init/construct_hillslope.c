@@ -207,6 +207,7 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.NH4_adsorption_rate = 0.0;
 	hillslope[0].aggdefs.DON_adsorption_rate = 0.0;
 	hillslope[0].aggdefs.DOC_adsorption_rate = 0.0;
+    hillslope[0].mean_hillslope_lna = 0.0;
 	
 	for ( i=0 ; i<hillslope[0].num_zones ; i++ ){
 		hillslope[0].zones[i] = construct_zone( command_line,
@@ -215,54 +216,56 @@ struct hillslope_object *construct_hillslope(
 			world_base_stations, defaults,
 			base_station_ncheader, world);
 		for	 (j =0; j < hillslope[0].zones[i][0].num_patches ; j++) {
-			hillslope[0].area += hillslope[0].zones[i][0].patches[j][0].area;
-			if (hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].ID == 42) 
-				hillslope[0].riparian_area += hillslope[0].zones[i][0].patches[j][0].area;
-			hillslope[0].slope += hillslope[0].zones[i][0].patches[j][0].slope *
-					hillslope[0].zones[i][0].patches[j][0].area;
+            struct  patch_object *patch = hillslope[0].zones[i][0].patches[j];
+            hillslope[0].area += patch[0].area;
+            if (patch[0].soil_defaults[0][0].ID == 42)
+                hillslope[0].riparian_area += patch[0].area;
+            hillslope[0].slope += patch[0].slope *
+                    patch[0].area;
 			hillslope[0].aggdefs.soil_water_cap +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].soil_water_cap *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].soil_water_cap *
+                patch[0].area;
 			hillslope[0].aggdefs.Ksat_0 +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].Ksat_0 *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].Ksat_0 *
+                patch[0].area;
 			hillslope[0].aggdefs.m +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].m *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].m *
+                patch[0].area;
 			hillslope[0].aggdefs.psi_air_entry +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].psi_air_entry*
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].psi_air_entry*
+                patch[0].area;
 			hillslope[0].aggdefs.porosity_0 +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].porosity_0 *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].porosity_0 *
+                patch[0].area;
 			hillslope[0].aggdefs.porosity_decay +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].porosity_decay *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].porosity_decay *
+                patch[0].area;
 			hillslope[0].aggdefs.DOM_decay_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DOM_decay_rate *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].DOM_decay_rate *
+                patch[0].area;
 			hillslope[0].aggdefs.N_decay_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].N_decay_rate *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].N_decay_rate *
+                patch[0].area;
 			hillslope[0].aggdefs.active_zone_z +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].active_zone_z *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].active_zone_z *
+                patch[0].area;
 			hillslope[0].aggdefs.soil_depth +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].soil_depth *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].soil_depth *
+                patch[0].area;
 			hillslope[0].aggdefs.NO3_adsorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NO3_adsorption_rate *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].NO3_adsorption_rate *
+                patch[0].area;
 			hillslope[0].aggdefs.NH4_adsorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].NH4_adsorption_rate *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].NH4_adsorption_rate *
+                patch[0].area;
 			hillslope[0].aggdefs.DON_adsorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DON_adsorption_rate *
-				hillslope[0].zones[i][0].patches[j][0].area;
+                patch[0].soil_defaults[0][0].DON_adsorption_rate *
+                patch[0].area;
 			hillslope[0].aggdefs.DOC_adsorption_rate +=
-				hillslope[0].zones[i][0].patches[j][0].soil_defaults[0][0].DOC_adsorption_rate *
-				hillslope[0].zones[i][0].patches[j][0].area;
-
+                patch[0].soil_defaults[0][0].DOC_adsorption_rate *
+                patch[0].area;
+            hillslope[0].mean_hillslope_lna += patch[0].lna *
+                patch[0].area;
 		}
 	}
 	hillslope[0].slope /= hillslope[0].area;
@@ -280,6 +283,8 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].aggdefs.NH4_adsorption_rate /= hillslope[0].area;
 	hillslope[0].aggdefs.DON_adsorption_rate /= hillslope[0].area;
 	hillslope[0].aggdefs.DOC_adsorption_rate /= hillslope[0].area;
+    hillslope[0].mean_hillslope_lna /= hillslope[0].area;
+    hillslope[0].Q0 = hillslope[0].aggdefs.Ksat_0 * exp( -1 * hillslope[0].mean_hillslope_lna);
 
 
 	/*--------------------------------------------------------------*/

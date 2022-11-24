@@ -182,7 +182,8 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
             patch[0].soil_defaults[0][0].adsorption_rate,
-            leached
+            leached,
+            LEACH_ELEMENT_counts
             //patch[0].transmissivity_profile
                 );
         NO3_leached_to_stream = leached[LNO3];
@@ -262,7 +263,8 @@ void  update_drainage_stream(
 			patch[0].soil_defaults[0][0].active_zone_z,
 			patch[0].soil_defaults[0][0].soil_depth,
             patch[0].soil_defaults[0][0].adsorption_rate,
-            leached
+            leached,
+            LEACH_ELEMENT_counts
             //patch[0].transmissivity_profile
                 );
         patch[0].surface_NO3 += leached[LNO3];

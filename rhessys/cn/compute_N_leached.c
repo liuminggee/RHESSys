@@ -45,7 +45,8 @@ double	compute_N_leached(int verbose_flag,
 			double z2_N, 
 			double z2_water, 
             double N_absorption_rate[],
-            double nleached[]
+            double nleached[],
+            int which_element_to_simulate
                           /*,
             double *transmissivity*/)
 			
@@ -88,7 +89,13 @@ double	compute_N_leached(int verbose_flag,
 	double z1, z2;
 	double	available_water,septic_depth;
 
-    for (int i = 0; i < LEACH_ELEMENT_counts; i++) {
+    int start_elem = (which_element_to_simulate == LEACH_ELEMENT_counts) ?
+                     0 : which_element_to_simulate;
+    int end_elem = (which_element_to_simulate == LEACH_ELEMENT_counts) ?
+                     LEACH_ELEMENT_counts : (start_elem + 1);
+
+
+    for (int i = start_elem; i < end_elem; i++) {
         nleached[i] = 0.0;
     }
 
@@ -108,7 +115,7 @@ double	compute_N_leached(int verbose_flag,
       if (close_enough(s1, 0.0) && close_enough(s2, 0.0)) {
 		z2 = -1.0 * p * log (1 - (Qout) / (p * n_0));
 		z1 = 0.0;
-        for (int i = 0; i < LEACH_ELEMENT_counts; i++) {
+        for (int i = start_elem; i < end_elem; i++) {
           if (N_decay_rate[i] > ZERO) {
             navail = total_nitrate[i]
                 / (1.0 - exp(-1.0 * N_decay_rate[i] * z2_N) )
@@ -154,7 +161,8 @@ double	compute_N_leached(int verbose_flag,
             n_0,p,z2_water,
             z2,
             z1);
-        for (int i = 0; i < LEACH_ELEMENT_counts; i++) {
+
+        for (int i = start_elem; i < end_elem; i++) {
           if (N_decay_rate[i] > 0.0) {
             navail = total_nitrate[i]
                      / (1.0 - exp(-1.0 * N_decay_rate[i] * z2_N) )

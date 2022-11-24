@@ -141,6 +141,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+//#include <iomanip>
 
 #include "../../util/WMFireInterface.h" /* required for fire spread*/
 /*----------------------------------------------------------*/
@@ -220,8 +221,13 @@ int get_indays(int,int,int,int,int);	//get days since XXXX-01-01
 #endif
 
 //05202022LML compare double
-int close_enough(double a, double b);
-
+//int close_enough(double a, double b);
+#ifndef DBL_EPSILON
+#define DBL_EPSILON 2.2204460492503131e-16
+#endif
+#ifndef close_enough
+#define close_enough(x,y) (((((x)-(y))*((x)-(y))) <= DBL_EPSILON ) ? 1 : 0)
+#endif
 /*----------------------------------------------------------*/
 /*      Define types                                        */
 /*----------------------------------------------------------*/
@@ -1061,6 +1067,8 @@ struct hillslope_object
         double  hourly_streamflow_NH4;  /* kgN/m2/day           */
         double  hourly_streamflow_DON;  /* kgN/m2/day           */
         double  hourly_streamflow_DOC;  /* kgN/m2/day           */
+        double  mean_hillslope_lna;
+        double Q0;    //discharge when mean sat deficit = 0.
         struct  gw_object               gw;
         struct  aggdefs_object          aggdefs;
         struct  base_station_object     **base_stations;

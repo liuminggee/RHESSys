@@ -241,7 +241,7 @@ void zone_daily_I(
 		/*		compute isohyet difference adjustment					*/
 		/*--------------------------------------------------------------*/
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_precip == NULL) {
-        if (!close_enough(zone[0].defaults[0][0].lapse_rate_precip_default, -999.0))
+        if (! close_enough(zone[0].defaults[0][0].lapse_rate_precip_default, -999.0))
 			isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default*z_delta+1.0;
 		else
 			isohyet_adjustment = zone[0].precip_lapse_rate;
@@ -296,8 +296,7 @@ void zone_daily_I(
 				isohyet_adjustment = 0.0;
 		} /* end stocastic noise addition */
 
-
-        if ( !close_enough(temp,-999.0 )){
+        if ( ! close_enough(temp,-999.0 )){
 			zone[0].rain =  temp * isohyet_adjustment;
 			flag++;
 		}
@@ -315,7 +314,7 @@ void zone_daily_I(
             temp = zone[0].base_stations[i][0].daily_clim[0].tmin[day];
 		}
 
-        if (!close_enough(temp, -999.0)) {
+        if (! close_enough(temp, -999.0)) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmin == NULL) {
 			if (zone[0].rain > ZERO)
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
@@ -338,7 +337,7 @@ void zone_daily_I(
             }
 
 
-        if (!close_enough(temp, -999.0)) {
+        if (! close_enough(temp, -999.0)) {
 		if ( zone[0].base_stations[i][0].daily_clim[0].lapse_rate_tmax == NULL) {
 			if (zone[0].rain > ZERO)
 				Tlapse_adjustment = z_delta * zone[0].defaults[0][0].wet_lapse_rate;
@@ -450,7 +449,7 @@ void zone_daily_I(
 
 	if ( zone[0].base_stations[0][0].daily_clim[0].snow != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].snow[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].snow = temp * isohyet_adjustment;
 		}
 
@@ -466,7 +465,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].daytime_rain_duration!=NULL){
 		temp=zone[0].base_stations[0][0].daily_clim[0].daytime_rain_duration[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].rain_duration = temp * 3600;
 		}
 	}
@@ -493,7 +492,7 @@ void zone_daily_I(
 	if(zone[0].base_stations[0][0].daily_clim[0].base_station_effective_lai
 		!= NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].base_station_effective_lai[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].base_station_effective_lai = temp;
 		}
 	}
@@ -506,7 +505,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].cloud_fraction != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].cloud_fraction[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].cloud_fraction = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].cloud_fraction = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	cloud opacity												*/
@@ -518,7 +517,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].cloud_opacity != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].cloud_opacity[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].cloud_opacity = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].cloud_opacity = temp;
 	}
 	else{
 		zone[0].cloud_opacity = 0.8;
@@ -542,7 +541,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Delta_T != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Delta_T[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].Delta_T = temp;
 		}
 		else{
@@ -583,7 +582,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Kdown_direct != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Kdown_direct[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].Kdown_direct = temp;
 			zone[0].Kdown_direct_flag = 1;
 		}
@@ -595,7 +594,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Kdown_diffuse != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Kdown_diffuse[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].Kdown_diffuse = temp;
 			zone[0].Kdown_diffuse_flag = 1;
 		}
@@ -611,7 +610,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].PAR_diffuse != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].PAR_diffuse[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].PAR_diffuse = temp * 1000000;
+        if ( ! close_enough(temp, -999.0 )) zone[0].PAR_diffuse = temp * 1000000;
 	}
 	/*--------------------------------------------------------------*/
 	/*	PAR_direct			(umol/(m2*day))??							*/
@@ -624,7 +623,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].PAR_direct != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].PAR_direct[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].PAR_direct = temp * 1000000;
+        if ( ! close_enough(temp, -999.0 )) zone[0].PAR_direct = temp * 1000000;
 	}
 	/*--------------------------------------------------------------*/
 	/*	bulk atmospheric transmissivity	(includes clouds)			*/
@@ -632,7 +631,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].atm_trans != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].atm_trans[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].atm_trans = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].atm_trans = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	tsoil		(deg C)												*/
@@ -641,7 +640,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tsoil != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tsoil[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].metv.tsoil = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].metv.tsoil = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/* if it is the first day of the simulation running average of the tsoil */
@@ -664,7 +663,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].wind != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].wind[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].wind = temp;
 		}
 		else{
@@ -681,7 +680,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].wind_direction != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].wind_direction[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].wind_direction = temp;
 		}
 		else{
@@ -699,13 +698,13 @@ void zone_daily_I(
 	if ( zone[0].base_stations[0][0].daily_clim[0].ndep_NO3 != NULL )
 		{
 		temp = zone[0].base_stations[0][0].daily_clim[0].ndep_NO3[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].ndep_NO3 = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].ndep_NO3 = temp;
 	}
 		else zone[0].ndep_NO3 = zone[0].defaults[0][0].ndep_NO3;
 	if ( zone[0].base_stations[0][0].daily_clim[0].ndep_NH4 != NULL )
 		{
 		temp = zone[0].base_stations[0][0].daily_clim[0].ndep_NH4[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].ndep_NH4 = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].ndep_NH4 = temp;
 	}
 		else zone[0].ndep_NH4 = 0.0;
 	/*--------------------------------------------------------------*/
@@ -713,13 +712,13 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].CO2 != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].CO2[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].CO2 = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].CO2 = temp;
 	}
 
 	// NREN 20181115 add extra stations to read in CO2 values
 	if ( world[0].num_extra_stations==1 && world[0].extra_stations[0][0].daily_clim[0].CO2 !=NULL) {
         temp = world[0].extra_stations[0][0].daily_clim[0].CO2[day];
-        if (!close_enough(temp, -999.0)) zone[0].CO2 = temp;
+        if (! close_enough(temp, -999.0)) zone[0].CO2 = temp;
 
         if (zone[0].ID == 7788 & current_date.month == 1 && current_date.day == 1) {
             printf(" \n the read in value is %lf , the index is %d\n", temp, day);
@@ -734,7 +733,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].vpd != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].vpd[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].metv.vpd = temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].metv.vpd = temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	relative humidity											*/
@@ -745,7 +744,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].relative_humidity != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].relative_humidity[day];
-        if ( !close_enough(temp, -999.0 )) zone[0].relative_humidity= temp;
+        if ( ! close_enough(temp, -999.0 )) zone[0].relative_humidity= temp;
 	}
 	/*--------------------------------------------------------------*/
 	/*	Dewpoint temperature										*/
@@ -758,7 +757,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tdewpoint != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tdewpoint[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].tdewpoint = temp-( z_delta )
 				* zone[0].defaults[0][0].dewpoint_lapse_rate;
 		}
@@ -777,7 +776,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tavg != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tavg[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].metv.tavg = temp-( z_delta )
 				* zone[0].defaults[0][0].lapse_rate;
 
@@ -797,7 +796,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].LAI_scalar != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].LAI_scalar[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].LAI_scalar = temp;
 		}
 	} /*end if*/
@@ -809,7 +808,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].Ldown != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].Ldown[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].Ldown = temp;
 		}
 	} /*end if*/
@@ -818,7 +817,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].dayl != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].dayl[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			zone[0].metv.dayl = temp;
 			zone[0].daylength_flag = 1;
 		}
@@ -845,7 +844,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tday != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tday[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			temp = temp - ( z_delta )
 				* zone[0].defaults[0][0].lapse_rate;
 			zone[0].metv.tday = temp;
@@ -865,19 +864,19 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tnight != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tnight[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			temp = temp - ( z_delta ) *
 				zone[0].defaults[0][0].lapse_rate;
 			zone[0].metv.tnight = temp;
 		}
-        else if ( !close_enough(zone[0].metv.tday, -999.0 )){
+        else if ( ! close_enough(zone[0].metv.tday, -999.0 )){
 			zone[0].metv.tnight  = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
 		}
 		else{
 			zone[0].metv.tnight = -999.0;
 		}
 	} /*end if*/
-    else if( !close_enough(zone[0].metv.tday, -999.0 )){
+    else if( ! close_enough(zone[0].metv.tday, -999.0 )){
 		zone[0].metv.tnight  = (zone[0].metv.tday + zone[0].metv.tmin)/2.0;
 	}
 	else{
@@ -891,7 +890,7 @@ void zone_daily_I(
 	/*--------------------------------------------------------------*/
 	if ( zone[0].base_stations[0][0].daily_clim[0].tnightmax != NULL ){
 		temp = zone[0].base_stations[0][0].daily_clim[0].tnightmax[day];
-        if ( !close_enough(temp, -999.0 )){
+        if ( ! close_enough(temp, -999.0 )){
 			temp = temp - ( z_delta )
 				* zone[0].defaults[0][0].lapse_rate;
 			zone[0].metv.tnightmax = temp;
@@ -971,13 +970,13 @@ void zone_daily_I(
 				}
 
 				/* If it is summer and summer params provided, use them. */
-                if ( (season == 1) && !close_enough(zone[0].defaults[0][0].trans_coeff1_sum, -999.0) && !close_enough(zone[0].defaults[0][0].trans_coeff2_sum, -999.0) ) {
+                if ( (season == 1) && ! close_enough(zone[0].defaults[0][0].trans_coeff1_sum, -999.0) && ! close_enough(zone[0].defaults[0][0].trans_coeff2_sum, -999.0) ) {
 						trans_coeff1 = zone[0].defaults[0][0].trans_coeff1_sum;
 						trans_coeff2 = zone[0].defaults[0][0].trans_coeff2_sum;
 					} /* end summer if */
 				else {
 					/* If it is winter and winter params provided, use them. */
-                    if ( (season == 2) && !close_enough(zone[0].defaults[0][0].trans_coeff1_win, -999.0) && !close_enough(zone[0].defaults[0][0].trans_coeff2_win, -999.0)) {
+                    if ( (season == 2) && ! close_enough(zone[0].defaults[0][0].trans_coeff1_win, -999.0) && ! close_enough(zone[0].defaults[0][0].trans_coeff2_win, -999.0)) {
 						trans_coeff1 = zone[0].defaults[0][0].trans_coeff1_win;
 						trans_coeff2 = zone[0].defaults[0][0].trans_coeff2_win;
 						} /* end winter if */

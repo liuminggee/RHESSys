@@ -290,7 +290,7 @@ void		zone_daily_F(
 	/*--------------------------------------------------------------*/
 
     if ( close_enough(zone[0].rain_duration, -999.0 )){
-        if ( close_enough(zone[0].rain, 0) || !close_enough(zone[0].snow, 0 ) ){
+        if ( close_enough(zone[0].rain, 0) || ! close_enough(zone[0].snow, 0 ) ){
 			zone[0].rain_duration = 0;
 		}
 		else{
@@ -358,7 +358,7 @@ void		zone_daily_F(
 		/*																*/
 		/*	Equation 2a & 2b , Page 5, "MTCLIM" 						*/
 		/*--------------------------------------------------------------*/
-        if ( !close_enough(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat, 0.0 )) {
+        if ( ! close_enough(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat, 0.0 )) {
 			zone[0].radrat = (zone[0].Kdown_direct + zone[0].Kdown_diffuse) /
 			(zone[0].Kdown_direct_flat + zone[0].Kdown_diffuse_flat);
 		}

@@ -83,7 +83,8 @@ double	compute_N_leached(int verbose_flag,
             double z2_N,
             double z2_water,
             double N_absorption_rate[],
-            double nleached[]
+            double nleached[],
+            int which_element_to_simulate
             //,double *transmissivity
                           );
 

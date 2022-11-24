@@ -191,7 +191,7 @@ double	top_model(
 	double  mean_sat_deficit, mean_sat_deficit_z, up_flow, down_flow;			/* Taehee Hwang */
 	double  new_mean_sat_deficit, new_mean_rz_storage, new_mean_unsat_storage;		/* Taehee Hwang */
 	double  preday_mean_sat_deficit, preday_mean_unsat_storage, preday_mean_rz_storage; 	/* Taehee Hwang */
-	double  mean_hillslope_lna;
+    //double  mean_hillslope_lna;
 	double  new_total_litter_store, new_total_detention_store;
 	double  total_detention_store, total_litter_store;
 	double  preday_total_detention_store;
@@ -233,14 +233,13 @@ double	top_model(
 				* zones[i][0].patches[j][0].area;
 			preday_total_litter_store += patch[0].litter.rain_stored
 				* zones[i][0].patches[j][0].area;
-				
 		}
 	}
 
 	for ( k=0; k< num_timesteps; ++k) { 
 
 	mean_sat_deficit = 0.0;
-	mean_hillslope_lna = 0.0;
+    //mean_hillslope_lna = 0.0;
 	mean_N_leached = 0.0;
 	mean_nitrate = 0.0;
 	new_total_detention_store = 0.0;
@@ -295,9 +294,9 @@ double	top_model(
 				patch[0].unsat_storage = 0.0;
 			}			
 			
-			if (patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) {
+            if (patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) {
 				return_flow = patch[0].detention_store -
-						patch[0].soil_defaults[0][0].detention_store_size;
+                        patch[0].soil_defaults[0][0].detention_store_size;
 				patch[0].detention_store -= return_flow;
 				patch[0].return_flow += return_flow;
 			}
@@ -305,19 +304,22 @@ double	top_model(
 	/*--------------------------------------------------------------*/
 	/*	compute mean soil moisture				*/
 	/*--------------------------------------------------------------*/
-			mean_sat_deficit += zones[i][0].patches[j][0].sat_deficit
-				* zones[i][0].patches[j][0].area;
+            mean_sat_deficit += patch[0].sat_deficit
+                * patch[0].area;
 			if (grow_flag > 0) {
-				mean_nitrate += zones[i][0].patches[j][0].soil_ns.nitrate
-					* zones[i][0].patches[j][0].area;
+                mean_nitrate += patch[0].soil_ns.nitrate
+                    * patch[0].area;
+                if (patch[0].soil_ns.nitrate < 0)
+                    fprintf(stderr,"patch_ID:%d i:%d j:%d patches.soil_ns.nitrate:%lf < 0\n",
+                            patch[0].ID, i,j,patch[0].soil_ns.nitrate * 1000);
 			}
-			area += zones[i][0].patches[j][0].area;
-			mean_hillslope_lna += zones[i][0].patches[j][0].lna
-				* zones[i][0].patches[j][0].area;
+            area += patch[0].area;
+            //mean_hillslope_lna += patch[0].lna
+            //    * patch[0].area;
 		}
 	}
 	mean_sat_deficit = mean_sat_deficit / area;
-	mean_hillslope_lna = mean_hillslope_lna / area;
+    //mean_hillslope_lna = mean_hillslope_lna / area;
 	/*--------------------------------------------------------------*/
 	/*      Estimate Qo - discharge when mean sat deficit = 0.      */
 	/*      Note that Ambroise suggest that this condition results  */
@@ -327,7 +329,7 @@ double	top_model(
 	/*	We use a hillslope_area of 1 since we want base_flow in	*/
 	/*	m water / day.						*/
 	/*--------------------------------------------------------------*/
-	Q_0 = hillslope[0].aggdefs.Ksat_0 * exp( -1 * mean_hillslope_lna  ) / num_timesteps;
+    Q_0 = hillslope[0].Q0 / num_timesteps;
 	/*--------------------------------------------------------------*/
 	/*	Compute base flow. (m/day)				*/
 	/*								*/
@@ -362,8 +364,18 @@ double	top_model(
 				hillslope[0].aggdefs.soil_depth,
 				0.0,
 				-1.0 * mean_sat_deficit);
-		mean_N_leached = compute_N_leached( verbose_flag,
-					mean_nitrate,
+        double total_nitrate[LEACH_ELEMENT_counts];
+        double N_decay_rate[LEACH_ELEMENT_counts];
+        double N_absorption_rate[LEACH_ELEMENT_counts];
+        double N_leached[LEACH_ELEMENT_counts];
+        int elem_sim = LNO3;
+        total_nitrate[elem_sim] = mean_nitrate;
+        N_decay_rate[elem_sim] = hillslope[0].aggdefs.N_decay_rate;
+        N_absorption_rate[elem_sim] = hillslope[0].aggdefs.NO3_adsorption_rate;
+        if (mean_nitrate < 0)
+            fprintf(stderr,"Warning: mean_nitrate < 0!\n");
+        int tmp = compute_N_leached( verbose_flag,
+                    total_nitrate,//mean_nitrate,
 					base_flow,
 					mean_sat_deficit,
 					hillslope[0].aggdefs.soil_water_cap,
@@ -371,13 +383,19 @@ double	top_model(
 					hillslope[0].aggdefs.Ksat_0 / num_timesteps,	
 					hillslope[0].aggdefs.porosity_0,
 					hillslope[0].aggdefs.porosity_decay,
-					hillslope[0].aggdefs.N_decay_rate,
+                    N_decay_rate,//hillslope[0].aggdefs.N_decay_rate,
 					hillslope[0].aggdefs.active_zone_z,
 					hillslope[0].aggdefs.soil_depth,
-					hillslope[0].aggdefs.NO3_adsorption_rate,
-					NULL);
-		hillslope[0].streamflow_NO3 += mean_N_leached;
-		mean_nitrate -= hillslope[0].streamflow_NO3;
+                    N_absorption_rate,//hillslope[0].aggdefs.NO3_adsorption_rate,
+                    N_leached,
+                    elem_sim
+                    //NULL
+                );
+
+        //printf("nitrate:%lf leach:%lf\n",mean_nitrate,N_leached[elem_sim]);
+
+        hillslope[0].streamflow_NO3 += N_leached[elem_sim];//mean_N_leached;
+        mean_nitrate -= N_leached[elem_sim];//hillslope[0].streamflow_NO3;
 	}
 	/*--------------------------------------------------------------*/
 	/*	Adjust the mean_sat_deficit for the base_flow.		*/
@@ -396,19 +414,20 @@ double	top_model(
 	for (	i=0 ; i<hillslope[0].num_zones; i++ ){
 		for ( j=0; j < zones[i][0].num_patches; j++ ){
 			patch =  zones[i][0].patches[j];
+            struct  soil_default *psoil_def = patch[0].soil_defaults[0];
 
 			preday_sat_deficit_z = compute_z_final(
 				verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth,
+                psoil_def[0].porosity_0,
+                psoil_def[0].porosity_decay,
+                psoil_def[0].soil_depth,
 				0.0,
 				-1.0 * patch[0].sat_deficit);
 			/*--------------------------------------------------------------*/
 			/*	adjust local sat deficit relative to mean		*/
 			/*--------------------------------------------------------------*/
 			patch[0].sat_deficit = mean_sat_deficit
-				- ( patch[0].lna - mean_hillslope_lna )
+                - ( patch[0].lna - hillslope[0].mean_hillslope_lna )
 				* hillslope[0].aggdefs.m ;
 
 			/*--------------------------------------------------------------*/
@@ -417,9 +436,9 @@ double	top_model(
 			/*--------------------------------------------------------------*/
 			patch[0].sat_deficit_z = compute_z_final(
 				verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth,
+                psoil_def[0].porosity_0,
+                psoil_def[0].porosity_decay,
+                psoil_def[0].soil_depth,
 				0.0,
 				-1.0 * patch[0].sat_deficit);
 
@@ -429,13 +448,13 @@ double	top_model(
 			if (patch[0].sat_deficit_z < patch[0].rootzone.depth)  {
 				patch[0].rootzone.field_capacity = compute_layer_field_capacity(
 					command_line[0].verbose_flag,
-					patch[0].soil_defaults[0][0].theta_psi_curve,
-					patch[0].soil_defaults[0][0].psi_air_entry,
-					patch[0].soil_defaults[0][0].pore_size_index,
-					patch[0].soil_defaults[0][0].p3,
-					patch[0].soil_defaults[0][0].p4,
-					patch[0].soil_defaults[0][0].porosity_0,
-					patch[0].soil_defaults[0][0].porosity_decay,
+                    psoil_def[0].theta_psi_curve,
+                    psoil_def[0].psi_air_entry,
+                    psoil_def[0].pore_size_index,
+                    psoil_def[0].p3,
+                    psoil_def[0].p4,
+                    psoil_def[0].porosity_0,
+                    psoil_def[0].porosity_decay,
 					patch[0].sat_deficit_z,
 					patch[0].sat_deficit_z, 0.0);				
 					
@@ -444,25 +463,25 @@ double	top_model(
 			else  {
 				patch[0].field_capacity = compute_layer_field_capacity(
 					command_line[0].verbose_flag,
-					patch[0].soil_defaults[0][0].theta_psi_curve,
-					patch[0].soil_defaults[0][0].psi_air_entry,
-					patch[0].soil_defaults[0][0].pore_size_index,
-					patch[0].soil_defaults[0][0].p3,
-					patch[0].soil_defaults[0][0].p4,
-					patch[0].soil_defaults[0][0].porosity_0,
-					patch[0].soil_defaults[0][0].porosity_decay,
+                    psoil_def[0].theta_psi_curve,
+                    psoil_def[0].psi_air_entry,
+                    psoil_def[0].pore_size_index,
+                    psoil_def[0].p3,
+                    psoil_def[0].p4,
+                    psoil_def[0].porosity_0,
+                    psoil_def[0].porosity_decay,
 					patch[0].sat_deficit_z,
 					patch[0].sat_deficit_z, 0);
 					
 				patch[0].rootzone.field_capacity = compute_layer_field_capacity(
 					command_line[0].verbose_flag,
-					patch[0].soil_defaults[0][0].theta_psi_curve,
-					patch[0].soil_defaults[0][0].psi_air_entry,
-					patch[0].soil_defaults[0][0].pore_size_index,
-					patch[0].soil_defaults[0][0].p3,
-					patch[0].soil_defaults[0][0].p4,
-					patch[0].soil_defaults[0][0].porosity_0,
-					patch[0].soil_defaults[0][0].porosity_decay,
+                    psoil_def[0].theta_psi_curve,
+                    psoil_def[0].psi_air_entry,
+                    psoil_def[0].pore_size_index,
+                    psoil_def[0].p3,
+                    psoil_def[0].p4,
+                    psoil_def[0].porosity_0,
+                    psoil_def[0].porosity_decay,
 					patch[0].sat_deficit_z,
 					patch[0].rootzone.depth, 0.0);	
 			}
@@ -484,12 +503,12 @@ double	top_model(
 				patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
 				rz_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
-					patch[0].soil_defaults[0][0].theta_psi_curve,
-					patch[0].soil_defaults[0][0].pore_size_index,
+                    psoil_def[0].theta_psi_curve,
+                    psoil_def[0].pore_size_index,
 					patch[0].rootzone.S,
-					patch[0].soil_defaults[0][0].mz_v,
+                    psoil_def[0].mz_v,
 					patch[0].rootzone.depth,
-					patch[0].soil_defaults[0][0].Ksat_0 / num_timesteps / 2,	
+                    psoil_def[0].Ksat_0 / num_timesteps / 2,
 					patch[0].rz_storage - patch[0].rootzone.field_capacity);
 					
 				patch[0].rz_storage -=  rz_drainage;
@@ -498,12 +517,12 @@ double	top_model(
 				patch[0].S = min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
 				unsat_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
-					patch[0].soil_defaults[0][0].theta_psi_curve,
-					patch[0].soil_defaults[0][0].pore_size_index,
+                    psoil_def[0].theta_psi_curve,
+                    psoil_def[0].pore_size_index,
 					patch[0].S,
-					patch[0].soil_defaults[0][0].mz_v,
+                    psoil_def[0].mz_v,
 					patch[0].sat_deficit_z,
-					patch[0].soil_defaults[0][0].Ksat_0 / num_timesteps / 2,
+                    psoil_def[0].Ksat_0 / num_timesteps / 2,
 					patch[0].unsat_storage - patch[0].field_capacity);
 					
 				patch[0].unsat_storage -=  unsat_drainage;
@@ -516,12 +535,12 @@ double	top_model(
 				patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
 				rz_drainage = compute_unsat_zone_drainage(
 					command_line[0].verbose_flag,
-					patch[0].soil_defaults[0][0].theta_psi_curve,
-					patch[0].soil_defaults[0][0].pore_size_index,
+                    psoil_def[0].theta_psi_curve,
+                    psoil_def[0].pore_size_index,
 					patch[0].S,
-					patch[0].soil_defaults[0][0].mz_v,
+                    psoil_def[0].mz_v,
 					patch[0].sat_deficit_z,
-					patch[0].soil_defaults[0][0].Ksat_0 / num_timesteps / 2,
+                    psoil_def[0].Ksat_0 / num_timesteps / 2,
 					patch[0].rz_storage - patch[0].rootzone.field_capacity);	
 				
 				unsat_drainage = 0.0;	   				  		
@@ -572,18 +591,18 @@ double	top_model(
 				patch[0].unsat_storage = 0.0;
 			}			
 			
-			if (patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) {
+            if (patch[0].detention_store > psoil_def[0].detention_store_size) {
 				return_flow = patch[0].detention_store -
-						patch[0].soil_defaults[0][0].detention_store_size;
+                        psoil_def[0].detention_store_size;
 				patch[0].detention_store -= return_flow;
 				patch[0].return_flow += return_flow;
 			}
 			
 			patch[0].sat_deficit_z = compute_z_final(
 				verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth,
+                psoil_def[0].porosity_0,
+                psoil_def[0].porosity_decay,
+                psoil_def[0].soil_depth,
 				0.0,
 				-1.0 * patch[0].sat_deficit);
 
@@ -596,13 +615,13 @@ double	top_model(
 			if ((patch[0].sat_deficit_z > preday_sat_deficit_z) && (patch[0].sat_deficit > ZERO)) {
 	       			add_field_capacity = compute_layer_field_capacity(
 					command_line[0].verbose_flag,
-					patch[0].soil_defaults[0][0].theta_psi_curve,
-					patch[0].soil_defaults[0][0].psi_air_entry,
-					patch[0].soil_defaults[0][0].pore_size_index,
-					patch[0].soil_defaults[0][0].p3,
-					patch[0].soil_defaults[0][0].p4,
-					patch[0].soil_defaults[0][0].porosity_0,
-					patch[0].soil_defaults[0][0].porosity_decay,
+                    psoil_def[0].theta_psi_curve,
+                    psoil_def[0].psi_air_entry,
+                    psoil_def[0].pore_size_index,
+                    psoil_def[0].p3,
+                    psoil_def[0].p4,
+                    psoil_def[0].porosity_0,
+                    psoil_def[0].porosity_decay,
 					patch[0].sat_deficit_z,
 					patch[0].sat_deficit_z,
 					preday_sat_deficit_z);
@@ -644,9 +663,9 @@ double	top_model(
 			
 			patch[0].sat_deficit_z = compute_z_final(
 				verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth,
+                psoil_def[0].porosity_0,
+                psoil_def[0].porosity_decay,
+                psoil_def[0].soil_depth,
 				0.0,
 				-1.0 * patch[0].sat_deficit);
 		} /* end patches */
