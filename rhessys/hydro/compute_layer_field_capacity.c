@@ -78,6 +78,7 @@
 #include <math.h>
 #include "rhessys.h"
 #include "phys_constants.h"
+#include "functions.h"
 double	compute_layer_field_capacity(
 							   int	verbose_flag,
 							   int	curve,
@@ -156,3 +157,45 @@ double	compute_layer_field_capacity(
 	return(field_capacity);
 
 } /*compute_layer_field_capacity*/ 
+
+double	compute_layer_field_capacity_from_soildef(
+                               int	verbose_flag,
+                               struct soil_default *psoildef,
+                               double	z_water_table,
+                               double	z_layer,
+                               double	z_surface)
+{
+    /*--------------------------------------------------------------*/
+    /*	Local function declaration			*/
+    /*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*	Local variable definition.				*/
+    /*--------------------------------------------------------------*/
+    double	partial_field_capacity;
+    double	full_field_capacity, field_capacity;
+
+    /*--------------------------------------------------------------*/
+    /* field capacity of the layer is the difference between field */
+    /* capacity of full unsat zone - field capacity between		*/
+    /* bottom of the layer and water table				*/
+    /*--------------------------------------------------------------*/
+
+    partial_field_capacity = 0.0;
+    full_field_capacity = compute_field_capacity_from_soildef(verbose_flag,
+                        psoildef,
+                        z_water_table,
+                        z_water_table,
+                        z_surface);
+
+    if (z_layer <  z_water_table)
+        partial_field_capacity = compute_field_capacity_from_soildef(verbose_flag,
+                        psoildef,
+                        z_water_table,
+                        z_water_table,
+                        z_layer);
+
+    field_capacity = full_field_capacity - partial_field_capacity;
+
+    return(field_capacity);
+
+} /*compute_layer_field_capacity*/

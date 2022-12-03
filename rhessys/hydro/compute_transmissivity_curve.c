@@ -44,6 +44,7 @@
 #include <math.h>
 #include "rhessys.h"
 #include "phys_constants.h"
+#include "functions.h"
 
 double 	*compute_transmissivity_curve( 
 					double  gamma,
@@ -128,21 +129,13 @@ double 	*compute_transmissivity_curve(
 			depth = depth-patch[0].soil_defaults[0][0].interval_size;
 
 			
-			lower_z = compute_z_final(
-				command_line[0].verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth,
-				0.0,
-				-1.0*lower);
+            lower_z = compute_z_final_from_surface(
+                patch[0].soil_defaults[0],
+                -1.0*lower);
 
-			depth_z = compute_z_final(
-				command_line[0].verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth,
-				0.0,
-				-1.0*depth);
+            depth_z = compute_z_final_from_surface(
+                patch[0].soil_defaults[0],
+                -1.0*depth);
 
             fclayer = compute_field_capacity(
 				command_line[0].verbose_flag,

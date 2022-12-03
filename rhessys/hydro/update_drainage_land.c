@@ -106,9 +106,9 @@ void  update_drainage_land(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-    int j, d; //, idx;
+    int d; //, idx;
     //double Ksat;
-    double m, std_scale;
+    double std_scale;
     double NH4_leached_to_patch;//, NH4_leached_to_stream;
     double NO3_leached_to_patch;//, NO3_leached_to_stream;
     double DON_leached_to_patch;//, DON_leached_to_stream;
@@ -123,10 +123,10 @@ void  update_drainage_land(
 	double route_to_surface;  /* m3 */
 	double return_flow,route_to_patch ;  /* m3 */
 	double available_sat_water; /* m3 */
-    double Qin, Qout;  /* m */
-    double innundation_depth, infiltration; /* m */
+    double Qout;  /* m */
+    double innundation_depth; /* m */
 	double total_gamma;
-    double Nin, Nout; /* kg/m2 */
+    double Nout; /* kg/m2 */
     //double t1,t2,t3;
 
     //struct patch_object *neigh;
@@ -210,7 +210,7 @@ void  update_drainage_land(
 
 	if (command_line[0].grow_flag > 0) {
         //double *Nout =
-        double t = compute_N_leached(
+        double t = compute_N_leached_from_soildef(
 			verbose_flag,
             lpools,
             pQout,
@@ -218,12 +218,7 @@ void  update_drainage_land(
             psoil_def[0].soil_water_cap,
             //m,
             //gamma,
-            psoil_def[0].porosity_0,
-            psoil_def[0].porosity_decay,
-            psoil_def[0].decay_rate,
-            psoil_def[0].active_zone_z,
-            psoil_def[0].soil_depth,
-            psoil_def[0].adsorption_rate,
+            psoil_def,
             leached,
             LEACH_ELEMENT_counts
             //patch[0].transmissivity_profile
@@ -300,7 +295,7 @@ void  update_drainage_land(
                 }
             }
             //double *pNout =
-            double t = compute_N_leached(
+            double t = compute_N_leached_from_soildef(
 				verbose_flag,
                 lpools,
 				return_flow,
@@ -308,12 +303,7 @@ void  update_drainage_land(
 				0.0,
                 //m,
                 //gamma,
-                psoil_def[0].porosity_0,
-                psoil_def[0].porosity_decay,
-                psoil_def[0].decay_rate,
-                psoil_def[0].active_zone_z,
-                psoil_def[0].soil_depth,
-                psoil_def[0].adsorption_rate,
+                psoil_def,
                 leached,
                 LEACH_ELEMENT_counts
                 //patch[0].transmissivity_profile
@@ -385,14 +375,15 @@ void  update_drainage_land(
 	/* regular downslope routing */
 	/*--------------------------------------------------------------*/
 	if (command_line[0].noredist_flag == 0) {
+      int numnb = patch[0].innundation_list[d].num_neighbours;
     //#pragma omp parallel for
-      for (int j = 0; j < patch[0].innundation_list[d].num_neighbours; j++) {
-        struct  patch_object *neigh = patch[0].innundation_list[d].neighbours[j].patch;
+      for (int j = 0; j < numnb; j++) {
+        struct  neighbour_object *nbo = &patch[0].surface_innundation_list[d].neighbours[j];
+        struct  patch_object *neigh = nbo->patch;
 //#ifdef LIU_OMP_PATCH_LOCK
 //        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 //#endif
-        double fgamma = patch[0].innundation_list[d].neighbours[j].gamma
-                        / neigh[0].area;
+        double fgamma = nbo->gamma / neigh[0].area;
 		/*--------------------------------------------------------------*/
 		/* first transfer subsurface water and nitrogen */
 		/*--------------------------------------------------------------*/
@@ -424,14 +415,15 @@ void  update_drainage_land(
 			  d++;}
       }
     //#pragma omp parallel for
-      for (int j = 0; j < patch[0].surface_innundation_list[d].num_neighbours; j++) {
-        struct  patch_object *neigh = patch[0].surface_innundation_list[d].neighbours[j].patch;
+      numnb = patch[0].innundation_list[d].num_neighbours;
+      for (int j = 0; j < numnb; j++) {
+        struct  neighbour_object *nbo = &patch[0].surface_innundation_list[d].neighbours[j];
+        struct  patch_object *neigh = nbo->patch;
         struct  soil_default *neigh_psoil = neigh[0].soil_defaults[0];
 //#ifdef LIU_OMP_PATCH_LOCK
 //        omp_set_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 //#endif
-        double fgamma = patch[0].surface_innundation_list[d].neighbours[j].gamma
-                        / neigh[0].area;
+        double fgamma = nbo->gamma / neigh[0].area;
 		/*--------------------------------------------------------------*/
 		/* now transfer surface water and nitrogen */
 		/*	- first nitrogen					*/
@@ -459,32 +451,20 @@ void  update_drainage_land(
 		/*--------------------------------------------------------------*/
 		if (neigh[0].detention_store > ZERO) {
 			if (neigh[0].rootzone.depth > ZERO) {
-			infiltration = compute_infiltration(
+            infiltration = compute_infiltration_patch(
 				verbose_flag,
-				neigh[0].sat_deficit_z,
+                neigh,
 				neigh[0].rootzone.S,
-				neigh[0].Ksat_vertical,
-                neigh_psoil[0].Ksat_0_v,
-                neigh_psoil[0].mz_v,
-                neigh_psoil[0].porosity_0,
-                neigh_psoil[0].porosity_decay,
 				(neigh[0].detention_store),	
-				time_int,
-                neigh_psoil[0].psi_air_entry);
+                time_int);
 			}
 			else {
-			infiltration = compute_infiltration(
+            infiltration = compute_infiltration_patch(
 				verbose_flag,
-				neigh[0].sat_deficit_z,
+                neigh,
 				neigh[0].S,
-				neigh[0].Ksat_vertical,
-                neigh_psoil[0].Ksat_0_v,
-                neigh_psoil[0].mz_v,
-                neigh_psoil[0].porosity_0,
-                neigh_psoil[0].porosity_decay,
-				(neigh[0].detention_store),	
-				time_int,
-                neigh_psoil[0].psi_air_entry);
+                (neigh[0].detention_store),
+                time_int);
 			}
 		}
 		else infiltration = 0.0;

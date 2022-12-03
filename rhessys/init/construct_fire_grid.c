@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "rhessys.h"
+#include "util/rhessys_fire.h"
 #include <omp.h>
 // local function definition:
 /*double calc_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,double curMaxY,double cellMaxX,
@@ -380,18 +381,41 @@ struct fire_object **construct_fire_grid(struct world_object *world)
      #pragma omp parallel for private(i,j)
 	 for(i=0;i<world[0].num_fire_grid_row;i++){
 		for(j=0;j<world[0].num_fire_grid_col;j++){
-			fire_grid[i][j].burn=0; // if burned, WMFire will replace with the p_s value
-			fire_grid[i][j].fuel_veg=0; // for one of the fuel loading options
-			fire_grid[i][j].fuel_litter=0; // for
-			fire_grid[i][j].fuel_moist=100;
-			fire_grid[i][j].soil_moist=100;
-			fire_grid[i][j].temp=0;
+            struct fire_object *pfire = &fire_grid[i][j];
+            pfire->burn=0; // if burned, WMFire will replace with the p_s value
+            pfire->fuel_veg=0; // for one of the fuel loading options
+            pfire->fuel_litter=0; // for
+            pfire->fuel_moist=100;
+            pfire->soil_moist=100;
+            pfire->temp=0;
 			//fire_grid[i][j].df=0 // placeholder for linked list of WUI's within salience distance of pixel, initialized at zero
 							// this would be an array of length=number of WUI blocks within <=10 km of this cell,
 							// with the distance associated with each WUI block. WMFire will replace these zeroes if
 							// a fire occurs in this pixel
 							// or a pointer to the to wui block
+            double elev = world[0].patch_fire_grid[i][j].elev;
+            for (int direct = 0; direct < counts_FIRE_NEIGHBOR; direct++) {
+                double ind = 0;
+                int nb_row = i + add_row[direct];
+                int nb_col = j + add_col[direct];
+                if (nb_row > 0 && nb_row < world[0].num_fire_grid_row
+                        && nb_col > 0 && nb_col < world[0].num_fire_grid_col) {
+                    double ind = 1;
+                    double slope = (elev - world[0].patch_fire_grid[nb_row][nb_col].elev)
+                                   / world[0].fire_grid_res;
+                    if(slope<=0) ind = -1.;
+                    double p_slope = world[0].defaults[0].fire->slope_k1
+                            *exp(ind*world[0].defaults[0].fire->slope_k2*slope*slope);
+                    if (p_slope < 0) p_slope = 0;
+                    else if (p_slope > 1) p_slope = 1;
+                    pfire->fp_slope[direct] = p_slope;
 
+                    //printf("d%d\tfp_slope:%lf\n",direct,pfire->fp_slope[direct]);
+
+                } else {
+                    pfire->fp_slope[direct] = 0;
+                }
+            }
 		}
 	}
 

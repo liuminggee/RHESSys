@@ -336,7 +336,7 @@ void		zone_hourly(
 							= temp * (1.0 - temp / Kdown_direct_flat_toa);
 					zone[0].hourly[0].Kdown_diffuse
 						= zone[0].hourly[0].Kdown_diffuse_flat
-						* pow(cos(zone[0].slope/2.0),2.0);
+                        * zone[0].pow_cos_slope; //pow(cos(zone[0].slope/2.0),2.0);
 					if ( command_line[0].verbose_flag > 5 )
 						printf("\n-111.3 cos_sza : %8.4f Kdown_dir_flat= %8.4f Kdown_dif_flat= %8.4f ",
 						basin[0].hourly[0].cos_sza,
@@ -353,14 +353,14 @@ void		zone_hourly(
 					/*		Convert calculation fro W/m^2 to Kj/(m^2*hr)	*/
 					/*-----------------------------------------------------------*/
 					zone[0].Kdown_direct_flat_calc
-						+= zone[0].hourly[0].Kdown_direct_flat * 3600 / 1000;
+                        += zone[0].hourly[0].Kdown_direct_flat * 3.6; //3600 / 1000;
 					zone[0].Kdown_direct_calc
-						+= zone[0].hourly[0].Kdown_direct * 3600 / 1000;
+                        += zone[0].hourly[0].Kdown_direct * 3.6; //3600 / 1000;
 
 					zone[0].Kdown_diffuse_flat_calc
-						+= zone[0].hourly[0].Kdown_diffuse_flat * 3600 / 1000;
+                        += zone[0].hourly[0].Kdown_diffuse_flat * 3.6; //3600 / 1000;
 					zone[0].Kdown_diffuse_calc
-						+= zone[0].hourly[0].Kdown_diffuse * 3600 / 1000;
+                        += zone[0].hourly[0].Kdown_diffuse * 3.6; //3600 / 1000;
 				/*} end if */
             } /*end if*/
 			} /*end if*/

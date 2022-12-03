@@ -171,6 +171,7 @@ struct zone_object *construct_zone(
 	zone[0].cos_slope = cos(zone[0].slope);
 	zone[0].sin_aspect = sin(zone[0].aspect);
 	zone[0].sin_slope = sin(zone[0].slope);
+    zone[0].pow_cos_slope = pow(cos(zone[0].slope/2.0),2.0);
 	/*--------------------------------------------------------------*/
 	/*      Initialize accumulator variables                        */
 	/*--------------------------------------------------------------*/

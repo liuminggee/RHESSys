@@ -35,42 +35,34 @@ double recompute_gamma( struct patch_object *patch,
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/ 
 	/*--------------------------------------------------------------*/ 
-	int i, d;
-	double adjustment, revised_total_gamma;  
-	double z1, z2, water_table_z1, water_table_z2;
+    double adjustment = 0.0;
+    double water_table_z1, water_table_z2;
 	/*--------------------------------------------------------------*/ 
 	/*	for now, if water table is above the surface we		*/
 	/*	we set saturation deficit to zero, since return flow	*/
 	/*	is modelled separately and should not be taken into	*/
 	/*	account in modelling surface gradients			*/
 	/*--------------------------------------------------------------*/ 
-
-	adjustment = 0.0;
-	z1 = patch[0].z;  
+    //z1 = patch[0].z;
 	if (patch[0].sat_deficit_z > ZERO)	
-		water_table_z1	 = (z1 - patch[0].sat_deficit_z);
+        water_table_z1	 = (patch[0].z - patch[0].sat_deficit_z);
 	else
-		water_table_z1 = z1;
-	d = 0;
-	if (patch[0].innundation_list[d].num_neighbours > 0)
-		for (i =0; i < patch[0].innundation_list[d].num_neighbours; i++) {
-            struct  neighbour_object *nb = &patch[0].innundation_list[d].neighbours[i];
+        water_table_z1 = patch[0].z;
+    int numnb = patch[0].innundation_list[0].num_neighbours;
+    if (numnb > 0)
+        for (int i =0; i < numnb; i++) {
+            struct  neighbour_object *nb = &patch[0].innundation_list[0].neighbours[i];
             struct  patch_object *tpatch = nb->patch;
-            z2 = tpatch[0].z;
             if (tpatch[0].sat_deficit_z > 0)
-                water_table_z2	 = (z2 - tpatch[0].sat_deficit_z);
+                water_table_z2	 = (tpatch[0].z - tpatch[0].sat_deficit_z);
 			else
-				water_table_z2 = z2;
-			if (fabs(z1-z2) > ZERO) {
-				adjustment += max(((water_table_z1 - water_table_z2) / (z1 - z2) *
+                water_table_z2 = tpatch[0].z;
+            if (fabs(patch[0].z-tpatch[0].z) > ZERO) {
+                adjustment += max(((water_table_z1 - water_table_z2) / (patch[0].z - tpatch[0].z) *
                     nb->gamma),0.0);
             }
 		}
 	else
 		adjustment = 1.0;
-
-	revised_total_gamma = adjustment * total_gamma;		
-				
-		
-	return(revised_total_gamma);
+    return(adjustment * total_gamma);
 } /*recompute_gamma*/

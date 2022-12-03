@@ -157,11 +157,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;
 
-		patch[0].preday_sat_deficit_z = compute_z_final(verbose_flag,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-				patch[0].soil_defaults[0][0].soil_depth, 0.0,
-				-1.0 * patch[0].sat_deficit);
+        patch[0].preday_sat_deficit_z = compute_z_final_from_surface(
+                patch[0].soil_defaults[0], -1.0 * patch[0].sat_deficit);
 
 		patch[0].interim_sat = patch[0].sat_deficit - patch[0].unsat_storage;
 		if ((patch[0].sat_deficit - patch[0].unsat_storage) < ZERO)
@@ -290,10 +287,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             //}
 
 
-			patch[0].sat_deficit_z = compute_z_final(verbose_flag,
-					patch[0].soil_defaults[0][0].porosity_0,
-					patch[0].soil_defaults[0][0].porosity_decay,
-					patch[0].soil_defaults[0][0].soil_depth, 0.0,
+            patch[0].sat_deficit_z = compute_z_final_from_surface(patch[0].soil_defaults[0],
 					-1.0 * patch[0].sat_deficit);
 
 			if (grow_flag > 0) {
@@ -440,17 +434,12 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                                       patch[0].soil_cs.DOC
                                       };
                     //double *Nout =
-                    double t = compute_N_leached(verbose_flag,
+                    double t = compute_N_leached_from_soildef(verbose_flag,
                                     lpools, excess, 0.0, 0.0,
                                     //patch[0].m,
                                     //patch[0].innundation_list[d].gamma
                                     //        / patch[0].area * time_int,
-                                    patch[0].soil_defaults[0][0].porosity_0,
-                                    patch[0].soil_defaults[0][0].porosity_decay,
-                                    patch[0].soil_defaults[0][0].decay_rate,
-                                    patch[0].soil_defaults[0][0].active_zone_z,
-                                    patch[0].soil_defaults[0][0].soil_depth,
-                                    patch[0].soil_defaults[0][0].adsorption_rate,
+                                    patch[0].soil_defaults[0],
                                     leached,
                                     LEACH_ELEMENT_counts
                                     //patch[0].transmissivity_profile
@@ -637,10 +626,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             /*-------------------------------------------------------------------------*/
             /*Recompute current actual depth to water table				*/
             /*-------------------------------------------------------------------------*/
-            patch[0].sat_deficit_z = compute_z_final(verbose_flag,
-                    patch[0].soil_defaults[0][0].porosity_0,
-                    patch[0].soil_defaults[0][0].porosity_decay,
-                    patch[0].soil_defaults[0][0].soil_depth, 0.0,
+            patch[0].sat_deficit_z = compute_z_final_from_surface(patch[0].soil_defaults[0],
                     -1.0 * patch[0].sat_deficit);
 
             /*--------------------------------------------------------------*/
@@ -654,15 +640,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             if ((patch[0].sat_deficit_z > patch[0].preday_sat_deficit_z)
                     && (patch[0].sat_deficit_z
                             < patch[0].soil_defaults[0][0].soil_depth * 0.9)) {
-                add_field_capacity = compute_layer_field_capacity(
+                add_field_capacity = compute_layer_field_capacity_from_soildef(
                         command_line[0].verbose_flag,
-                        patch[0].soil_defaults[0][0].theta_psi_curve,
-                        patch[0].soil_defaults[0][0].psi_air_entry,
-                        patch[0].soil_defaults[0][0].pore_size_index,
-                        patch[0].soil_defaults[0][0].p3,
-                        patch[0].soil_defaults[0][0].p4,
-                        patch[0].soil_defaults[0][0].porosity_0,
-                        patch[0].soil_defaults[0][0].porosity_decay,
+                        patch[0].soil_defaults[0],
                         patch[0].sat_deficit_z, patch[0].sat_deficit_z,
                         patch[0].preday_sat_deficit_z);
 
@@ -680,15 +660,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             if (patch[0].rootzone.depth > ZERO) {
                 if ((patch[0].sat_deficit > ZERO)
                         && close_enough(patch[0].rz_storage, 0.0)) {
-                    add_field_capacity = compute_layer_field_capacity(
+                    add_field_capacity = compute_layer_field_capacity_from_soildef(
                             command_line[0].verbose_flag,
-                            patch[0].soil_defaults[0][0].theta_psi_curve,
-                            patch[0].soil_defaults[0][0].psi_air_entry,
-                            patch[0].soil_defaults[0][0].pore_size_index,
-                            patch[0].soil_defaults[0][0].p3,
-                            patch[0].soil_defaults[0][0].p4,
-                            patch[0].soil_defaults[0][0].porosity_0,
-                            patch[0].soil_defaults[0][0].porosity_decay,
+                            patch[0].soil_defaults[0],
                             patch[0].sat_deficit_z, patch[0].sat_deficit_z,
                             0.0);
                     add_field_capacity = max(add_field_capacity, 0.0);
@@ -698,15 +672,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             } else {
                 if ((patch[0].sat_deficit > ZERO)
                         && close_enough(patch[0].unsat_storage, 0.0)) {
-                    add_field_capacity = compute_layer_field_capacity(
+                    add_field_capacity = compute_layer_field_capacity_from_soildef(
                             command_line[0].verbose_flag,
-                            patch[0].soil_defaults[0][0].theta_psi_curve,
-                            patch[0].soil_defaults[0][0].psi_air_entry,
-                            patch[0].soil_defaults[0][0].pore_size_index,
-                            patch[0].soil_defaults[0][0].p3,
-                            patch[0].soil_defaults[0][0].p4,
-                            patch[0].soil_defaults[0][0].porosity_0,
-                            patch[0].soil_defaults[0][0].porosity_decay,
+                            patch[0].soil_defaults[0],
                             patch[0].sat_deficit_z, patch[0].sat_deficit_z,
                             0.0);
                     add_field_capacity = max(add_field_capacity, 0.0);
@@ -722,25 +690,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
             if (patch[0].detention_store > ZERO)
                 if (patch[0].rootzone.depth > ZERO) {
-                    infiltration = compute_infiltration(verbose_flag,
-                            patch[0].sat_deficit_z, patch[0].rootzone.S,
-                            patch[0].Ksat_vertical,
-                            patch[0].soil_defaults[0][0].Ksat_0_v,
-                            patch[0].soil_defaults[0][0].mz_v,
-                            patch[0].soil_defaults[0][0].porosity_0,
-                            patch[0].soil_defaults[0][0].porosity_decay,
-                            (patch[0].detention_store), time_int,
-                            patch[0].soil_defaults[0][0].psi_air_entry);
+                    infiltration = compute_infiltration_patch(verbose_flag,
+                            patch, patch[0].rootzone.S,
+                            (patch[0].detention_store), time_int);
                 } else {
-                    infiltration = compute_infiltration(verbose_flag,
-                            patch[0].sat_deficit_z, patch[0].S,
-                            patch[0].Ksat_vertical,
-                            patch[0].soil_defaults[0][0].Ksat_0_v,
-                            patch[0].soil_defaults[0][0].mz_v,
-                            patch[0].soil_defaults[0][0].porosity_0,
-                            patch[0].soil_defaults[0][0].porosity_decay,
-                            (patch[0].detention_store), time_int,
-                            patch[0].soil_defaults[0][0].psi_air_entry);
+                    infiltration = compute_infiltration_patch(verbose_flag,
+                            patch, patch[0].S,
+                            (patch[0].detention_store), time_int);
                 }
             else
                 infiltration = 0.0;
@@ -838,10 +794,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             /*--------------------------------------------------------------*/
             /* recompute saturation deficit					*/
             /*--------------------------------------------------------------*/
-            patch[0].sat_deficit_z = compute_z_final(verbose_flag,
-                    patch[0].soil_defaults[0][0].porosity_0,
-                    patch[0].soil_defaults[0][0].porosity_decay,
-                    patch[0].soil_defaults[0][0].soil_depth, 0.0,
+            patch[0].sat_deficit_z = compute_z_final_from_surface(patch[0].soil_defaults[0],
                     -1.0 * patch[0].sat_deficit);
 
             /*--------------------------------------------------------------*/
@@ -849,15 +802,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             /*--------------------------------------------------------------*/
             if (patch[0].sat_deficit_z < patch[0].rootzone.depth) {
                 patch[0].rootzone.field_capacity =
-                        compute_layer_field_capacity(
+                        compute_layer_field_capacity_from_soildef(
                                 command_line[0].verbose_flag,
-                                patch[0].soil_defaults[0][0].theta_psi_curve,
-                                patch[0].soil_defaults[0][0].psi_air_entry,
-                                patch[0].soil_defaults[0][0].pore_size_index,
-                                patch[0].soil_defaults[0][0].p3,
-                                patch[0].soil_defaults[0][0].p4,
-                                patch[0].soil_defaults[0][0].porosity_0,
-                                patch[0].soil_defaults[0][0].porosity_decay,
+                                patch[0].soil_defaults[0],
                                 patch[0].sat_deficit_z,
                                 patch[0].rootzone.depth, 0.0);
 
@@ -865,27 +812,15 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             } else {
 
                 patch[0].rootzone.field_capacity =
-                        compute_layer_field_capacity(
+                        compute_layer_field_capacity_from_soildef(
                                 command_line[0].verbose_flag,
-                                patch[0].soil_defaults[0][0].theta_psi_curve,
-                                patch[0].soil_defaults[0][0].psi_air_entry,
-                                patch[0].soil_defaults[0][0].pore_size_index,
-                                patch[0].soil_defaults[0][0].p3,
-                                patch[0].soil_defaults[0][0].p4,
-                                patch[0].soil_defaults[0][0].porosity_0,
-                                patch[0].soil_defaults[0][0].porosity_decay,
+                                patch[0].soil_defaults[0],
                                 patch[0].sat_deficit_z,
                                 patch[0].rootzone.depth, 0.0);
 
-                patch[0].field_capacity = compute_layer_field_capacity(
+                patch[0].field_capacity = compute_layer_field_capacity_from_soildef(
                         command_line[0].verbose_flag,
-                        patch[0].soil_defaults[0][0].theta_psi_curve,
-                        patch[0].soil_defaults[0][0].psi_air_entry,
-                        patch[0].soil_defaults[0][0].pore_size_index,
-                        patch[0].soil_defaults[0][0].p3,
-                        patch[0].soil_defaults[0][0].p4,
-                        patch[0].soil_defaults[0][0].porosity_0,
-                        patch[0].soil_defaults[0][0].porosity_decay,
+                        patch[0].soil_defaults[0],
                         patch[0].sat_deficit_z, patch[0].sat_deficit_z, 0)
                         - patch[0].rootzone.field_capacity;
             }
@@ -905,30 +840,26 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 /*-------------------------------------------------------*/
                 patch[0].rootzone.S =
                         min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
-                rz_drainage = compute_unsat_zone_drainage(
+                rz_drainage = compute_unsat_zone_drainage_patch(
                         command_line[0].verbose_flag,
-                        patch[0].soil_defaults[0][0].theta_psi_curve,
-                        patch[0].soil_defaults[0][0].pore_size_index,
-                        patch[0].rootzone.S,
-                        patch[0].soil_defaults[0][0].mz_v,
-                        patch[0].rootzone.depth,
-                        patch[0].soil_defaults[0][0].Ksat_0_v / n_timesteps / 2,
-                        patch[0].rz_storage
-                                - patch[0].rootzone.field_capacity);
+                        patch,
+                        n_timesteps,
+                        1,
+                        0,
+                        0);
 
                 patch[0].rz_storage -= rz_drainage;
                 patch[0].unsat_storage += rz_drainage;
 
                 patch[0].S =
                         min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
-                unsat_drainage = compute_unsat_zone_drainage(
+                unsat_drainage = compute_unsat_zone_drainage_patch(
                         command_line[0].verbose_flag,
-                        patch[0].soil_defaults[0][0].theta_psi_curve,
-                        patch[0].soil_defaults[0][0].pore_size_index,
-                        patch[0].S, patch[0].soil_defaults[0][0].mz_v,
-                        patch[0].sat_deficit_z,
-                        patch[0].soil_defaults[0][0].Ksat_0_v / n_timesteps / 2,
-                        patch[0].unsat_storage - patch[0].field_capacity);
+                        patch,
+                        n_timesteps,
+                        0,
+                        0,
+                        0);
 
                 patch[0].unsat_storage -= unsat_drainage;
                 patch[0].sat_deficit -= unsat_drainage;
@@ -938,15 +869,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
                 patch[0].S =
                         min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
-                rz_drainage = compute_unsat_zone_drainage(
+                rz_drainage = compute_unsat_zone_drainage_patch(
                         command_line[0].verbose_flag,
-                        patch[0].soil_defaults[0][0].theta_psi_curve,
-                        patch[0].soil_defaults[0][0].pore_size_index,
-                        patch[0].S, patch[0].soil_defaults[0][0].mz_v,
-                        patch[0].sat_deficit_z,
-                        patch[0].soil_defaults[0][0].Ksat_0_v / n_timesteps / 2,
-                        patch[0].rz_storage
-                                - patch[0].rootzone.field_capacity);
+                        patch,
+                        n_timesteps,
+                        0,
+                        0,
+                        1);
 
                 unsat_drainage = 0.0;
 
@@ -968,10 +897,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             /*-------------------c------------------------------------------------------*/
             /*	Recompute current actual depth to water table				*/
             /*-------------------------------------------------------------------------*/
-            patch[0].sat_deficit_z = compute_z_final(verbose_flag,
-                    patch[0].soil_defaults[0][0].porosity_0,
-                    patch[0].soil_defaults[0][0].porosity_decay,
-                    patch[0].soil_defaults[0][0].soil_depth, 0.0,
+            patch[0].sat_deficit_z = compute_z_final_from_surface(patch[0].soil_defaults[0],
                     -1.0 * patch[0].sat_deficit);
 
 

@@ -42,6 +42,7 @@
 #include "rhessys.h"
 #include "phys_constants.h"
 #include "params.h"
+#include "functions.h"
 int set_zero_patch_storage(struct patch_object *patch);
 struct patch_object *construct_patch(
                                      struct	command_line_object	*command_line,
@@ -808,12 +809,8 @@ if (command_line[0].beetlespread_flag == 1) {
     /*	compute actual depth to water tablke			*/
     /*--------------------------------------------------------------*/
     patch[0].unsat_zone_volume = patch[0].sat_deficit + patch[0].unsat_storage;
-    patch[0].sat_deficit_z = compute_z_final(
-        command_line[0].verbose_flag,
-        patch[0].soil_defaults[0][0].porosity_0,
-        patch[0].soil_defaults[0][0].porosity_decay,
-        patch[0].soil_defaults[0][0].soil_depth,
-        0,
+    patch[0].sat_deficit_z = compute_z_final_from_surface(
+        patch[0].soil_defaults[0],
         -1*patch[0].sat_deficit);
     patch[0].preday_sat_deficit_z = patch[0].sat_deficit_z;
 

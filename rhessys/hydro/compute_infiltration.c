@@ -126,7 +126,7 @@ double	compute_infiltration(int verbose_flag,
 	if (duration <= tp)
 		infiltration = precip;
 	else
-		infiltration = Sp * pow(t, 0.5) +Ksat*1.5/3.0 * t + tp * intensity;
+        infiltration = Sp * pow(t, 0.5) + Ksat * 0.5 * t + tp * intensity;
 
 	}
 	/*--------------------------------------------------------------*/
@@ -146,4 +146,95 @@ double	compute_infiltration(int verbose_flag,
 
 	infiltration = infiltration * Ksat_vertical;
 	return(infiltration);
+} /*compute_infiltration*/
+
+double	compute_infiltration_patch(int verbose_flag,
+                             struct patch_object *patch,
+                             double S,
+                             double precip,
+                             double duration)
+{
+    /*------------------------------------------------------*/
+    /*	Local Function Declarations.						*/
+    /*------------------------------------------------------*/
+
+    /*------------------------------------------------------*/
+    /*	Local Variable Definition. 							*/
+    /*------------------------------------------------------*/
+
+    double porosity;
+    double Ksat;
+    double Sp;
+    double psi_f;
+    double theta;
+    double intensity, tp,t;
+    double infiltration;
+    struct soil_default *psoildef = patch->soil_defaults[0];
+    double Ksat_0 = psoildef[0].Ksat_0_v;
+    /*--------------------------------------------------------------*/
+    /* only infiltrate for on unsaturated soil			*/
+    /*--------------------------------------------------------------*/
+    if ((S < 1.0) && (Ksat_0 > ZERO)) {
+
+    /*--------------------------------------------------------------*/
+    /*	use mean K and p (porosity) given current saturation    */
+    /*	depth							*/
+    /*--------------------------------------------------------------*/
+    if (patch->soil_defaults[0][0].mz_v > ZERO)
+        Ksat = patch->soil_defaults[0][0].mz_v * psoildef[0].Ksat_0_v *
+                (1-exp(-patch->sat_deficit_z/patch->soil_defaults[0][0].mz_v))/patch->sat_deficit_z;
+    else
+        Ksat = Ksat_0;
+    if (psoildef[0].porosity_decay < 999.9)
+        porosity = psoildef[0].porosity_decay*psoildef[0].porosity_0*
+                (1-exp(-patch->sat_deficit_z/psoildef[0].porosity_decay))/patch->sat_deficit_z;
+    else
+        porosity = psoildef[0].porosity_0;
+    /*--------------------------------------------------------------*/
+    /*	soil moisture deficit - S must be converted to theta	*/
+    /*--------------------------------------------------------------*/
+    theta = S*porosity;
+    /*--------------------------------------------------------------*/
+    /*	estimate sorptivity					*/
+    /*--------------------------------------------------------------*/
+    psi_f = 0.76 * patch->soil_defaults[0][0].psi_air_entry;
+    Sp = pow(2 * Ksat *  (psi_f),0.5);
+    /*--------------------------------------------------------------*/
+    /*	calculate rainfall intensity				*/
+    /*--------------------------------------------------------------*/
+    intensity = precip/duration;
+    /*--------------------------------------------------------------*/
+    /*	estimate time to ponding				*/
+    /*--------------------------------------------------------------*/
+    if (intensity > Ksat)
+        tp = Ksat *  psi_f * (porosity-theta) / (intensity * (intensity-Ksat));
+    else
+        tp = duration;
+    /*--------------------------------------------------------------*/
+    /*	calculate infiltration					*/
+    /*--------------------------------------------------------------*/
+    t = duration - tp;
+    if (duration <= tp)
+        infiltration = precip;
+    else
+        infiltration = Sp * pow(t, 0.5) + Ksat * 0.5 * t + tp * intensity;
+
+    }
+    /*--------------------------------------------------------------*/
+    /* otherwise soil is saturated 					*/
+    /*--------------------------------------------------------------*/
+    else
+        infiltration = 0.0;
+
+    if (infiltration > precip)
+        infiltration = precip;
+    if (infiltration < ZERO)
+        infiltration = 0.0;
+
+    /*--------------------------------------------------------------*/
+    /* use Ksat_vertical to limit infiltration only to pervious area */
+    /*--------------------------------------------------------------*/
+
+    infiltration = infiltration * patch->Ksat_vertical;
+    return(infiltration);
 } /*compute_infiltration*/

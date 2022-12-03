@@ -9,6 +9,10 @@ extern "C" {
 /* basis for the bi-directional coupling between RHESSys	*/
 /* and WMFire								*/
 /*******************************************************/
+enum FIRE_NEIGHBOR {F_SOUTH, F_NORTH, F_EAST, F_WEST, F_SELF, counts_FIRE_NEIGHBOR};
+extern int add_row[];
+extern int add_col[];
+extern double cfire_dir[];
 struct fire_default {
 	int ID;
 	double veg_fuel_weighting;	// A preliminary idea from model development. Never fully implemented, and likely to go away. Intention was to weight vegetation carbon in fuel loading for fire spread
@@ -86,6 +90,7 @@ struct fire_object
 	double understory_pet; //potential evapotranspiration of only the understory
 	double fire_size; // I think this would be the easiest way to transfer fire size to rhessys,and allow for an if fire_size>0 then calculate fire effects, otherwise don't bother; keep as 0 in general, and just fill in the first element in the grid as a placeholder
 						// returned as the number of pixels, should be converted to ha
+    double fp_slope[counts_FIRE_NEIGHBOR];  //p_slope around this pixel (if fire occurs around)
 	//double *wui_dists;  this has to be a dynamically allocated array with nWUI from the fire default
 	//struct node_fire_wui_dist *patch_wui_dist[3] // intended to be an array of 3 patch WUI linked lists
 };

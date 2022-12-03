@@ -33,6 +33,7 @@ double getDoubleWorldfile(int *paramCnt, param **paramPtr , char *paramName, cha
 
 //10112022LML
 extern double normal[9], perc[9];
+extern struct fire_litter_soil_loss_struct fire_loss;
 #ifdef LIU_OMP_PATCH_LOCK
 extern int num_patches;
 #define NUMLOCKS 3

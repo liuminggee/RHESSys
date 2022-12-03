@@ -356,6 +356,7 @@ struct world_object
         // for input time series of beetle attack events
         int num_extra_stations; //NREN 2018711
         struct base_station_object  **extra_stations;
+        double fire_grid_res; //(m)
 
         };
 
@@ -1272,6 +1273,7 @@ struct zone_object
         double  sin_aspect;                             /*      DIM     */
         double  sin_slope;                              /*      DIM     */
         double  slope;                                  /* degrees      */
+        double  pow_cos_slope;                          //pow(cos(zone[0].slope/2.0),2.0)
         double  snow;                                   /* m water      */
         double  snow_hourly_total;
         double  surface_Tday;                           /*      deg C   */
@@ -1347,6 +1349,10 @@ struct  landuse_default
 /*----------------------------------------------------------*/
 /*	Define an soil 	default object.						*/
 /*----------------------------------------------------------*/
+struct soil_loopup_table {
+    double z_final; //from delta_water
+};
+
 struct	soil_default
     {
     int		ID;
@@ -1361,6 +1367,7 @@ struct	soil_default
     double	mz_v;						/* m^-1	*/
     double	porosity_0;						/* unitless */
     double	porosity_decay;						/* m^-1 */ //09092022LML: should be in unit of meter
+    double  p_m_p_0;  // porosity_0 * porosity_decay
     double  Dingman_coef;            //eqn in Dingman p. 235 10112022LML for computing efficiency
     double	p3;						/* unitless */
     double	p4;						/* unitless */
@@ -1398,6 +1405,8 @@ struct	soil_default
 
     double  decay_rate[LEACH_ELEMENT_counts];      //10122022LML LNO3,LNH4,LDON,LDOC
     double  adsorption_rate[LEACH_ELEMENT_counts]; //10122022LML LNO3,LNH4,LDON,LDOC
+    double  decay_exp_coef[LEACH_ELEMENT_counts];  //(1.0 - exp(-1.0 * N_decay_rate[i] * z2_N) )
+    double  adsoption_toal_rate[LEACH_ELEMENT_counts];
 
     double	DON_production_rate;					/* (DIM) 0-1 */
     double	gl_c;						/* m/s */
@@ -1410,6 +1419,8 @@ struct	soil_default
     struct soil_class	soil_type;
     int decom_model; /* 1 is rhessys default, 2 is FireBGCv2 and 3 is LandClim*/
     int m_CO2_effect; // should include CO2
+
+    struct soil_loopup_table *soil_lookup;
     };
 
 
@@ -2268,10 +2279,10 @@ struct  command_line_object
         double          fire_pspread;                                           //0-1
         double          fire_overstory_mortality_rate;
         double          fire_understory_mortality_rate;
-        double          fire_pc_ku_mort;                                        //Primary canopy
-        double          fire_pc_kcons;
-        double          fire_pc_ko_mort1;
-        double          fire_pc_ko_mort2;
+        double          fire_pc_ku_mort;                                        //Primary canopy   0.001-1000
+        double          fire_pc_kcons;                                          //0.001-1000
+        double          fire_pc_ko_mort1;                                       //0.2-2
+        double          fire_pc_ko_mort2;                                       //-10
         double          fire_sc_ku_mort;                                        //Secondary canopy
         double          fire_sc_kcons;
         double          fire_sc_ko_mort1;
@@ -3052,8 +3063,8 @@ struct  stratum_default
         double  ustar_overu;                    /* DIM  */
         struct  epconst_struct  epc;
         struct  mrconst_struct  mrc;
-    double understory_mort; 		/* Relation between probability of spread and proportion understory mortality */
-    double consumption; 			/* Relation between proportion understory mortality and proportion consumed */
+    double understory_mort; 		/* Relation between probability of spread and proportion understory mortality */ //(0.001-1000?)
+    double consumption; 			/* Relation between proportion understory mortality and proportion consumed */  //(0.001-1000?)
     double overstory_mort_k1; 		/* Steepness of sigmoid function relating understory biomass consumed and overstory mortality */
     double overstory_mort_k2; 		/* Centerpoint of sigmoid function relating understory biomass consumed and overstory mortality */
 };

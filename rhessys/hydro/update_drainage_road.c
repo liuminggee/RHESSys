@@ -208,7 +208,7 @@ void  update_drainage_road(
 		/*--------------------------------------------------------------*/
 		if (command_line[0].grow_flag > 0) {
             //double *leached_to_patch
-            double t = compute_N_leached(
+            double t = compute_N_leached_from_soildef(
 				verbose_flag,
                 lpools,
 				route_to_patch / patch[0].area,
@@ -216,18 +216,13 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].soil_water_cap,
                 //m,
                 //total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-                patch[0].soil_defaults[0][0].decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-                patch[0].soil_defaults[0][0].adsorption_rate,
+                patch[0].soil_defaults[0],
                 leached_to_patch,
                 LEACH_ELEMENT_counts
                 //patch[0].transmissivity_profile
                     );
             //double *tot_leached
-            t = compute_N_leached(
+            t = compute_N_leached_from_soildef(
 				verbose_flag,
                 lpools,
 				route_to_stream / patch[0].area,
@@ -235,12 +230,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].soil_water_cap,
                 //m,
                 //total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-                patch[0].soil_defaults[0][0].decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-                patch[0].soil_defaults[0][0].adsorption_rate,
+                patch[0].soil_defaults[0],
                 tot_leached,
                 LEACH_ELEMENT_counts
                 //patch[0].transmissivity_profile
@@ -290,7 +280,7 @@ void  update_drainage_road(
 
 		if (command_line[0].grow_flag > 0) {
             //double *leached_to_patch
-            double t = compute_N_leached(
+            double t = compute_N_leached_from_soildef(
 				verbose_flag,
                 lpools,
 				route_to_patch / patch[0].area,
@@ -298,12 +288,7 @@ void  update_drainage_road(
 				patch[0].soil_defaults[0][0].soil_water_cap,
                 //m,
                 //total_gamma / patch[0].area * time_int,
-				patch[0].soil_defaults[0][0].porosity_0,
-				patch[0].soil_defaults[0][0].porosity_decay,
-                patch[0].soil_defaults[0][0].decay_rate,
-				patch[0].soil_defaults[0][0].active_zone_z,
-				patch[0].soil_defaults[0][0].soil_depth,
-                patch[0].soil_defaults[0][0].adsorption_rate,
+                patch[0].soil_defaults[0],
                 leached_to_patch,
                 LEACH_ELEMENT_counts
                 //patch[0].transmissivity_profile
@@ -378,7 +363,7 @@ void  update_drainage_road(
         }
 
         //double *Nout
-        double t = compute_N_leached(
+        double t = compute_N_leached_from_soildef(
 			verbose_flag,
             lpools,
 			return_flow,
@@ -386,12 +371,7 @@ void  update_drainage_road(
 			0.0,
             //m,
             //total_gamma / patch[0].area * time_int,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-            patch[0].soil_defaults[0][0].decay_rate,
-			patch[0].soil_defaults[0][0].active_zone_z,
-			patch[0].soil_defaults[0][0].soil_depth,
-            patch[0].soil_defaults[0][0].adsorption_rate,
+            patch[0].soil_defaults[0],
             tot_leached,
             LEACH_ELEMENT_counts
             //patch[0].transmissivity_profile

@@ -105,6 +105,7 @@
 /*								*/
 /*--------------------------------------------------------------*/
 #include "rhessys.h"
+#include "functions.h"
 
 double	top_model(
 				  int	verbose_flag,
@@ -152,18 +153,18 @@ double	top_model(
 //		double,
 //		double *);
 
-	double	compute_layer_field_capacity(
-		int,
-		int,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double);
+    //double	compute_layer_field_capacity(
+    //	int,
+    //	int,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double);
 
 	double	compute_unsat_zone_drainage(
 		int,
@@ -379,8 +380,8 @@ double	top_model(
 					base_flow,
 					mean_sat_deficit,
 					hillslope[0].aggdefs.soil_water_cap,
-					hillslope[0].aggdefs.m,
-					hillslope[0].aggdefs.Ksat_0 / num_timesteps,	
+                    //hillslope[0].aggdefs.m,
+                    //hillslope[0].aggdefs.Ksat_0 / num_timesteps,
 					hillslope[0].aggdefs.porosity_0,
 					hillslope[0].aggdefs.porosity_decay,
                     N_decay_rate,//hillslope[0].aggdefs.N_decay_rate,
@@ -416,12 +417,8 @@ double	top_model(
 			patch =  zones[i][0].patches[j];
             struct  soil_default *psoil_def = patch[0].soil_defaults[0];
 
-			preday_sat_deficit_z = compute_z_final(
-				verbose_flag,
-                psoil_def[0].porosity_0,
-                psoil_def[0].porosity_decay,
-                psoil_def[0].soil_depth,
-				0.0,
+            preday_sat_deficit_z = compute_z_final_from_surface(
+                psoil_def,
 				-1.0 * patch[0].sat_deficit);
 			/*--------------------------------------------------------------*/
 			/*	adjust local sat deficit relative to mean		*/
@@ -434,12 +431,8 @@ double	top_model(
 			/*      Hillslope redistribution  will have changed the		*/
 			/*      actual water table depth.                               */
 			/*--------------------------------------------------------------*/
-			patch[0].sat_deficit_z = compute_z_final(
-				verbose_flag,
-                psoil_def[0].porosity_0,
-                psoil_def[0].porosity_decay,
-                psoil_def[0].soil_depth,
-				0.0,
+            patch[0].sat_deficit_z = compute_z_final_from_surface(
+                psoil_def,
 				-1.0 * patch[0].sat_deficit);
 
 			/*--------------------------------------------------------------*/
@@ -501,29 +494,25 @@ double	top_model(
 				/*	soil drainage and storage update	     	 */
 				/*-------------------------------------------------------*/
 				patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);	
-				rz_drainage = compute_unsat_zone_drainage(
+                rz_drainage = compute_unsat_zone_drainage_patch(
 					command_line[0].verbose_flag,
-                    psoil_def[0].theta_psi_curve,
-                    psoil_def[0].pore_size_index,
-					patch[0].rootzone.S,
-                    psoil_def[0].mz_v,
-					patch[0].rootzone.depth,
-                    psoil_def[0].Ksat_0 / num_timesteps / 2,
-					patch[0].rz_storage - patch[0].rootzone.field_capacity);
+                    patch,
+                    num_timesteps,
+                    1,
+                    1,
+                    1);
 					
 				patch[0].rz_storage -=  rz_drainage;
 				patch[0].unsat_storage +=  rz_drainage;	
 										
 				patch[0].S = min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat), 1.0);
-				unsat_drainage = compute_unsat_zone_drainage(
+                unsat_drainage = compute_unsat_zone_drainage_patch(
 					command_line[0].verbose_flag,
-                    psoil_def[0].theta_psi_curve,
-                    psoil_def[0].pore_size_index,
-					patch[0].S,
-                    psoil_def[0].mz_v,
-					patch[0].sat_deficit_z,
-                    psoil_def[0].Ksat_0 / num_timesteps / 2,
-					patch[0].unsat_storage - patch[0].field_capacity);
+                    patch,
+                    num_timesteps,
+                    0,
+                    1,
+                    0);
 					
 				patch[0].unsat_storage -=  unsat_drainage;
 				patch[0].sat_deficit -=  unsat_drainage;
@@ -533,15 +522,13 @@ double	top_model(
 				patch[0].unsat_storage = 0.0;   
 								
 				patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
-				rz_drainage = compute_unsat_zone_drainage(
+                rz_drainage = compute_unsat_zone_drainage_patch(
 					command_line[0].verbose_flag,
-                    psoil_def[0].theta_psi_curve,
-                    psoil_def[0].pore_size_index,
-					patch[0].S,
-                    psoil_def[0].mz_v,
-					patch[0].sat_deficit_z,
-                    psoil_def[0].Ksat_0 / num_timesteps / 2,
-					patch[0].rz_storage - patch[0].rootzone.field_capacity);	
+                    patch,
+                    num_timesteps,
+                    0,
+                    1,
+                    1);
 				
 				unsat_drainage = 0.0;	   				  		
 				
@@ -598,12 +585,8 @@ double	top_model(
 				patch[0].return_flow += return_flow;
 			}
 			
-			patch[0].sat_deficit_z = compute_z_final(
-				verbose_flag,
-                psoil_def[0].porosity_0,
-                psoil_def[0].porosity_decay,
-                psoil_def[0].soil_depth,
-				0.0,
+            patch[0].sat_deficit_z = compute_z_final_from_surface(
+                psoil_def,
 				-1.0 * patch[0].sat_deficit);
 
 		/*--------------------------------------------------------------*/
@@ -622,6 +605,7 @@ double	top_model(
                     psoil_def[0].p4,
                     psoil_def[0].porosity_0,
                     psoil_def[0].porosity_decay,
+                    psoil_def[0].Dingman_coef,
 					patch[0].sat_deficit_z,
 					patch[0].sat_deficit_z,
 					preday_sat_deficit_z);
@@ -661,12 +645,8 @@ double	top_model(
 
 			patch[0].streamflow = patch[0].return_flow;	
 			
-			patch[0].sat_deficit_z = compute_z_final(
-				verbose_flag,
-                psoil_def[0].porosity_0,
-                psoil_def[0].porosity_decay,
-                psoil_def[0].soil_depth,
-				0.0,
+            patch[0].sat_deficit_z = compute_z_final_from_surface(
+                psoil_def,
 				-1.0 * patch[0].sat_deficit);
 		} /* end patches */
 	} /* end zones */

@@ -188,3 +188,107 @@ double	compute_field_capacity(
 	
 	return(field_capacity);
 } /*compute_field_capacity*/ 
+
+double	compute_field_capacity_from_soildef(
+                               int	verbose_flag,
+                               struct soil_default *psoildef,                         //10112022LML if not use, set -9999
+                               double	z_water_table,
+                               double	z,
+                               double	z_surface)
+{
+    /*--------------------------------------------------------------*/
+    /*	Local function declaration									*/
+    /*--------------------------------------------------------------*/
+    double	compute_delta_water(
+        int,
+        double,
+        double,
+        double,
+        double,
+        double);
+    /*--------------------------------------------------------------*/
+    /*	Local variable definition.									*/
+    /*--------------------------------------------------------------*/
+    double	depth;
+    double	field_capacity;
+    double	max_field_capacity;
+    double	porosity;
+    double	psi;
+    double	theta;
+    double	theta_actual;
+    /*--------------------------------------------------------------*/
+    /*	Initialize field capacity at 0.				*/
+    /*--------------------------------------------------------------*/
+    field_capacity = 0;
+    /*--------------------------------------------------------------*/
+    /*	Make sure p and p_0 are non zero.			*/
+    /*--------------------------------------------------------------*/
+    double p = psoildef->porosity_decay;
+    double p_0 = psoildef->porosity_0;
+    if (z < ZERO) z = 0.0;
+    if (z_surface < ZERO) z_surface = 0.0;
+
+    /*--------------------------------------------------------------*/
+    /*	Only do numerical int. if porosity varies with depth    */
+    /*	otherwise use analytical solution 		 	*/
+    /*--------------------------------------------------------------*/
+    if ( p < 999.0 ) {
+        /*--------------------------------------------------------------*/
+        /*	Loop through each interval.				*/
+        /*	Only if the water table is not at or above the surface.	*/
+        /*--------------------------------------------------------------*/
+        if ( z > 0 ){
+            for ( depth = z ; depth >z_surface ; depth = depth - INTERVAL_SIZE){
+                psi = (z-depth);
+                /*--------------------------------------------------------------*/
+                /*		Switch between differnt theta-psi curves	*/
+                /*--------------------------------------------------------------*/
+                if ( psi > psoildef->psi_air_entry ){
+                    switch(psoildef->theta_psi_curve) {
+                    case 1:
+                        theta = pow((psoildef->psi_air_entry/psi),psoildef->pore_size_index);
+                        break;
+                    case 2:
+                        theta = pow(1+pow(psi/psoildef->psi_air_entry,psoildef->p3),-psoildef->pore_size_index);
+                        break;
+                    case 3:
+                        theta = exp((log(psi)-psoildef->p3)/psoildef->p4);
+                        break;
+                    }
+                }
+                else{
+                    theta = 1;
+                }
+                porosity = p_0 * exp( -1 * depth / p);
+                theta_actual = theta * porosity ;
+                field_capacity += theta_actual * INTERVAL_SIZE;
+            }
+        }
+    }
+    else{
+        /* Changed field capacity to eqn in Dingman p. 235 using fixed pressure head */
+        /* of -340cm (constant over depth) vs. older method that varied field capacity */
+        /* with depth and overshot (field capacity sat > 1) close to sat zone. */
+        field_capacity = p_0 * ((psoildef->Dingman_coef > 0) ? psoildef->Dingman_coef
+                                 : ( pow((psoildef->psi_air_entry / 3.4),psoildef->pore_size_index) ))
+                             * (z - z_surface);
+        /*field_capacity = 1.0 / (1.0 - pore_size_index) * p_0
+            * pow( psi_air_entry, pore_size_index)
+            * (pow( z - z_surface, 1-pore_size_index));*/
+    }
+    /*--------------------------------------------------------------*/
+    /*	Limit field capacity to at most the porosity 		*/
+    /*--------------------------------------------------------------*/
+    max_field_capacity = compute_delta_water(
+        verbose_flag,
+        psoildef->porosity_0,
+        p,
+        z_water_table,
+        z,
+        z_surface);
+
+    field_capacity = min(field_capacity,max_field_capacity);
+    field_capacity = max(field_capacity, 0.0);
+
+    return(field_capacity);
+} /*compute_field_capacity*/

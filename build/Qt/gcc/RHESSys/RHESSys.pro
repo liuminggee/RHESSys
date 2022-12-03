@@ -22,6 +22,7 @@ QMAKE_LFLAGS += -fopenmp
 
 TEMPLATE = app
 INCLUDEPATH += ../../../../rhessys/include \
+               ../../../../ \
                ../../../../../boost_1_66_0                                      #put parrallel with RHESSys
 
 DEFINES += NO_UPDATE_160419 \
@@ -31,7 +32,7 @@ DEFINES += NO_UPDATE_160419 \
            LIU_EXTEND_CLIM_VAR \
            LIU_EXTEND_CLIM_VAR_AND_USE_SWRAD \
            RUN_WITH_SPINUP_PERIOD_USING_RANDOM_CLIMATE_YEAR_DATA \
-           LIU_BURN_ALL_AT_ONCE \
+           xLIU_BURN_ALL_AT_ONCE \
            LIU_TRACKING_BASIN_LITTERC \
            LIU_WMFIRE_OUTPUT \
            LIU_DISPLY_RUN_INFO \

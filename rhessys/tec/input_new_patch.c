@@ -329,12 +329,8 @@
 	/*--------------------------------------------------------------*/
 	/*	compute actual depth to water tablke			*/
 	/*--------------------------------------------------------------*/
-	patch[0].sat_deficit_z = compute_z_final(
-		command_line[0].verbose_flag,
-		patch[0].soil_defaults[0][0].porosity_0,
-		patch[0].soil_defaults[0][0].porosity_decay,
-		patch[0].soil_defaults[0][0].soil_depth,
-		0,
+    patch[0].sat_deficit_z = compute_z_final_from_surface(
+        patch[0].soil_defaults[0],
 		-1*patch[0].sat_deficit);
 
 	if(paramPtr!=NULL){

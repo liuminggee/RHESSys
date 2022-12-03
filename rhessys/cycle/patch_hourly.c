@@ -32,6 +32,7 @@
 /*																*/
 /*--------------------------------------------------------------*/
 #include "rhessys.h"
+#include "functions.h"
 
 void		patch_hourly(
 						 struct world_object *world,
@@ -147,21 +148,21 @@ void		patch_hourly(
 	/*--------------------------------------------------------------*/
 	/*	process any hourly rainfall				*/
 	/*--------------------------------------------------------------*/
-
+    struct  patch_hourly_object *patch_hourly = patch[0].hourly;
 	if ( zone[0].hourly_rain_flag == 1) {
-		patch[0].hourly[0].rain_throughfall = zone[0].hourly[0].rain;
+        patch_hourly[0].rain_throughfall = zone[0].hourly[0].rain;
 		patch[0].precip_with_assim += zone[0].hourly[0].rain;
 		}
 	else
-		patch[0].hourly[0].rain_throughfall = 0.0;
+        patch_hourly[0].rain_throughfall = 0.0;
 
 #if !(defined(LIU_HIGH_NDEP))
     if (!command_line[0].start_from_zero_soilpools)
-      patch[0].hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
+      patch_hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
     else
-      patch[0].hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;
+      patch_hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;
 #else
-    patch[0].hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;            //1.0/365./24.;     //06072022LML 1kgN/year JUST AVOID N LIMITATION
+    patch_hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;            //1.0/365./24.;     //06072022LML 1kgN/year JUST AVOID N LIMITATION
 #endif
 
 
@@ -174,7 +175,7 @@ void		patch_hourly(
 			patch[0].rain_throughfall_final = 0.0;
 			/* NO3_throughfall_final collects NO3_throughfall first from null_cover area */
 			/* Then use it to sum up the NO3_thoughfall from canopy cover */
-	    		patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
+                patch_hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch_hourly[0].NO3_throughfall;
 			for (stratum=0 ;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
 					world,
@@ -190,16 +191,16 @@ void		patch_hourly(
 			/*--------------------------------------------------------------*/
 			/*	process any hourly throughfallthat falls on a snowpack */
 			/*--------------------------------------------------------------*/
-			patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
-			patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;
+            patch_hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
+            patch_hourly[0].NO3_throughfall = patch_hourly[0].NO3_throughfall_final;
 
 		}
 	}
       	
 	if (patch[0].snowpack.water_equivalent_depth > 0.0) {
 		patch[0].snowpack.water_equivalent_depth
-			+= patch[0].hourly[0].rain_throughfall;
-		patch[0].hourly[0].rain_throughfall = 0.0;
+            += patch_hourly[0].rain_throughfall;
+        patch_hourly[0].rain_throughfall = 0.0;
 	}
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the canopy strata				*/
@@ -208,7 +209,7 @@ void		patch_hourly(
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		if ( (patch[0].layers[layer].height <= patch[0].snowpack.height) ){
 			patch[0].rain_throughfall_final = 0.0;
-			patch[0].hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch[0].hourly[0].NO3_throughfall;
+            patch_hourly[0].NO3_throughfall_final = patch[0].layers[layer].null_cover * patch_hourly[0].NO3_throughfall;
 
 			for ( stratum=0;stratum<patch[0].layers[layer].count; stratum++ ){
 				canopy_stratum_hourly(
@@ -222,15 +223,15 @@ void		patch_hourly(
 					event,
 					current_date );
 			}
-		patch[0].hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
-		patch[0].hourly[0].NO3_throughfall = patch[0].hourly[0].NO3_throughfall_final;	
+        patch_hourly[0].rain_throughfall = patch[0].rain_throughfall_final;
+        patch_hourly[0].NO3_throughfall = patch_hourly[0].NO3_throughfall_final;
 		}
 
 	}
 
-	patch[0].surface_NO3 += patch[0].hourly[0].NO3_throughfall;
+    patch[0].surface_NO3 += patch_hourly[0].NO3_throughfall;
 
-	patch[0].detention_store += patch[0].hourly[0].rain_throughfall;	
+    patch[0].detention_store += patch_hourly[0].rain_throughfall;
 
 	/*--------------------------------------------------------------*/
 	/*	include any detention storage as throughfall		*/
@@ -285,33 +286,21 @@ void		patch_hourly(
 			duration = zone[0].hourly[0].rain_duration/(86400);
 		
 		if (patch[0].rootzone.depth > ZERO)	{
-				infiltration = compute_infiltration(
+                infiltration = compute_infiltration_patch(
 					command_line[0].verbose_flag,
-					patch[0].sat_deficit_z,
+                    patch,
 					patch[0].rootzone.S,
-					patch[0].Ksat_vertical,
-                    psoil_def[0].Ksat_0_v,
-                    psoil_def[0].mz_v,
-                    psoil_def[0].porosity_0,
-                    psoil_def[0].porosity_decay,
-					net_inflow,
-					duration,
-                    psoil_def[0].psi_air_entry);
+                    net_inflow,
+                    duration);
 				}
 
 		else {
-				infiltration = compute_infiltration(
+                infiltration = compute_infiltration_patch(
 					command_line[0].verbose_flag,
-					patch[0].sat_deficit_z,
+                    patch,
 					patch[0].S,
-					patch[0].Ksat_vertical,
-                    psoil_def[0].Ksat_0_v,
-                    psoil_def[0].mz_v,
-                    psoil_def[0].porosity_0,
-                    psoil_def[0].porosity_decay,
-					net_inflow,
-					duration,
-                    psoil_def[0].psi_air_entry);
+                    net_inflow,
+                    duration);
 		}
 
 
@@ -374,19 +363,15 @@ void		patch_hourly(
 	/*	use rain_throughfall_24hours to collect the accumulative rain_throughfall		*/
 	/*--------------------------------------------------------------*/
 
-	patch[0].rain_throughfall_24hours+=patch[0].hourly[0].rain_throughfall;
+    patch[0].rain_throughfall_24hours+=patch_hourly[0].rain_throughfall;
 
 
 	/*-------------------------------------------------------------------------*/
 	/*	Compute current actual depth to water table				*/
 	/*------------------------------------------------------------------------*/
-	patch[0].sat_deficit_z = compute_z_final(
-		command_line[0].verbose_flag,
-        psoil_def[0].porosity_0,
-        psoil_def[0].porosity_decay,
-        psoil_def[0].soil_depth,
-		0.0,
-		-1.0 * patch[0].sat_deficit);
+    patch[0].sat_deficit_z = compute_z_final_from_surface(
+        psoil_def,
+        -1.0 * patch[0].sat_deficit);
 
 	/*--------------------------------------------------------------*/
 	/*	compute new field capacity				*/
@@ -395,16 +380,9 @@ void		patch_hourly(
 
 
 	if (patch[0].sat_deficit_z < patch[0].rootzone.depth)  {
-		patch[0].rootzone.field_capacity = compute_layer_field_capacity(
+        patch[0].rootzone.field_capacity = compute_layer_field_capacity_from_soildef(
 			command_line[0].verbose_flag,
-            psoil_def[0].theta_psi_curve,
-            psoil_def[0].psi_air_entry,
-            psoil_def[0].pore_size_index,
-            psoil_def[0].p3,
-            psoil_def[0].p4,
-            psoil_def[0].porosity_0,
-            psoil_def[0].porosity_decay,
-            psoil_def[0].Dingman_coef,
+            psoil_def,
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);				
 			
@@ -412,29 +390,15 @@ void		patch_hourly(
 
 	}
 	else  {
-		patch[0].rootzone.field_capacity = compute_layer_field_capacity(
+        patch[0].rootzone.field_capacity = compute_layer_field_capacity_from_soildef(
 			command_line[0].verbose_flag,
-            psoil_def[0].theta_psi_curve,
-            psoil_def[0].psi_air_entry,
-            psoil_def[0].pore_size_index,
-            psoil_def[0].p3,
-            psoil_def[0].p4,
-            psoil_def[0].porosity_0,
-            psoil_def[0].porosity_decay,
-            psoil_def[0].Dingman_coef,
+            psoil_def,
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);	
 
-		patch[0].field_capacity = compute_layer_field_capacity(
+        patch[0].field_capacity = compute_layer_field_capacity_from_soildef(
 			command_line[0].verbose_flag,
-            psoil_def[0].theta_psi_curve,
-            psoil_def[0].psi_air_entry,
-            psoil_def[0].pore_size_index,
-            psoil_def[0].p3,
-            psoil_def[0].p4,
-            psoil_def[0].porosity_0,
-            psoil_def[0].porosity_decay,
-            psoil_def[0].Dingman_coef,
+            psoil_def,
 			patch[0].sat_deficit_z,
 			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.field_capacity;
 
@@ -443,13 +407,9 @@ void		patch_hourly(
 	/*-------------------------------------------------------------------------*/
 	/*	Compute current actual depth to water table				*/
 	/*------------------------------------------------------------------------*/
-	patch[0].sat_deficit_z = compute_z_final(
-		command_line[0].verbose_flag,
-        psoil_def[0].porosity_0,
-        psoil_def[0].porosity_decay,
-        psoil_def[0].soil_depth,
-		0.0,
-		-1.0 * patch[0].sat_deficit);	
+    patch[0].sat_deficit_z = compute_z_final_from_surface(
+        psoil_def,
+        -1.0 * patch[0].sat_deficit);
 
 
 	/*--------------------------------------------------------------*/
@@ -467,29 +427,25 @@ void		patch_hourly(
 		/*-------------------------------------------------------*/
 		
 		patch[0].rootzone.S = min(patch[0].rz_storage / patch[0].rootzone.potential_sat, 1.0);
-		rz_drainage = compute_unsat_zone_drainage(
+        rz_drainage = compute_unsat_zone_drainage_patch(
 			command_line[0].verbose_flag,
-            psoil_def[0].theta_psi_curve,
-            psoil_def[0].pore_size_index,
-			patch[0].rootzone.S,
-            psoil_def[0].mz_v,
-			patch[0].rootzone.depth,
-            psoil_def[0].Ksat_0_v /  basin[0].defaults[0][0].n_routing_timesteps / 2,
-			patch[0].rz_storage - patch[0].rootzone.field_capacity);
+            patch,
+            basin[0].defaults[0][0].n_routing_timesteps,
+            1,
+            0,
+            0);
 	
 		patch[0].rz_storage -=  rz_drainage;
 		patch[0].unsat_storage +=  rz_drainage;
 		
 		patch[0].S = min(patch[0].unsat_storage / (patch[0].sat_deficit - patch[0].rootzone.potential_sat),1.0);	
-		unsat_drainage = compute_unsat_zone_drainage(
+        unsat_drainage = compute_unsat_zone_drainage_patch(
 			command_line[0].verbose_flag,
-            psoil_def[0].theta_psi_curve,
-            psoil_def[0].pore_size_index,
-			patch[0].S,
-            psoil_def[0].mz_v,
-			patch[0].sat_deficit_z,
-            psoil_def[0].Ksat_0_v / basin[0].defaults[0][0].n_routing_timesteps / 2,
-			patch[0].unsat_storage - patch[0].field_capacity);
+            patch,
+            basin[0].defaults[0][0].n_routing_timesteps,
+            0,
+            0,
+            0);
 	
 		patch[0].unsat_storage -=  unsat_drainage;
 		patch[0].sat_deficit -=  unsat_drainage;
@@ -499,15 +455,13 @@ void		patch_hourly(
 		patch[0].unsat_storage = 0.0;   
 
 		patch[0].S = min(patch[0].rz_storage / patch[0].sat_deficit, 1.0);
-		rz_drainage = compute_unsat_zone_drainage(
+        rz_drainage = compute_unsat_zone_drainage_patch(
 			command_line[0].verbose_flag,
-            psoil_def[0].theta_psi_curve,
-            psoil_def[0].pore_size_index,
-			patch[0].S,
-            psoil_def[0].mz_v,
-			patch[0].sat_deficit_z,
-            psoil_def[0].Ksat_0_v / basin[0].defaults[0][0].n_routing_timesteps / 2,
-			patch[0].rz_storage - patch[0].rootzone.field_capacity);		
+            patch,
+            basin[0].defaults[0][0].n_routing_timesteps,
+            0,
+            0,
+            1);
 
 		unsat_drainage = 0.0;
 		
@@ -534,23 +488,17 @@ void		patch_hourly(
 	/*  re-Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/			
 	if (patch[0].rootzone.depth > ZERO)
-		patch[0].rootzone.potential_sat = compute_delta_water(
+        patch[0].rootzone.potential_sat = compute_delta_water_from_soildef(
 		command_line[0].verbose_flag,
-        psoil_def[0].porosity_0,
-        psoil_def[0].porosity_decay,
-        psoil_def[0].soil_depth,
+        psoil_def,
 		patch[0].rootzone.depth, 0.0);	
 
 	/*------------------------------------------------------------------------*/
 	/*	Compute current actual depth to water table				*/
 	/*------------------------------------------------------------------------*/
-	patch[0].sat_deficit_z = compute_z_final(
-		command_line[0].verbose_flag,
-        psoil_def[0].porosity_0,
-        psoil_def[0].porosity_decay,
-        psoil_def[0].soil_depth,
-		0.0,
-		-1.0 * patch[0].sat_deficit);
+    patch[0].sat_deficit_z = compute_z_final_from_surface(
+        psoil_def,
+        -1.0 * patch[0].sat_deficit);
 
 	theta = patch[0].rootzone.S;
     patch[0].theta_std = (psoil_def[0].theta_mean_std_p2*theta*theta +

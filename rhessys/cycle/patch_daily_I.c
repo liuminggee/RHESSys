@@ -212,11 +212,9 @@ void		patch_daily_I(
 	/*  Compute potential saturation for rootzone layer   */
 	/*-----------------------------------------------------*/
 	if (patch[0].rootzone.depth > ZERO)  {
-	patch[0].rootzone.potential_sat = compute_delta_water(
+    patch[0].rootzone.potential_sat = compute_delta_water_from_soildef(
 		command_line[0].verbose_flag,
-		patch[0].soil_defaults[0][0].porosity_0,
-		patch[0].soil_defaults[0][0].porosity_decay,
-		patch[0].soil_defaults[0][0].soil_depth,
+        patch[0].soil_defaults[0],
 		patch[0].rootzone.depth, 0.0);
 	 if (patch[0].rootzone.potential_sat > ZERO)
 		if (patch[0].sat_deficit_z > patch[0].rootzone.depth)
@@ -249,16 +247,9 @@ void		patch_daily_I(
 	/*--------------------------------------------------------------*/
 
 	if (patch[0].sat_deficit_z <= patch[0].rootzone.depth)  {
-		patch[0].rootzone.field_capacity = compute_layer_field_capacity(
+        patch[0].rootzone.field_capacity = compute_layer_field_capacity_from_soildef(
 			command_line[0].verbose_flag,
-			patch[0].soil_defaults[0][0].theta_psi_curve,
-			patch[0].soil_defaults[0][0].psi_air_entry,
-			patch[0].soil_defaults[0][0].pore_size_index,
-			patch[0].soil_defaults[0][0].p3,
-			patch[0].soil_defaults[0][0].p4,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-            patch[0].soil_defaults[0][0].Dingman_coef,
+            patch[0].soil_defaults[0],
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);
 
@@ -273,29 +264,15 @@ void		patch_daily_I(
 
 	}
 	else  {
-		patch[0].rootzone.field_capacity = compute_layer_field_capacity(
+        patch[0].rootzone.field_capacity = compute_layer_field_capacity_from_soildef(
 			command_line[0].verbose_flag,
-			patch[0].soil_defaults[0][0].theta_psi_curve,
-			patch[0].soil_defaults[0][0].psi_air_entry,
-			patch[0].soil_defaults[0][0].pore_size_index,
-			patch[0].soil_defaults[0][0].p3,
-			patch[0].soil_defaults[0][0].p4,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-            patch[0].soil_defaults[0][0].Dingman_coef,
+            patch[0].soil_defaults[0],
 			patch[0].sat_deficit_z,
 			patch[0].rootzone.depth, 0.0);
 
-		patch[0].field_capacity = compute_layer_field_capacity(
+        patch[0].field_capacity = compute_layer_field_capacity_from_soildef(
 			command_line[0].verbose_flag,
-			patch[0].soil_defaults[0][0].theta_psi_curve,
-			patch[0].soil_defaults[0][0].psi_air_entry,
-			patch[0].soil_defaults[0][0].pore_size_index,
-			patch[0].soil_defaults[0][0].p3,
-			patch[0].soil_defaults[0][0].p4,
-			patch[0].soil_defaults[0][0].porosity_0,
-			patch[0].soil_defaults[0][0].porosity_decay,
-            patch[0].soil_defaults[0][0].Dingman_coef,
+            patch[0].soil_defaults[0],
 			patch[0].sat_deficit_z,
 			patch[0].sat_deficit_z, 0.0) - patch[0].rootzone.field_capacity;
 

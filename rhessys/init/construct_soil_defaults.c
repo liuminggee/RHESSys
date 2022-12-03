@@ -35,6 +35,8 @@
 #include <stdlib.h>
 #include "rhessys.h"
 #include "params.h"
+#include "functions.h"
+#include "phys_constants.h"
 
 struct soil_default *construct_soil_defaults(
 			int	num_default_files,
@@ -213,10 +215,8 @@ struct soil_default *construct_soil_defaults(
 		/*--------------------------------------------------------------*/
 		/*      calculate water_equivalent depth of soil                */
 		/*--------------------------------------------------------------*/
-        defobj[0].soil_water_cap = compute_delta_water(
-            0, defobj[0].porosity_0,
-            defobj[0].porosity_decay,
-            defobj[0].soil_depth,
+        defobj[0].soil_water_cap = compute_delta_water_from_soildef(
+            0, defobj,
             defobj[0].soil_depth,
 			0.0);
 
@@ -279,7 +279,12 @@ struct soil_default *construct_soil_defaults(
         defobj[0].adsorption_rate[LNH4] = defobj[0].NH4_adsorption_rate;
         defobj[0].adsorption_rate[LDON] = defobj[0].DON_adsorption_rate;
         defobj[0].adsorption_rate[LDOC] = defobj[0].DOC_adsorption_rate;
-
+        double bulkdencity = PARTICLE_DENSITY * (1.0 - defobj[0].porosity_0) * 1000;
+        for (int i = LNO3; i < LEACH_ELEMENT_counts; i++) {
+             defobj[0].decay_exp_coef[i] = (1.0 - exp(-1.0 * defobj[0].decay_rate[i] * defobj[0].active_zone_z) );
+             defobj[0].adsoption_toal_rate[i] = defobj[0].porosity_0*defobj[0].adsorption_rate[i]*bulkdencity;
+        }
+        defobj[0].p_m_p_0 = defobj[0].porosity_decay * defobj[0].porosity_0;
         //11012022LML test
         //if (defobj[0].adsorption_rate[LNO3] < (defobj[0].adsorption_rate[LNH4] / 3.0))
         //    defobj[0].adsorption_rate[LNO3] = defobj[0].adsorption_rate[LNH4] / 3.0;

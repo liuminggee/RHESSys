@@ -87,5 +87,49 @@ double	compute_N_leached(int verbose_flag,
             int which_element_to_simulate
             //,double *transmissivity
                           );
-
+double	compute_field_capacity_from_soildef(
+                               int	verbose_flag,
+                               struct soil_default *psoildef,                         //10112022LML if not use, set -9999
+                               double	z_water_table,
+                               double	z,
+                               double	z_surface);
+double	compute_layer_field_capacity_from_soildef(
+                               int	verbose_flag,
+                               struct soil_default *psoildef,
+                               double	z_water_table,
+                               double	z_layer,
+                               double	z_surface);
+double	compute_infiltration_patch(int verbose_flag,
+                             struct patch_object *patch,
+                             double S,
+                             double precip,
+                             double duration);
+double	compute_z_final_from_soildef(
+                        int	verbose_flag,
+                        struct soil_default *psoildef,
+                        double	z_initial,
+                        double	delta_water);
+double	compute_delta_water_from_soildef(
+                            int	verbose_flag,
+                            struct soil_default *psoildef,
+                            double	z_initial,
+                            double	z_final);
+double	compute_unsat_zone_drainage_patch(
+                                    int	verbose_flag,
+                                    struct patch_object *patch,
+                                    float num_per_day,
+                                    int rz,
+                                    int topmodel,
+                                    int potential_drainage_use_rootzone);
+double	compute_N_leached_from_soildef(int verbose_flag,
+            double total_nitrate[],
+            double Qout,
+            double s1,
+            double s2,
+            struct soil_default *psoildef,
+            double nleached[],
+            int which_element_to_simulate);
+double	compute_z_final_from_surface(
+                        struct soil_default *psoildef,
+                        double	delta_water);
 #endif

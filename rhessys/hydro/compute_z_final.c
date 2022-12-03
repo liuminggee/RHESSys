@@ -99,7 +99,7 @@ double	compute_z_final(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/
-	double	arguement;
+    //double	arguement;
 	double	delta_water_surf;
 	double	z_final;
 	
@@ -162,6 +162,7 @@ double	compute_z_final(
 	/*--------------------------------------------------------------*/
 	p = max(p,0.00000001);
 	p_0 = max(p_0,0.00000001);
+    double p_m_p_0 = p * p_0;
 	
 	/*--------------------------------------------------------------*/
 	/*	Case ii  water table at or above surface + recharge	*/
@@ -183,19 +184,21 @@ double	compute_z_final(
 			/*--------------------------------------------------------------*/
 			delta_water = -1 * z_final;
 			if (p < 999.9) {
-				if ( z_final < (p*p_0) ){
+                if ( z_final < p_m_p_0 ){
 					z_final = -1 * p *
-						log( 1 +  delta_water / ( p * p_0) );
+                        log( 1 +  delta_water / p_m_p_0 );
 				}
 				else {
 					z_final = soil_depth;
 				}
 			}
 			else
-				{if ((-delta_water/p_0)>soil_depth) // should compare with soil_depth here
+                {
+                double t = -delta_water/p_0;
+                if (t > soil_depth) // should compare with soil_depth here
 					z_final=soil_depth;
 				else
-					z_final =  (0 - delta_water/p_0); // should be 0 because start from surface, z=0
+                    z_final = t; // should be 0 because start from surface, z=0
 				} 
 		}
 	}
@@ -225,7 +228,7 @@ double	compute_z_final(
 			/*	make sure if delta_water is negative we dont blow up	*/
 			/*	the logarithm						*/
 			/*--------------------------------------------------------------*/
-			arguement = ( exp( -1 * z_initial/p) + delta_water / (p*p_0));
+            double arguement = ( exp( -1 * z_initial/p) + delta_water / p_m_p_0);
 			if ( arguement > 0 ){
 				z_final = -1 * p * log(arguement);
 			}
@@ -247,3 +250,280 @@ double	compute_z_final(
 	return(z_final);
 } /*compute_z_final*/
 
+double	compute_z_final_from_soildef(
+                        int	verbose_flag,
+                        struct soil_default *psoildef,
+                        double	z_initial,
+                        double	delta_water)
+{
+    /*--------------------------------------------------------------*/
+    /*	Local function declaration									*/
+    /*--------------------------------------------------------------*/
+    double	compute_delta_water(
+        int,
+        double,
+        double,
+        double,
+        double,
+        double);
+
+    /*--------------------------------------------------------------*/
+    /*	Local variable definition.									*/
+    /*--------------------------------------------------------------*/
+    //double	arguement;
+    double	delta_water_surf;
+    double	z_final;
+
+    /*--------------------------------------------------------------*/
+    /*	User defined function relating water table gain/loss    */
+    /*	and current water table depth to new water table depth	*/
+    /*	(delta_water positive ==> addition of water to water 	*/
+    /*					table )			*/
+    /*								*/
+    /*	Given that the OPMODEL m parameter is proportional to	*/
+    /*	the depth to the impermeable layer we use the TOPMODEL	*/
+    /*	depth decay parameter for porosity in the soil column:	*/
+    /*								*/
+    /*	n(z) = p_0 * exp( - z / p )	if z<=0			*/
+    /*	     = 1			if z>0			*/
+    /*								*/
+    /*	Then the addition in water content due to a change in z	*/
+    /*	is the integral of n(z) from z_final to z_initial:	*/
+    /*								*/
+    /*	i) Where both z_initial and z_final >= 0:		*/
+    /*								*/
+    /*	delta_water = p_0 * +p * 				*/
+    /*		(exp(-z_final/p) - exp(-z_initial/p))		*/
+    /*								*/
+    /*	Solvin for z_final gives:				*/
+    /*								*/
+    /*	exp(-z_final/p) = [ delta_water / (-p*p_0) ] +	*/
+    /*				exp(-z_initial/p)		*/
+    /*								*/
+    /*	z_final = -p * ln [ exp(-z_initial/p) +			*/
+    /*				delta_water / (p*p_0) ]	*/
+    /*								*/
+    /*	Note that since we dont know z_final a priori 		*/
+    /*	recognizing this case is tricky.  To do so we first	*/
+    /*	compute delta_water(z_final=0) and see if this is	*/
+    /*	less than the existing delta_water - if not then 	*/
+    /*	we have case iv).					*/
+    /*								*/
+    /*	ii) Where z_initial <= 0 and z_final <= 0:		*/
+    /*								*/
+    /*	delta_water = z_initial - z_final			*/
+    /*	z_final = z_initial - delta_water			*/
+    /*								*/
+    /*	iii) Where z_initial <0 and delta_water < -z_initial:	*/
+    /*								*/
+    /*	set z_initial'=0 and delta_water'=delta_water-z_initial	*/
+    /*	and apply case i)					*/
+    /*								*/
+    /*	iv) Where z_initial<0 and z_final >0:			*/
+    /*								*/
+    /*	estimate delta_water'=delta_water-delta_water(z_final=0)*/
+    /*	estimate z_final = delta_water'				*/
+    /*								*/
+    /*	where delta_water(z_final=0) is the amount of water 	*/
+    /*	needed to reach the surface.				*/
+    /*--------------------------------------------------------------*/
+
+    /*--------------------------------------------------------------*/
+    /*	Ensure that p and p_0 is not zero 			*/
+    /*--------------------------------------------------------------*/
+    //double p_m_p_0 = p * p_0;
+
+    /*--------------------------------------------------------------*/
+    /*	Case ii  water table at or above surface + recharge	*/
+    /*--------------------------------------------------------------*/
+    if ( (z_initial<=0) && (delta_water>=0) ){
+        z_final = z_initial - delta_water;
+    }
+    /*--------------------------------------------------------------*/
+    /*	Case iii water table at or above surface + discharge	*/
+    /*--------------------------------------------------------------*/
+    else if ( (z_initial<=0) && (delta_water<0) ){
+        z_final = z_initial - delta_water;                                      //08192022LML the logic is not right, while it gives correct value in the following equations.
+        /*--------------------------------------------------------------*/
+        /*	The drainage brings z_final below the surface	*/
+        /*--------------------------------------------------------------*/
+        if ( z_final > 0 ){
+            /*--------------------------------------------------------------*/
+            /*	Make sure we dont drain more than there is.		*/
+            /*--------------------------------------------------------------*/
+            delta_water = -1 * z_final;
+            if (psoildef->porosity_decay < 999.9) {
+                if ( z_final < psoildef->p_m_p_0 ){
+                    z_final = -1 * psoildef->porosity_decay *
+                        log( 1 +  delta_water / psoildef->p_m_p_0 );
+                }
+                else {
+                    z_final = psoildef->soil_depth;
+                }
+            }
+            else
+                {
+                double t = -delta_water/psoildef->porosity_0;
+                if (t > psoildef->soil_depth) // should compare with soil_depth here
+                    z_final=psoildef->soil_depth;
+                else
+                    z_final = t; // should be 0 because start from surface, z=0
+                }
+        }
+    }
+    /*--------------------------------------------------------------*/
+    /*	Determine if we will be in case i or iv			*/
+    /*	i.e. will the recharge cause z_final to be above surface*/
+    /*--------------------------------------------------------------*/
+    else{
+        /*--------------------------------------------------------------*/
+        /*	Compute water needed to get to surface		*/
+        /*--------------------------------------------------------------*/
+        delta_water_surf =
+            compute_delta_water_from_soildef(
+            verbose_flag,
+            psoildef,
+            z_initial,
+            0);
+
+        /*--------------------------------------------------------------*/
+        /*	Determine if we will get to the surface.	*/
+        /*--------------------------------------------------------------*/
+        if ( delta_water < delta_water_surf ){
+            /*--------------------------------------------------------------*/
+            /*	Case i - we dont get to surface				*/
+            /*	make sure if delta_water is negative we dont blow up	*/
+            /*	the logarithm						*/
+            /*--------------------------------------------------------------*/
+            double arguement = ( exp( -1 * z_initial/psoildef->porosity_decay) + delta_water / psoildef->p_m_p_0);
+            if ( arguement > 0 ){
+                z_final = -1 * psoildef->porosity_decay * log(arguement);
+            }
+            else{
+                z_final = psoildef->soil_depth;
+            }
+        }
+        else{
+            /*--------------------------------------------------------------*/
+            /*	Case iv - we get to surface .				*/
+            /*--------------------------------------------------------------*/
+            z_final = delta_water_surf  - delta_water;
+        }
+    }
+
+    /* CAN GO SLIGHTLY BELOW SOIL DEPTH AND CAUSING INSTABILITY, SO CAPPING */
+    z_final = min(z_final,psoildef->soil_depth);
+
+    return(z_final);
+} /*compute_z_final*/
+
+double	compute_z_final_from_surface(
+                        struct soil_default *psoildef,
+                        double	delta_water)
+{
+    /*--------------------------------------------------------------*/
+    /*	Local function declaration									*/
+    /*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*	Local variable definition.									*/
+    /*--------------------------------------------------------------*/
+    //double	arguement;
+    double	delta_water_surf;
+    double	z_final;
+
+    /*--------------------------------------------------------------*/
+    /*	User defined function relating water table gain/loss    */
+    /*	and current water table depth to new water table depth	*/
+    /*	(delta_water positive ==> addition of water to water 	*/
+    /*					table )			*/
+    /*								*/
+    /*	Given that the OPMODEL m parameter is proportional to	*/
+    /*	the depth to the impermeable layer we use the TOPMODEL	*/
+    /*	depth decay parameter for porosity in the soil column:	*/
+    /*								*/
+    /*	n(z) = p_0 * exp( - z / p )	if z<=0			*/
+    /*	     = 1			if z>0			*/
+    /*								*/
+    /*	Then the addition in water content due to a change in z	*/
+    /*	is the integral of n(z) from z_final to z_initial:	*/
+    /*								*/
+    /*	i) Where both z_initial and z_final >= 0:		*/
+    /*								*/
+    /*	delta_water = p_0 * +p * 				*/
+    /*		(exp(-z_final/p) - exp(-z_initial/p))		*/
+    /*								*/
+    /*	Solvin for z_final gives:				*/
+    /*								*/
+    /*	exp(-z_final/p) = [ delta_water / (-p*p_0) ] +	*/
+    /*				exp(-z_initial/p)		*/
+    /*								*/
+    /*	z_final = -p * ln [ exp(-z_initial/p) +			*/
+    /*				delta_water / (p*p_0) ]	*/
+    /*								*/
+    /*	Note that since we dont know z_final a priori 		*/
+    /*	recognizing this case is tricky.  To do so we first	*/
+    /*	compute delta_water(z_final=0) and see if this is	*/
+    /*	less than the existing delta_water - if not then 	*/
+    /*	we have case iv).					*/
+    /*								*/
+    /*	ii) Where z_initial <= 0 and z_final <= 0:		*/
+    /*								*/
+    /*	delta_water = z_initial - z_final			*/
+    /*	z_final = z_initial - delta_water			*/
+    /*								*/
+    /*	iii) Where z_initial <0 and delta_water < -z_initial:	*/
+    /*								*/
+    /*	set z_initial'=0 and delta_water'=delta_water-z_initial	*/
+    /*	and apply case i)					*/
+    /*								*/
+    /*	iv) Where z_initial<0 and z_final >0:			*/
+    /*								*/
+    /*	estimate delta_water'=delta_water-delta_water(z_final=0)*/
+    /*	estimate z_final = delta_water'				*/
+    /*								*/
+    /*	where delta_water(z_final=0) is the amount of water 	*/
+    /*	needed to reach the surface.				*/
+    /*--------------------------------------------------------------*/
+
+    /*--------------------------------------------------------------*/
+    /*	Ensure that p and p_0 is not zero 			*/
+    /*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*	Case ii  water table at or above surface + recharge	*/
+    /*--------------------------------------------------------------*/
+    if ( delta_water>=0 ){
+        z_final = -delta_water;
+    }
+    /*--------------------------------------------------------------*/
+    /*	Case iii water table at or above surface + discharge	*/
+    /*--------------------------------------------------------------*/
+    else {
+        z_final = -delta_water;                                      //08192022LML the logic is not right, while it gives correct value in the following equations.
+        /*--------------------------------------------------------------*/
+        /*	The drainage brings z_final below the surface	*/
+        /*--------------------------------------------------------------*/
+            /*--------------------------------------------------------------*/
+            /*	Make sure we dont drain more than there is.		*/
+            /*--------------------------------------------------------------*/
+            //delta_water = -1 * z_final;
+            if (psoildef->porosity_decay < 999.9) {
+                if ( z_final < psoildef->p_m_p_0 ){
+                    z_final = -1 * psoildef->porosity_decay *
+                        log( 1 +  delta_water / psoildef->p_m_p_0 );
+                }
+                else {
+                    z_final = psoildef->soil_depth;
+                }
+            }
+            else
+                {
+                double t = -delta_water/psoildef->porosity_0;
+                if (t > psoildef->soil_depth) // should compare with soil_depth here
+                    z_final=psoildef->soil_depth;
+                else
+                    z_final = t; // should be 0 because start from surface, z=0
+                }
+    }
+    /* CAN GO SLIGHTLY BELOW SOIL DEPTH AND CAUSING INSTABILITY, SO CAPPING */
+    return(min(z_final,psoildef->soil_depth));
+} /*compute_z_final*/

@@ -40,6 +40,7 @@
 #include "rhessys.h"
 #define ONE 1.0
 #include "params.h"
+#include "functions.h"
 
 void input_new_strata_mult(
 											  struct	command_line_object	*command_line,
@@ -406,11 +407,9 @@ void input_new_strata_mult(
 	/*--------------------------------------------------------------*/
 
 	if (canopy_strata[0].rootzone.depth > ZERO)
-		canopy_strata[0].rootzone.potential_sat = compute_delta_water(
+        canopy_strata[0].rootzone.potential_sat = compute_delta_water_from_soildef(
 		command_line[0].verbose_flag,
-		patch[0].soil_defaults[0][0].porosity_0,
-		patch[0].soil_defaults[0][0].porosity_decay,
-		patch[0].soil_defaults[0][0].soil_depth,
+        patch[0].soil_defaults[0],
 		canopy_strata[0].rootzone.depth,
 		0.0);
 

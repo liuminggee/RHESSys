@@ -16,6 +16,7 @@
 /* lists the indices of the x and y arrays for each cell that has	*/
 /* been burned and is still to test for spread.						*/
 /********************************************************************/
+
 struct BurnedCells
 {
 	int rowId;	//x index for current burned cell
@@ -58,7 +59,6 @@ struct fire_years
 //	fire_years() { ZeroMem(this); }  // why not?
 };
 typedef std::vector<fire_years> Fires;
-
 
 /********************************************************************/
 /* LandScape class												*/

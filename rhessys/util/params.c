@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "params.h"
+#include "rhessys.h"
 double normal[] = { 0.,
                     0.253,
                     0.524,
@@ -23,6 +24,24 @@ double perc[] = {   0.2,
                     0.1,
                     0.1,
                     0.1};
+struct fire_litter_soil_loss_struct fire_loss = {
+    .loss_litr1c = 1,
+    .loss_litr2c = 1,
+    .loss_litr3c = 0.85,
+    .loss_litr4c = 0.71,
+    .loss_soil1c = 0.71,
+    .loss_soil2c = 0,
+    .loss_soil3c = 0,
+    .loss_soil4c = 0,
+    .loss_litr1n = 1,
+    .loss_litr2n = 1,
+    .loss_litr3n = 0.85,
+    .loss_litr4n = 0.71,
+    .loss_soil1n = 0.71,
+    .loss_soil2n = 0,
+    .loss_soil3n = 0,
+    .loss_soil4n = 0
+};
 #ifdef LIU_OMP_PATCH_LOCK
 int num_patches;
 omp_lock_t* locks_patch[NUMLOCKS];

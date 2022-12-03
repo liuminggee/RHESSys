@@ -728,7 +728,6 @@ void update_phenology(struct zone_object  *zone,
 				* pow ( (cs->live_stemc + cs->dead_stemc + cs->snagc + cs->delay_snagc), epc.height_to_stem_exp); //
 
     }
-
     //NREN 20181121
     if (world[0].defaults[0].beetle != NULL && world[0].defaults[0].beetle[0].pai_include_snag != 1)  {//NREN 20191129
     epv->proj_pai_when_red = epv->proj_pai; }

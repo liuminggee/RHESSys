@@ -103,3 +103,57 @@ double	compute_delta_water(
 	return(delta_water);
 	
 } /*compute_delta_water*/
+
+double	compute_delta_water_from_soildef(
+                            int	verbose_flag,
+                            struct soil_default *psoildef,
+                            double	z_initial,
+                            double	z_final)
+{
+    /*--------------------------------------------------------------*/
+    /*	Local function declaration									*/
+    /*--------------------------------------------------------------*/
+
+    /*--------------------------------------------------------------*/
+    /*	Local variable definition.									*/
+    /*--------------------------------------------------------------*/
+    double	delta_water;
+
+    /*--------------------------------------------------------------*/
+    /*	User defined function relating water table depth change */
+    /*	to water lost or gained.				*/
+    /*								*/
+    /*	A delta_water > 0 means water added to the water table.	*/
+    /*	Given that the POROSITY parameter p is a 		*/
+    /*	depth decay parameter for porosity:			*/
+    /*								*/
+    /*	n(z) = n_0 * exp( - z / p )				*/
+    /*								*/
+    /*	Then the addition in water content due to a change in z	*/
+    /*	is the integral of n(z) from z_final to z_initial:	*/
+    /*								*/
+    /*	delta_water = n_0 * -p *				*/
+    /*		(exp(-z_final/p) - exp(-z_initial/p));		*/
+    /*								*/
+    /*	However, the case where either z is negative (i.e.	*/
+    /*	above the land surface) must be handled first.		*/
+    /*--------------------------------------------------------------*/
+    delta_water = min(z_initial,0) - min(z_final,0);
+
+    /*--------------------------------------------------------------*/
+    /*	Now we look at below the land surface.			*/
+    /*--------------------------------------------------------------*/
+    z_final = min(max(z_final,0),psoildef->soil_depth);
+    z_initial = max(z_initial,0);
+    if ( ! close_enough(psoildef->porosity_decay,0) && (psoildef->porosity_decay < 999.0) ){
+        delta_water += psoildef->porosity_0 * psoildef->porosity_decay *
+            (exp(-z_final/psoildef->porosity_decay) - exp(-z_initial/psoildef->porosity_decay));
+    }
+    else{
+        delta_water += psoildef->porosity_0 * (z_initial - z_final );
+    }
+
+
+    return(delta_water);
+
+} /*compute_delta_water*/
