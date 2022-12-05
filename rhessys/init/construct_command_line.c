@@ -420,11 +420,11 @@ struct	command_line_object	*construct_command_line(
                     fprintf(stderr,"FATAL ERROR: You should either define pspread or understory mortality, not both, not neither!\n");
                     exit(EXIT_FAILURE);
                 }
-                if (command_line[0].fire_understory_mortality_rate >= 0 && command_line[0].fire_pc_ku_mort >= 0)
-                {
-                    fprintf(stderr,"FATAL ERROR: You should either define fire_pc_ku_mort or understory mortality, not both, not neither!\n");
-                    exit(EXIT_FAILURE);
-                }
+                //if (command_line[0].fire_understory_mortality_rate >= 0 && command_line[0].fire_pc_ku_mort >= 0)
+                //{
+                //    fprintf(stderr,"FATAL ERROR: You should either define fire_pc_ku_mort or understory mortality, not both, not neither!\n");
+                //    exit(EXIT_FAILURE);
+                //}
 
             }/* end if */
 #endif

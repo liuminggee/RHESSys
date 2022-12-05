@@ -355,7 +355,7 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*			Perform any requested daily output					*/
 				/*--------------------------------------------------------------*/
-				if ((command_line[0].output_flags.daily_growth == 1) &&
+                if ((command_line[0].output_flags.daily_growth == 1) &&
 							(command_line[0].grow_flag > 0) ) {
 						execute_daily_growth_output_event(
 						world,
@@ -375,12 +375,21 @@ void	execute_tec(
                 if ((command_line[0].output_flags.daily != 1) || (command_line[0].b == NULL)) {
                     for (int b=0; b < world[0].num_basin_files; ++ b ) {
                             int basinID = command_line[0].b->basinID;
-                            if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
+                            if (( world[0].basins[b][0].ID == basinID) || (basinID == -999)) {
                                 output_basin(
-                                command_line[0].routing_flag,
-                                world[0].basins[b],
-                                current_date,
-                                outfile->basin->daily);
+                                    command_line[0].routing_flag,
+                                    world[0].basins[b],
+                                    current_date,
+                                    outfile->basin->daily);
+                                output_growth_basin(
+                                    world[0].basins[b],
+                                    current_date,
+                                    growth_outfile->basin->daily
+            #ifdef JMG_TRACKING
+                                    ,&world[0].track_simtime
+            #endif
+                                    );
+                            }
                     }
                 }
 #endif

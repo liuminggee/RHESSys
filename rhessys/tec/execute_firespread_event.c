@@ -138,6 +138,8 @@ void execute_firespread_event(
             pfire->understory_pet=0.0;
             pfire->trans=0.0; //NR add transpiration
             pfire->ign_available=1;	/* then make this available for ignition */
+            pfire->burned = 0;
+            //printf("col:%d\trow:%d\tign_available=1\n",j,i);
 		}
 //    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
         int num_patches = patch_fire_grid[i][j].num_patches;
@@ -321,7 +323,12 @@ void execute_firespread_event(
                 //total_pspread += pspread;
                 //05062022LML pspread = 1.0;                                                  //Handle the patch once for all pixels since they share same C&N pools
                 pspread = command_line[0].fire_pspread * ppatch_fire->prop_grid_in_patch[p]; //05182022LML
-                if (pspread < 0) pspread = ppatch_fire->prop_grid_in_patch[p];
+                if (pspread < 0) {
+                    if (command_line[0].fire_understory_mortality_rate > 0)     //use predefined understory mortality rate
+                        pspread = command_line[0].fire_understory_mortality_rate
+                                * ppatch_fire->prop_grid_in_patch[p];
+                    else pspread = ppatch_fire->prop_grid_in_patch[p];          //assume firespread rate is 1
+                }
 #endif
 // so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
 				/* (if pspread>0&world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*0.0001>=400) // also need a flag with the fire size to trigger event, because fire > 400 ha

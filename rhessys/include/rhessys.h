@@ -2281,8 +2281,8 @@ struct  command_line_object
         double          fire_understory_mortality_rate;
         double          fire_pc_ku_mort;                                        //Primary canopy   0.001-1000
         double          fire_pc_kcons;                                          //0.001-1000
-        double          fire_pc_ko_mort1;                                       //0.2-2
-        double          fire_pc_ko_mort2;                                       //-10
+        double          fire_pc_ko_mort1;                                       //-10  (K1)
+        double          fire_pc_ko_mort2;                                       //0.2-1.5 (K2)
         double          fire_sc_ku_mort;                                        //Secondary canopy
         double          fire_sc_kcons;
         double          fire_sc_ko_mort1;

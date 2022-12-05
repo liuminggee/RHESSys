@@ -175,6 +175,7 @@ void LandScape::Reset()	// just to fill in the raster fire object.  Called when 
             struct LocalFireNodes *plf = &localFireGrid_[i][j];
             fire_object *pfire = &fireGrid_[i][j];
             pfire->burn=0;		// 0 indicates that the pixel has not been burned
+            pfire->burned = 0;
             plf->iter=-1;
             plf->failedIter=-1;
             plf->pSlope=-1;
@@ -203,17 +204,6 @@ void LandScape::drawNumIgn(double lambda,GenerateRandom& rng)	// to be called in
     if(def_.fire_verbose==1)
 	cout<<"\n random 1 the drawnum ignition random number tmpN is" << tmpN << "\n\n"; //Ning Ren 20180920
 	n_cur_ign_=round(tmpN);
-
-
-
-    //n_cur_ign_ = n_ign_;
-    //fprintf(stderr,"n_cur_ign_ = n_ign_    DEBUGGING!!!\n");
-
-
-
-//#else
-//    n_cur_ign_ = 100;                                                           //Start fire quikly
-//#endif
 	return ;
 }
 
@@ -248,6 +238,7 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 		for(int j=0;j<cols_;j++)
 		{
 			fireGrid_[i][j].burn=0;
+            fireGrid_[i][j].burned = 0;
 			fireGrid_[i][j].fire_size=0; // make sure it returns a fire size of 0, unless a fire burns
 		}
 	}
@@ -268,19 +259,7 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 
 			if(def_.fire_verbose==1)
 				cout<<"in burn before testIgnition: \n\n";
-			int ign;
-//#ifndef LIU_BURN_ALL_AT_ONCE
-			ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
-//#else
-//            ign = 1;
-//#endif
-
-
-
-            //ign = 1;
-            //fprintf(stderr,"ign = 1    DEBUGGING!!!\n");
-
-
+            int ign=testIgnition(cur_row,cur_col,rng); // test whether the fire successfully ignites based on the fuel moisture and fuel load
 
 			if(def_.fire_verbose==1)
 				cout<<"in burn after testIgnition: "<<ign<<"\n\n";
@@ -313,8 +292,9 @@ void LandScape::Burn(GenerateRandom& rng)	// to be called in main, to replace Ra
 					stop=5;
 		allow fire to continue burning even if all borders are reached, so the only way to stop is to have no successful tests of spread*/
 				cur_fire_.stop=stop;
-			}
-		}
+                //printf("total_iters:%d\tstop:%d\n",iter,stop);
+            } //if
+        } //k
 	}
 	fireGrid_[0][0].fire_size=cur_fire_.update_size; // to return the fire size, when only the grid is returned; this is the number of pixels
 	return ;
@@ -349,7 +329,7 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 	double cur_pBurn;
 
 	std::vector<BurnedCells> burnedThisTime;
-
+    //printf("iter:%d\tfirst_burned_size:%d\n",iter,firstBurned_.size());
 // mk: now this loop will start at zero, and run the length of the firstBurned vector
 	for(size_t x = 0; x < firstBurned_.size(); ++x)
 	{
@@ -357,9 +337,11 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 		{
 			test_burn=1;		// this will be set to 0 if the current cell is on any of the borders, or if the neighbor has already been burned
 								// some conditions include whether you are at the border of the landscape, whether the neighboring cell is already burned
+            burned = 0;
 
 			new_row=firstBurned_[x].rowId+add_row[i];  // calculate the array indices of the neighbor cell
 			new_col=firstBurned_[x].colId+add_col[i];
+            fire_object *pfire = &fireGrid_[new_row][new_col];
 
 			if(new_row<0)						// if any of the indices are outside of the raster area, then clearly don't burn
 			{
@@ -388,32 +370,25 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 			}
 
             //05202022LML
-            if (! fireGrid_[new_row][new_col].ign_available) test_burn = 0;
+            if (! pfire->ign_available) test_burn = 0;
+            //printf("firstBurned_.size:%d\tx:%d\tx_row:%d\tx_col:%d\ti:%d\ti_row:%d\ti_col:%d\ttest_burn:%d\n"
+            //       ,firstBurned_.size(),x,firstBurned_[x].rowId,firstBurned_[x].colId
+            //       ,i,new_row,new_col,test_burn);
 
 
-            printf("Debugging fire!");
-            test_burn = 1;
+            //printf("Debugging fire!");
+            //test_burn = 1;
 
 
-            if(test_burn==1&&close_enough(fireGrid_[new_row][new_col].burn,0)) // only test if it is not already burned, and not beyond the border
+            if(test_burn==1 && pfire->burned==0) // only test if it is not already burned, and not beyond the border
 			{
-				test_once=test_once+1;
+                test_once++;
 #ifndef LIU_BURN_ALL_AT_ONCE
                 cur_pBurn=calc_pSpreadTest(firstBurned_[x].rowId, firstBurned_[x].colId, new_row, new_col, cfire_dir[i]); // mk: calculate the spread probability for this combination of idx/idy and new_idx/new_idy
 				burned = IsBurned(rng, cur_pBurn); // mk: need to merge IsBurned with BurnTest
-
-
-
                 //if (! close_enough(cur_pBurn,0)) burned = 1;
                 //fprintf(stderr,"ig_row:%d ig_col:%d row:%d col:%d p:%.3f\nburned = 1     DEBUGGING!!!\n"
                 //        ,firstBurned_[x].rowId,firstBurned_[x].colId,new_row,new_col,cur_pBurn);
-
-
-
-
-
-
-
 #else
                                 cur_pBurn = 1.0;
                                 burned = 1;
@@ -421,8 +396,8 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
 				if(burned==1)	// if 1 is returned, then burn the cell and update the new linked list of burned cells
 				{
 					calc_FireEffects(new_row, new_col,iter,cur_pBurn);
-
-					numBurnedThisIter=numBurnedThisIter+1; // update the number burned
+                    pfire->burned = 1;
+                    numBurnedThisIter++; // update the number burned
 					BurnedCells bc = {new_row, new_col};
 					burnedThisTime.push_back(bc);
 				}
@@ -580,6 +555,7 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	double p_slope,p_winddir,p_moisture,p_load,winddir,windspeed,k1wind;
 	double cur_load,cur_moist;
     fire_object *pfire = &fireGrid_[cur_row][cur_col];
+    struct LocalFireNodes *plf = &localFireGrid_[new_row][new_col];
 
     //slope=(fireGrid_[new_row][new_col].z-pfire->z)/cell_res_; // for now, just the orthogonal
 								//neighbors, so the slope is just the difference in elevation divided by the distance
@@ -704,15 +680,15 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 		//break;
 	}
 
-	localFireGrid_[new_row][new_col].pSlope=p_slope;
-	localFireGrid_[new_row][new_col].pDef=p_moisture;
-	localFireGrid_[new_row][new_col].pWind=p_winddir;
-	localFireGrid_[new_row][new_col].pLoad=p_load;
+    plf->pSlope=p_slope;
+    plf->pDef=p_moisture;
+    plf->pWind=p_winddir;
+    plf->pLoad=p_load;
 
-    fprintf(stderr,"new_row:%d new_col:%d pburn:%.3f\n",new_row,new_col,temp_pBurn);
+    //fprintf(stderr,"new_row:%d new_col:%d pburn:%.3f\n",new_row,new_col,temp_pBurn);
 
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
-	if(def_.fire_verbose==1)
+    if(def_.fire_verbose==1)
 		cout<<"burn test, pburn: "<<temp_pBurn<<" slope: "<<p_slope<<" wind: "<<p_winddir<<" moisture: "<<p_moisture<<" load: "<<p_load<<"\n";
 	return temp_pBurn;
 }

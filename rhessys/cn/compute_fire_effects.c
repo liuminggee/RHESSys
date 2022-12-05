@@ -49,7 +49,11 @@ void compute_fire_effects(
 		struct soil_n_object *,
 		struct litter_c_object *,
 		struct litter_n_object *,
-        struct fire_litter_soil_loss_struct *);
+        struct fire_litter_soil_loss_struct *
+#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
+        ,double
+#endif
+                );
 
 	void	update_mortality(
 		struct epconst_struct,
@@ -110,6 +114,9 @@ void compute_fire_effects(
 			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c +
 			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
 
+#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
+    litter_c_consumed *= pspread;
+#endif
     patch[0].litterc_burned = litter_c_consumed;//new NREN
 
 	update_litter_soil_mortality(
@@ -119,7 +126,11 @@ void compute_fire_effects(
 		 &(patch[0].soil_ns),
 		 &(patch[0].litter_cs),
 		 &(patch[0].litter_ns),
-         &fire_loss);
+         &fire_loss
+#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
+         ,pspread
+#endif
+            );
     }
 	/*--------------------------------------------------------------*/
 	/*		Compute vegetation effects.			*/
@@ -221,9 +232,11 @@ void compute_fire_effects(
                 double target_u_fraction = calc_contribution_to_undercanopy(canopy_target[0].fe.canopy_target_height
                         ,patch[0].soil_defaults[0]);
 
-                printf("understory_mort_f:%lf\ttarget_u_fraction:%lf\n"
-                   ,understory_mort_f
-                   ,target_u_fraction);
+                //printf("psread:%lf\tlitter_consumed:%lf\ttunderstory_mort_f:%lf\ttarget_u_fraction:%lf\n"
+                //   ,pspread
+                //   ,litter_c_consumed
+                //   ,understory_mort_f
+                //   ,target_u_fraction);
 
 			/*--------------------------------------------------------------*/
 			/* Calculate coarse woody debris removed			*/
@@ -232,8 +245,12 @@ void compute_fire_effects(
 			/* Litter consumption is approximated based CONSUME model outputs */
 			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
 			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
-                canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339;
-                canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339;
+                double scale = 1.;
+#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
+                scale = pspread;
+#endif
+                canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339 * scale;
+                canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339 * scale;
                 canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
                 canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 
@@ -446,10 +463,10 @@ void compute_fire_effects(
                 canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort  * canopy_target[0].fe.canopy_target_prop_mort_consumed;
 
 
-                printf("strataID:%d\tcanopy_target_prop_c_consumed:%f canopy_target_prop_mort:%lf canopy_target_prop_mort_consumed:%lf\n"
-                       ,canopy_target[0].ID, canopy_target[0].fe.canopy_target_prop_c_consumed
-                        ,canopy_target[0].fe.canopy_target_prop_mort
-                        ,canopy_target[0].fe.canopy_target_prop_mort_consumed);
+                //printf("strataID:%d\tcanopy_target_prop_c_consumed:%f canopy_target_prop_mort:%lf canopy_target_prop_mort_consumed:%lf\n"
+                //       ,canopy_target[0].ID, canopy_target[0].fe.canopy_target_prop_c_consumed
+                //        ,canopy_target[0].fe.canopy_target_prop_mort
+                //        ,canopy_target[0].fe.canopy_target_prop_mort_consumed);
 
 
                 mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_consumed;
@@ -508,11 +525,11 @@ void compute_fire_effects(
                         (canopy_target[0].fe.canopy_target_prop_c_remain_adjusted * (1 - canopy_target[0].fe.canopy_target_height_u_prop))
                         + canopy_target[0].fe.canopy_target_height_u_prop;
 
-                printf("strataID:%d\theight:%lf\tcanopy_target_prop_c_remain_adjusted:%f\tcanopy_target_prop_c_remain_adjusted_leafc:%f\tunderstory_c_consumed:%lf\n",
-                               canopy_target[0].ID, canopy_target[0].fe.canopy_target_height
-                               ,canopy_target[0].fe.canopy_target_prop_c_remain_adjusted
-                               ,canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc
-                               ,canopy_target[0].fe.understory_c_consumed);
+                //printf("strataID:%d\theight:%lf\tcanopy_target_prop_c_remain_adjusted:%f\tcanopy_target_prop_c_remain_adjusted_leafc:%f\tunderstory_c_consumed:%lf\n",
+                //               canopy_target[0].ID, canopy_target[0].fe.canopy_target_height
+                //               ,canopy_target[0].fe.canopy_target_prop_c_remain_adjusted
+                //               ,canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc
+                //               ,canopy_target[0].fe.understory_c_consumed);
 
 			/* Determine the portion of mortality that remains on landscape */
                 mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;

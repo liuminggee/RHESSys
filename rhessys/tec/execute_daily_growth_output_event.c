@@ -112,7 +112,7 @@ void	execute_daily_growth_output_event(
 			/*--------------------------------------------------------------*/
 			if ( command_line[0].b != NULL ){
 				basinID = command_line[0].b->basinID;
-				if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
+                if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
 					output_growth_basin(
 					world[0].basins[b],
 					date,
