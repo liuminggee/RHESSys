@@ -45,7 +45,10 @@ int update_septic(
 	/*------------------------------------------------------*/
 	int ok = 1;
 
-	patch[0].soil_ns.nitrate += patch[0].landuse_defaults[0][0].septic_NO3_load; 
+    patch[0].soil_ns.nitrate += patch[0].landuse_defaults[0][0].septic_NO3_load;
+
+    printf("6 nitrate:%lf\n",patch[0].soil_ns.nitrate);
+
 	patch[0].unsat_storage += patch[0].landuse_defaults[0][0].septic_water_load;
 		
 	return (!ok);

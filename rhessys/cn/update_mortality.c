@@ -108,7 +108,7 @@ void update_mortality(
 	double m_deadstemn_to_cwdn;
 	double m_livecrootn_to_cwdn;
 	double m_deadcrootn_to_cwdn;
-
+    //double ini_leafn = ns->leafn;
 	/******************************************************************/
 	/* Non-fire mortality: these fluxes all enter litter or CWD pools */
 	/******************************************************************/
@@ -178,6 +178,17 @@ printf("\n at line 171  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		m_leafn_to_litr4n = m_leafc_to_litr4c / LIG_CN;
 		m_leafn_to_litr1n = mort.mort_leafc*ns->leafn - (m_leafn_to_litr2n+m_leafn_to_litr3n+m_leafn_to_litr4n);
 		m_leafn_to_litr1n = max(m_leafn_to_litr1n, 0.0);
+
+        double tn = m_leafn_to_litr1n + m_leafn_to_litr2n
+                        + m_leafn_to_litr3n + m_leafn_to_litr4n;
+        if (tn > ns->leafn) {
+            double f = ns->leafn / tn;
+            m_leafn_to_litr1n *= f;
+            m_leafn_to_litr2n *= f;
+            m_leafn_to_litr3n *= f;
+            m_leafn_to_litr4n *= f;
+        }
+
 		}
 	else {
 		m_leafn_to_litr1n = 0.0;
@@ -204,6 +215,18 @@ printf("\n at line 171  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 		m_frootn_to_litr4n = m_frootc_to_litr4c / LIG_CN;
 		m_frootn_to_litr1n = mort.mort_frootc*ns->frootn - (m_frootn_to_litr2n+m_frootn_to_litr3n+m_frootn_to_litr4n);
 		m_frootn_to_litr1n = max(m_frootn_to_litr1n, 0.0);
+
+        double tn = m_frootn_to_litr1n + m_frootn_to_litr2n
+                        + m_frootn_to_litr3n + m_frootn_to_litr4n;
+        if (tn > ns->frootn) {
+            double f = ns->frootn / tn;
+            m_frootn_to_litr1n *= f;
+            m_frootn_to_litr2n *= f;
+            m_frootn_to_litr3n *= f;
+            m_frootn_to_litr4n *= f;
+        }
+
+
 		}
 	else {
 		m_frootn_to_litr1n = 0.0;
@@ -545,6 +568,11 @@ printf("\n at the end of update mortality: litter 1=%lf, litter2 =%lf, litter3=%
         //root to cwdc pool
     cdf_patch->rootc_to_cwdc += m_livecrootc_to_cwdc;
     cdf_patch->rootc_to_cwdc += m_deadcrootc_to_cwdc;
+
+    //if (ini_leafn > 0 && ns->leafn <= 0) {
+    //    printf("3  ns->leafn < 0! %lf\n",ns->leafn*1000);
+    //}
+
 	return;
 }/*end update_mortality*/
 

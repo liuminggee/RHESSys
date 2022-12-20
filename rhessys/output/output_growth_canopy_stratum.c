@@ -48,7 +48,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 
-    char out_basic[] = "%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
+    char out_basic[] = "%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 
 #ifdef JMG_TRACKING
     char out_format[1000] = "%d %d %d ";
@@ -85,7 +85,13 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		(stratum[0].cs.dead_rootc_beetle)*1000,
 		(stratum[0].ns.dead_rootn_beetle)*1000, //NREN 20190910
 		(stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer)* 1000.0,
+        stratum[0].cs.leafc * 1000.,
+        stratum[0].cs.leafc_store * 1000.,
+        stratum[0].cs.leafc_transfer * 1000.,
 		(stratum[0].ns.leafn + stratum[0].ns.leafn_store + stratum[0].ns.leafn_transfer)* 1000.0,
+        stratum[0].ns.leafn * 1000.,
+        stratum[0].ns.leafn_store * 1000.,
+        stratum[0].ns.leafn_transfer * 1000.,
 		stratum[0].cs.cpool * 1000.0,
 		stratum[0].ns.npool * 1000.0,
 		stratum[0].cs.dead_leafc * 1000.0,

@@ -423,7 +423,7 @@ void		patch_daily_F(
 	double 	duration, irrigation;
 	double	snow_melt_input;
 	double  fertilizer_NO3, fertilizer_NH4;
-	double	resp, transpiration_reduction_percent;
+    double	resp, transpiration_reduction_percent;                              //12162022LML "transpiration_reduction_percent" is the fraction of potential demand
 	double 	surfaceN_to_soil;
 	double	FERT_TO_SOIL;
 	double	pond_height;
@@ -1398,6 +1398,9 @@ void		patch_daily_F(
 		surfaceN_to_soil = FERT_TO_SOIL * patch[0].fertilizer_NO3;
 		patch[0].fertilizer_NO3 -= surfaceN_to_soil;
 		patch[0].soil_ns.nitrate += surfaceN_to_soil;
+
+        printf("5 nitrate:%lf\n",patch[0].soil_ns.nitrate);
+
 		}
 
 
@@ -1426,7 +1429,6 @@ void		patch_daily_F(
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
 	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 
-
 	/* Calculate det store, litter, and bare soil evap first */
 
 	surface_daily_F(
@@ -1446,6 +1448,11 @@ void		patch_daily_F(
 	}
 
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
+
+
+    //printf("detention_store:%lf rain_throughfall:%lf\n"
+    //       ,patch[0].detention_store * 1000
+    //       ,patch[0].rain_throughfall * 1000);
 
 	/*--------------------------------------------------------------*/
 	/* if there is hourly rain input, don't run the daily infiltration	*/
@@ -1780,7 +1787,7 @@ void		patch_daily_F(
 		if (patch[0].sat_deficit_z > patch[0].rootzone.depth)
 				water_below_field_cap = patch[0].rootzone.field_capacity - patch[0].rz_storage;
 		else
-			water_below_field_cap = patch[0].rootzone.field_capacity - patch[0].rz_storage - (patch[0].rootzone.potential_sat-patch[0].sat_deficit);
+            water_below_field_cap = patch[0].rootzone.field_capacity - patch[0].rz_storage - (patch[0].rootzone.potential_sat-patch[0].sat_deficit); //12162022LML confusing!
 		} /* END VEG CASE */
 
 	else  { /* NO VEG CASE (NEED TO CHECK THIS) */
@@ -1861,7 +1868,27 @@ void		patch_daily_F(
 		transpiration_reduction_percent = 1.0;
 	}
 
-	if ( command_line[0].verbose_flag == -5 ){
+    //if (transpiration_reduction_percent < 0.5) {
+    //     printf("month=%d day=%d t_red=%lf rz.dep=%lf rz_sto=%lf wtpoint:%lf ex_unsat=%lf ex_sat=%lf unsat_ini=%lf unsatdem=%lf satdem_ini=%lf satdem=%lf sat_def_z=%lf f_c=%lf rz.fc=%lf\n",
+    //            current_date.month,
+    //            current_date.day,
+    //            transpiration_reduction_percent,
+    //            patch[0].rootzone.depth*1000,
+    //            patch[0].rz_storage*1000,
+    //            patch[0].wilting_point*1000,
+    //            patch[0].exfiltration_unsat_zone*1000,
+    //            patch[0].exfiltration_sat_zone*1000,
+    //            unsat_zone_patch_demand_initial*1000,
+    //            unsat_zone_patch_demand*1000,
+    //            sat_zone_patch_demand_initial*1000,
+    //            sat_zone_patch_demand*1000,
+    //            patch[0].sat_deficit_z*1000,
+    //            patch[0].field_capacity*1000,
+    //            patch[0].rootzone.field_capacity*1000
+    //            );
+    //}
+
+    if ( command_line[0].verbose_flag == -5 ){
 		printf("\n***START: exfil_unsat=%lf exfil_sat=%lf unsatdemand_ini=%lf unsatdemand=%lf satdemand_ini=%lf satdemand=%lf",
 			   patch[0].exfiltration_unsat_zone,
 			   patch[0].exfiltration_sat_zone,
@@ -1917,9 +1944,20 @@ void		patch_daily_F(
         }
 			  if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) ){
 
-			   	if (transpiration_reduction_percent < 1.0) {
+                if (transpiration_reduction_percent < 0.5) {
 				  strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
-				  strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
+                  //12162022LML seeems not right! strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
+                  strata->cs.availc = strata->cdf.psn_to_cpool - strata->cdf.total_mr;
+
+                  //printf("month:%d day:%d t_reduction:%lf\tcs.availc:%lf\tpsn_to_cpool:%lf\ttotal_mr:%lf\t\n"
+                  //           ,current_date.month
+                  //           ,current_date.day
+                  //           ,transpiration_reduction_percent
+                  //           ,strata->cs.availc*1000
+                  //           ,strata->cdf.psn_to_cpool*1000
+                  //           ,strata->cdf.total_mr*1000);
+
+
 				  strata->gs_sunlit *= transpiration_reduction_percent;
 				  strata->gs_shade *= transpiration_reduction_percent;
 				  strata->mult_conductance.LWP *= transpiration_reduction_percent;

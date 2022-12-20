@@ -555,6 +555,7 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	double p_slope,p_winddir,p_moisture,p_load,winddir,windspeed,k1wind;
 	double cur_load,cur_moist;
     fire_object *pfire = &fireGrid_[cur_row][cur_col];
+    fire_object *pfire_newgrid = &fireGrid_[new_row][new_col];
     struct LocalFireNodes *plf = &localFireGrid_[new_row][new_col];
 
     //slope=(fireGrid_[new_row][new_col].z-pfire->z)/cell_res_; // for now, just the orthogonal
@@ -567,11 +568,11 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
     //if(p_slope<0)
     //	p_slope=0;
     int nb = get_nb_index(new_row, new_col,cur_row, cur_col);
-    if (nb >= 0) p_slope = fireGrid_[new_row][new_col].fp_slope[nb];
+    if (nb >= 0) p_slope = pfire_newgrid->fp_slope[nb];
     else p_slope = 0;
 
 //	if(def_.fire_verbose==1)
-//		cout<<"new elevation, old elevation, slope, p_slope: "<<fireGrid_[new_row][new_col].z<<"   "<<fireGrid_[cur_row][cur_col].z<<"   "<<slope<<"    "<<p_slope<<"\n";
+//		cout<<"new elevation, old elevation, slope, p_slope: "<<pfire_newgrid->z<<"   "<<fireGrid_[cur_row][cur_col].z<<"   "<<slope<<"    "<<p_slope<<"\n";
 
 	if(cur_fire_.winddir>=0)
 	{
@@ -604,22 +605,22 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	if(def_.spread_calc_type<4)
         p_moisture=1-calc_sigmoid(def_.moisture_k1
                                   ,def_.moisture_k2
-                                  ,fireGrid_[new_row][new_col].fuel_moist); //1/(1+exp(-(def_.moisture_k1*(fireGrid_[new_row][new_col].fuel_moist-def_.moisture_k2))));
+                                  ,pfire_newgrid->fuel_moist); //1/(1+exp(-(def_.moisture_k1*(pfire_newgrid->fuel_moist-def_.moisture_k2))));
 	else // use deficit
 	{
 		if(def_.spread_calc_type<7) // absolute difference
-			cur_moist=fireGrid_[new_row][new_col].pet-fireGrid_[new_row][new_col].et;
+            cur_moist=pfire_newgrid->pet-pfire_newgrid->et;
 		else // et relative to pt
 		{
-			if(fireGrid_[new_row][new_col].pet>0)
-				cur_moist=1-fireGrid_[new_row][new_col].et/(fireGrid_[new_row][new_col].pet); // for now see if fixes
+            if(pfire_newgrid->pet>0)
+                cur_moist=1-pfire_newgrid->et/(pfire_newgrid->pet); // for now see if fixes
 			else
 				cur_moist=0;
 		}
-	//	cout<<"deficit calculated, et, pet: "<<cur_moist<<"   "<<fireGrid_[new_row][new_col].et<<"   "<<fireGrid_[new_row][new_col].pet<<"\t";
+    //	cout<<"deficit calculated, et, pet: "<<cur_moist<<"   "<<pfire_newgrid->et<<"   "<<pfire_newgrid->pet<<"\t";
         p_moisture=calc_sigmoid(def_.moisture_k1,def_.moisture_k2,cur_moist);   //1/(1+exp(-(def_.moisture_k1*(cur_moist-def_.moisture_k2)))); //use deficit for moisture status
 	}
-	cur_load=(1-def_.veg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_litter+(def_.veg_fuel_weighting)*fireGrid_[new_row][new_col].fuel_veg; // modify this to always include all of the litter fuels and some proportion up to 1 of the veg fuels
+    cur_load=(1-def_.veg_fuel_weighting)*pfire_newgrid->fuel_litter+(def_.veg_fuel_weighting)*pfire_newgrid->fuel_veg; // modify this to always include all of the litter fuels and some proportion up to 1 of the veg fuels
     p_load=calc_sigmoid(def_.load_k1,def_.load_k2,cur_load);                    //1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 
 	switch(def_.spread_calc_type)

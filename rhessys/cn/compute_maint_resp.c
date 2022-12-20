@@ -109,5 +109,16 @@ tissue N content and respiration rate given in:
 	}
 	cdf->total_mr = cdf->livecroot_mr + cdf->livestem_mr + cdf->froot_mr
 		+ cdf->leaf_day_mr + cdf->leaf_night_mr;
+
+    if (cdf->total_mr < 0) {
+        printf("total_mr:%lf lcr:%lf ls:%lf fr:%lf lday:%lf lnight:%lf\n"
+               ,cdf->total_mr * 1000
+               ,cdf->livecroot_mr * 1000
+               ,cdf->livestem_mr * 1000
+               ,cdf->froot_mr * 1000
+               ,cdf->leaf_day_mr * 1000
+               ,cdf->leaf_night_mr * 1000);
+    }
+
   return (!ok);
 } /*compute_maint_resp*/

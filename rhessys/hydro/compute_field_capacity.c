@@ -168,6 +168,11 @@ double	compute_field_capacity(
         field_capacity = p_0 * ((inDingman_coef > 0) ? inDingman_coef
                                  : ( pow((psi_air_entry / 3.4),pore_size_index) ))
                              * (z - z_surface);
+
+
+        //printf("field_capacity:%lf\n",p_0 * ((inDingman_coef > 0) ? inDingman_coef
+        //                                                          : ( pow((psi_air_entry / 3.4),pore_size_index) )));
+
 		/*field_capacity = 1.0 / (1.0 - pore_size_index) * p_0
 			* pow( psi_air_entry, pore_size_index)
 			* (pow( z - z_surface, 1-pore_size_index));*/

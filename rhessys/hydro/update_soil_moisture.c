@@ -43,6 +43,9 @@ void	update_soil_moisture(
 	/*--------------------------------------------------------------*/
 	if ((command_line[0].grow_flag > 0) && (infiltration > ZERO)) {
 		patch[0].soil_ns.nitrate += infiltration / net_inflow * patch[0].surface_NO3;
+
+        //printf("1 nitrate:%lf\n",patch[0].soil_ns.nitrate);
+
 		patch[0].soil_ns.sminn += infiltration / net_inflow * patch[0].surface_NH4;
 		patch[0].surface_NO3 -= infiltration / net_inflow * patch[0].surface_NO3;
 		patch[0].surface_NH4 -= infiltration / net_inflow * patch[0].surface_NH4;

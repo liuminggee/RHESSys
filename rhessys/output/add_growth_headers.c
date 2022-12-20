@@ -481,7 +481,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
 
-    char out_basic_stratum_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+    char out_basic_stratum_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s  %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
     char out_format_stratum_daily[1000] = "%s %s %s ";
@@ -518,8 +518,14 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
         "total_redneedle_n",  //end NREN
         "deadrootc_beetle",
         "deadrootn_beetle", //NREN 20190910
+        "tleafc",
         "leafc",
+        "leafc_store",
+        "leafc_transfer",
+        "tleafn",
         "leafn",
+        "leafn_store",
+        "leafn_transfer",
         "cpool",
         "npool",
         "dead_leafc",

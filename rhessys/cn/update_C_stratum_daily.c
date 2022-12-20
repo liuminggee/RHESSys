@@ -60,7 +60,7 @@ int update_C_stratum_daily(struct epconst_struct epc,
 		cs->livestem_mr_snk += cdf->livestem_mr;
 		cs->livecroot_mr_snk += cdf->livecroot_mr;
 	}
-	cs->net_psn = cdf->psn_to_cpool - cdf->total_mr - cdf->total_gr;
+    cs->net_psn = cdf->psn_to_cpool - cdf->total_mr - cdf->total_gr;
 	cs->nppcum += cs->net_psn;
 
 	/* Daily allocation fluxes */

@@ -74,6 +74,10 @@ int update_gw_drainage(
 	}
 	else sat_to_gw_coeff = patch[0].soil_defaults[0][0].sat_to_gw_coeff; 
 
+    //printf("sat_to_gw_coeff:%lf detention_store:%lf\n"
+    //       ,sat_to_gw_coeff
+    //       ,patch[0].detention_store*1000);
+
 	drainage = sat_to_gw_coeff * patch[0].detention_store;
 	patch[0].detention_store -= drainage;
 	patch[0].gw_drainage = drainage;

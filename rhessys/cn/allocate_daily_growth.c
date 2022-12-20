@@ -74,12 +74,19 @@ int allocate_daily_growth(int nlimit,
 	double plant_ndemand, mean_cn;
 	double sum_plant_nsupply, soil_nsupply;
 	double plant_nalloc=0.0;
-	double plant_calloc;
+    double plant_calloc=0.0;
 	double plant_remaining_ndemand;
 	double excess_allocation_to_leaf, excess_c, excess_lai;
 	double sminn_to_npool;
 	double B,C, totalc_used,total_used; /* working variables */
 	double preday_npool, preday_cpool;
+
+
+
+    //if ((cdf->psn_to_cpool - cdf->total_mr) > 0.001 && cs->availc <= 0.0) {
+    //    printf("cdf->psn_to_cpool - cdf->total_mr > 0 && cs->availc < 0!\n");
+    //}
+
 
 	/* assign local values for the allocation control parameters */
 	B = epc.alloc_stemc_leafc;
@@ -136,7 +143,7 @@ int allocate_daily_growth(int nlimit,
                                                                                  //and set the limitation for under and over canopy
                                                                                  //in some cases, the undercanopy has so significant N limitation that it can't grow
 		else
-			soil_nsupply = ndf->potential_N_uptake;
+            soil_nsupply = min(ndf_patch->plant_avail_uptake,ndf->potential_N_uptake);
 	else
 		soil_nsupply = ndf->potential_N_uptake;
 		
@@ -172,11 +179,16 @@ int allocate_daily_growth(int nlimit,
 		plant_remaining_ndemand = plant_ndemand - sminn_to_npool;
 		/* the demand not satisfied by uptake from soil mineral N is
 		now sought from the retranslocated N pool */
+
+        //12/15/2022LML
+        ndf->retransn_to_npool = max(0.,min(plant_remaining_ndemand,ns->retransn));
+        plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+
 		if (plant_remaining_ndemand <= ns->retransn){
 		/* there is enough N available in retranslocation pool to
 			satisfy the remaining plant N demand */
-			ndf->retransn_to_npool = plant_remaining_ndemand;
-			plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+            //ndf->retransn_to_npool = plant_remaining_ndemand;
+            //plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 			plant_calloc = cs->availc/(1+epc.gr_perc);
 			ns->nlimit = 0;
 		}
@@ -190,13 +202,14 @@ int allocate_daily_growth(int nlimit,
 			photosynthesis source */
 
 			/* If there is no remaning retranslocation N is available and if plants are N fixers, plants start N fixation at a cost of carbon  */
-			plant_calloc = plant_nalloc  *  mean_cn;
+
+            plant_calloc = plant_nalloc  *  mean_cn;  //12152022LML Warning: plant_nalloc not being calculated!
 			if  (epc.nfix == 1){
-				sminn_to_npool = soil_nsupply;
+                //sminn_to_npool = soil_nsupply;
 				excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 				cost_fix = -0.625*(exp(-3.62 + 0.27 * Tsoil*(1 - 0.5 * Tsoil / 25.15)) - 2);
 				if (cost_fix > ZERO) 
-					amt_fix = cost_fix/2.0 * excess_c / mean_cn;
+                    amt_fix = cost_fix/2.0 * excess_c / mean_cn;   //12152022LML the logic and unit is not right!
 				else
 					amt_fix = 0.0;
 
@@ -213,11 +226,9 @@ int allocate_daily_growth(int nlimit,
 			}
 			 else {
 				 /* if the plants are not N fixers, no N fixation is applied and previous strategy applies */	 
-					sminn_to_npool = soil_nsupply;
-					if (ns->retransn > ZERO)
-						ndf->retransn_to_npool = ns->retransn;
-					else ndf->retransn_to_npool = 0.0;
-					plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
+                    //sminn_to_npool = soil_nsupply;
+                    //ndf->retransn_to_npool = max(0.0,ns->retransn);
+                    //plant_nalloc = ndf->retransn_to_npool + sminn_to_npool;
 					plant_calloc = plant_nalloc  * mean_cn;
 					excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 					cdf->psn_to_cpool -= excess_c;
@@ -334,28 +345,39 @@ int allocate_daily_growth(int nlimit,
 	/*---------------------------------------------------------------------------	*/
 	/*	create a maximum lai							*/
 	/*---------------------------------------------------------------------------	*/
+    //12162022LML double lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla;
+    double lai = (cs->leafc + cdf->cpool_to_leafc) * epc.proj_sla;
+    excess_lai = lai - epc.max_lai;
 
-	excess_lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla - epc.max_lai; 
+    //printf("month:%d\tday:%d\theight:%lf\tlai:%lf\texcess_lai:%lf\tns_limit:%d\tavailc:%lf\tmr:%lf\tpsn_cpool:%lf\tplant_calloc:%lf\texcell_c_gC:%lf\tleafc:%lf\ttransfer:%lf\tstore:%lf\tcpool:%lf\n"
+    //       ,current_date.month,current_date.day,epv->height
+    //       ,lai,excess_lai,ns->nlimit
+    //       ,cs->availc*1000,cdf->total_mr*1000,cdf->psn_to_cpool*1000,plant_calloc*1000,excess_c*1000,cs->leafc*1000,cs->leafc_transfer*1000
+    //       ,cs->leafc_store*1000,cs->cpool*1000);
+
+
 	if ( excess_lai > ZERO) 
 	{
 		excess_c = excess_lai / epc.proj_sla;
+        excess_allocation_to_leaf = min(cdf->cpool_to_leafc,  excess_c);
+        cdf->cpool_to_leafc -= excess_allocation_to_leaf;
+        ndf->npool_to_leafn = max(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
 		if (epc.veg_type == TREE) {
 	/*---------------------------------------------------------------------------	*/
 	/*	shift allocation to stemwood if leafc max has been reached		*/
 	/*---------------------------------------------------------------------------	*/
-			excess_allocation_to_leaf = min(cdf->cpool_to_leafc,  excess_c);
-			cdf->cpool_to_leafc -= excess_allocation_to_leaf;
+            //excess_allocation_to_leaf = min(cdf->cpool_to_leafc,  excess_c);
+            //cdf->cpool_to_leafc -= excess_allocation_to_leaf;
 			cdf->cpool_to_deadstemc += fdead*excess_allocation_to_leaf;
 			cdf->cpool_to_livestemc += flive*excess_allocation_to_leaf;
-			ndf->npool_to_leafn = max(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
+            //ndf->npool_to_leafn = max(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
 			ndf->npool_to_deadstemn += fdead*excess_allocation_to_leaf / cndw ;
 			ndf->npool_to_livestemn += flive*excess_allocation_to_leaf / cnlw;
 		}
 		else {
-		     excess_allocation_to_leaf = min(cdf->cpool_to_leafc,  excess_c);
-		     cdf->cpool_to_leafc -= excess_allocation_to_leaf;
-		     ndf->npool_to_leafn = max(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
-
+             //excess_allocation_to_leaf = min(cdf->cpool_to_leafc,  excess_c);
+             //cdf->cpool_to_leafc -= excess_allocation_to_leaf;
+             //ndf->npool_to_leafn = max(ndf->npool_to_leafn - excess_allocation_to_leaf / cnl, 0.0);
 		     cs->cpool += excess_allocation_to_leaf;
 		     ns->npool += excess_allocation_to_leaf / cnl;
 		}
@@ -368,7 +390,37 @@ int allocate_daily_growth(int nlimit,
 	cs->leafc_store, cdf->psn_to_cpool);
 	---------------------------------------------------------------------------*/
 
-	
+    //12192022LML in some cases the nitrogen is not balanced according to static
+    //CN ratio, here to add deficit N
+    ndf->npool_to_leafn += max(0,(cs->leafc + cdf->cpool_to_leafc) / cnl - ns->leafn);
+    ndf->npool_to_leafn_store += max(0,(cs->leafc_store + cdf->cpool_to_leafc_store) / cnl - ns->leafn_store);
+    ndf->npool_to_frootn += max(0,(cs->frootc + cdf->cpool_to_frootc) / cnfr - ns->frootn);
+    ndf->npool_to_frootn_store += max(0,(cs->frootc_store + cdf->cpool_to_frootc_store) / cnfr - ns->frootn_store);
+    if (epc.veg_type == TREE) {
+        ndf->npool_to_livestemn += max(0,(cs->live_stemc + cdf->cpool_to_livestemc) / cnlw - ns->live_stemn);
+        ndf->npool_to_livestemn_store += max(0,(cs->livestemc_store + cdf->cpool_to_livestemc_store) / cnlw - ns->livestemn_store);
+        ndf->npool_to_deadstemn += max(0,(cs->dead_stemc + cdf->cpool_to_deadstemc) / cndw - ns->dead_stemn);
+        ndf->npool_to_deadstemn_store += max(0,(cs->deadstemc_store + cdf->cpool_to_deadstemc_store) / cndw - ns->deadstemn_store);
+        ndf->npool_to_livecrootn += max(0,(cs->live_crootc + cdf->cpool_to_livecrootc) / cnlw - ns->live_crootn);
+        ndf->npool_to_livecrootn_store += max(0,(cs->livecrootc_store + cdf->cpool_to_livecrootc_store) / cnlw - ns->livecrootn_store);
+        ndf->npool_to_deadcrootn += max(0,(cs->dead_crootc + cdf->cpool_to_deadcrootc) / cndw - ns->dead_crootn);
+        ndf->npool_to_deadcrootn_store += max(0,(cs->deadcrootc_store + cdf->cpool_to_deadcrootc_store) / cndw - ns->deadcrootn_store);
+    }
+
+
+
+
+    //12/17/2022LML for next year's survive
+    if (current_date.month == 1 && current_date.day == 1) {
+        cs->maximum_live_biomass_this_year = 0;
+    }
+    double total_live_biomass = cs->leafc+cs->frootc+cs->live_stemc+cs->live_crootc;
+    if (total_live_biomass > cs->maximum_live_biomass_this_year) {
+        cs->maximum_live_biomass_this_year = total_live_biomass;
+        //printf("leafc:%lf rfoot:%lf livestem:%lf livecr:%lf\n"
+        //       ,cs->leafc,cs->frootc,cs->live_stemc,cs->live_crootc);
+    }
+
 	return(!ok);
 } /* end daily_allocation.c */
 

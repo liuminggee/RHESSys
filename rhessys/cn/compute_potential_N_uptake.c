@@ -69,7 +69,10 @@ double compute_potential_N_uptake(
 	Assess the carbon availability on the basis of this day's
 	gross production and maintenance respiration costs
 	----------------------------------------------------------------*/
-	cs->availc = cdf->psn_to_cpool-cdf->total_mr;
+
+    cs->availc = cdf->psn_to_cpool-cdf->total_mr;
+
+
 	/* no allocation when the daily C balance is negative */
 	if (cs->availc < 0.0) cs->availc = 0.0;
 	/* test for cpool deficit */

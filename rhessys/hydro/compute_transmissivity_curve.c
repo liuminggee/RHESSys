@@ -57,18 +57,18 @@ double 	*compute_transmissivity_curve(
 	/*--------------------------------------------------------------*/
 	/*	Local function definition.				*/
 	/*--------------------------------------------------------------*/
-	double compute_field_capacity(
-		int,
-		int,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double,
-		double);
+    //double compute_field_capacity(
+    //	int,
+    //	int,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double,
+    //	double);
 
 
 	double	compute_delta_water(
@@ -146,6 +146,7 @@ double 	*compute_transmissivity_curve(
 				patch[0].soil_defaults[0][0].p4,
 				patch[0].soil_defaults[0][0].porosity_0,
 				patch[0].soil_defaults[0][0].porosity_decay,
+                patch[0].soil_defaults[0][0].Dingman_coef,
 				patch[0].soil_defaults[0][0].soil_depth,
 				lower_z,
 				depth_z);

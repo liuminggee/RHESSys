@@ -347,6 +347,9 @@ void		patch_hourly(
             patch[0].soil_ns.DON += finf * patch[0].surface_DON;
             patch[0].soil_cs.DOC += finf * patch[0].surface_DOC;
             patch[0].soil_ns.nitrate += finf * patch[0].surface_NO3;
+
+            printf("7 nitrate:%lf\n",patch[0].soil_ns.nitrate);
+
             patch[0].surface_NO3 -= finf * patch[0].surface_NO3;
             patch[0].soil_ns.sminn += finf * patch[0].surface_NH4;
             patch[0].surface_NH4 -= finf * patch[0].surface_NH4;

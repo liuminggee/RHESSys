@@ -687,6 +687,11 @@ void update_beetle_attack_mortality(
    cdf_patch->rootc_to_cwdc += m_deadcrootc_to_cwdc;
 
       } // end of the if at the beginning
+
+
+   //if (ns->leafn < 0) {
+   //    printf("beetle attack  ns->leafn < 0! %lf\n",ns->leafn*1000);
+   //}
 	return;
 
 }/*end update_beetle_attack_mortality*/

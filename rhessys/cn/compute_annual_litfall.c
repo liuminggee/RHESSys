@@ -55,6 +55,9 @@ int compute_annual_litfall(
 		if (grow_flag > 0)
 			phen->frootlitfallc = (cs->frootc) * epc.froot_turnover;
 	}
+
+    //printf("leaflitfallc:%lf leafc:%lf\n",phen->leaflitfallc,cs->leafc);
+
 	phen->leaflitfallc_wstress = 0.0;
 	return (!ok);
 } /* end compute_annual_litfall */

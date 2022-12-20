@@ -90,12 +90,12 @@ int update_decomp(
 	cn_s3 = SOIL3_CN;
 	cn_s4 = SOIL4_CN;
 	/* respiration fractions for fluxes between compartments */
-	rfl1s1 = 0.39;
-	rfl2s2 = 0.55;
-	rfl4s3 = 0.29;
-	rfs1s2 = 0.28;
-	rfs2s3 = 0.46;
-	rfs3s4 = 0.55;
+    rfl1s1 = 0.39;
+    rfl2s2 = 0.55;
+    rfl4s3 = 0.29;
+    rfs1s2 = 0.28; //12142022LML may need calibration
+    rfs2s3 = 0.46; //12142022LML may need calibration
+    rfs3s4 = 0.99;//0.55; 12142022LML 0.55 seems too low (i.e. too much SOM being converted into humus)
 	daily_net_nmin = 0.0;
 	/* labile litter fluxes */
 	if (cs_litr->litr1c > ZERO) {
@@ -321,6 +321,9 @@ int update_decomp(
 	/*	second soil NH4; and thirds surface NO3, 4th surface NH4 */
 	remaining_uptake = ndf->sminn_to_npool;
 	/* remove from soil nitrate pool */
+
+    //printf("remaining_uptake:%lf\n",remaining_uptake);
+
 	N_uptake = max((min(ns_soil->nitrate, remaining_uptake)),0.0);
 	ns_soil->nitrate -= N_uptake;
 	remaining_uptake -= N_uptake;

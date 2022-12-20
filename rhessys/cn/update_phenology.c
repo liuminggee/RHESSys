@@ -157,7 +157,11 @@ void update_phenology(struct zone_object  *zone,
 	double excess_n;
 	int remdays_transfer;
 	int expand_flag, litfall_flag;
+    //double ini_leafn = ns->leafn;
 
+    //if (ini_leafn > 0 && ns->leafn <= 0) {
+    //    printf("4_0  ns->leafn < 0! %lf\n",ns->leafn*1000);
+    //}
 
 	expand_flag = 0;
 	leaflitfallc = 0.0;
@@ -331,8 +335,21 @@ void update_phenology(struct zone_object  *zone,
 
 		cdf->leafc_transfer_to_leafc = 2.0*cs->leafc_transfer / remdays_transfer;
 		ndf->leafn_transfer_to_leafn = 2.0*ns->leafn_transfer / remdays_transfer;
+
+
 		cdf->frootc_transfer_to_frootc=2.0*cs->frootc_transfer / remdays_transfer;
 		ndf->frootn_transfer_to_frootn=2.0*ns->frootn_transfer / remdays_transfer;
+
+        if ((cs->leafc_transfer > 0 && ns->leafn_transfer <= 0)
+                || (cs->frootc_transfer > 0 && ns->frootn_transfer <= 0)) {
+            printf("leafc_transfer:%lf leafn_transfer:%lf frc_transfer:%lf frn_transfer:%lf\n"
+                   ,cs->leafc_transfer * 1000
+                   ,ns->leafn_transfer * 1000
+                   ,cs->frootc_transfer * 1000
+                   ,ns->frootn_transfer);
+        }
+
+
 		if (epc.veg_type == TREE) {
 			cdf->livestemc_transfer_to_livestemc
 				= 2.0*cs->livestemc_transfer / remdays_transfer;
@@ -367,15 +384,20 @@ void update_phenology(struct zone_object  *zone,
 	/*--------------------------------------------------------------*/
 	/*	compute daily litter fall				*/
 	/*--------------------------------------------------------------*/
-	if (litfall_flag == 1) {
-		remdays_transfer = max(1.0,(epc.ndays_litfall + 1 - phen->lfseasonday));
-		leaflitfallc = 2.0*phen->leaflitfallc / remdays_transfer;
-		if (leaflitfallc > cs->leafc)
-			leaflitfallc = cs->leafc;
-		frootlitfallc = 2.0*phen->frootlitfallc / remdays_transfer;
-		if (frootlitfallc > cs->frootc)
-			frootlitfallc = cs->frootc;
+    if (litfall_flag == 1) {
+        remdays_transfer = max(1.0,(epc.ndays_litfall + 1 - phen->lfseasonday));
+        if (phen->leaflitfallc > 0) {
+            leaflitfallc = min(cs->leafc,min(phen->leaflitfallc,2.0*phen->leaflitfallc / remdays_transfer));
+            //if (leaflitfallc > cs->leafc)
+            //    leaflitfallc = cs->leafc;
+        }
+        if (phen->frootlitfallc > 0) {
+            frootlitfallc = min(cs->frootc,min(phen->frootlitfallc,2.0*phen->frootlitfallc / remdays_transfer));
+            //if (frootlitfallc > cs->frootc)
+            //    frootlitfallc = cs->frootc;
+        }
 	}
+
 	/*--------------------------------------------------------------*/
 	/*	on the last day of litterfall make sure that deciduous no longer */
 	/*	have any leaves left					*/
@@ -389,6 +411,38 @@ void update_phenology(struct zone_object  *zone,
 			}
 		phen->annual_allocation = 1;
 	}
+
+    //printf("leaflitfallc:%lf frootlitfallc:%lf\n"
+    //       ,leaflitfallc*1000
+    //       ,frootlitfallc*1000);
+
+    //12/17/2022LML ensure the ecosystem will survive for next year.
+    if (leaflitfallc > 0) {
+        //double total_live_biomass =  (cs->leafc+cs->frootc+cs->live_stemc+cs->live_crootc); //
+        double leaf_storage_needs = max(0.,
+          max(epc.max_lai * 0.1 / epc.proj_sla, epc.min_percent_leafg*cs->maximum_live_biomass_this_year)
+          - cs->leafc_store);
+        if (leaf_storage_needs > 0) {
+            double lfn = max(0.,ns->leafn * min(1.,leaflitfallc / cs->leafc));     //max(0.,min(ns->leafn,leaflitfallc / epc.leaf_cn));
+            //double frn = max(0.,ns->frootn * min(1.,frootlitfallc / cs->frootc));  //max(0.,min(ns->frootn,frootlitfallc / epc.froot_cn));
+            cs->leafc_store += leaflitfallc;
+            //cs->frootc_store += frootlitfallc;
+            //ns->retransn += lfn+frn;
+            ns->retransn += lfn;
+
+            cs->leafc -= leaflitfallc;
+            //cs->frootc -= frootlitfallc;
+
+            ns->leafn -= lfn;
+            //ns->frootn -= frn;
+
+            phen->leaflitfallc -= leaflitfallc;                                 //12202022LML still being counted as literfall but not go to the litter pool
+            //phen->frootlitfallc -= frootlitfallc;                               //12202022LML still being counted as literfall but not go to the litter pool
+
+            leaflitfallc = 0;
+            //frootlitfallc = 0;
+        }
+    }
 
 
 	/*--------------------------------------------------------------*/
@@ -760,6 +814,10 @@ void update_phenology(struct zone_object  *zone,
 	  if (phen->lfseasonday > 0)
 	      phen->lfseasonday += 1;
 
+
+    //if (ini_leafn > 0 && ns->leafn <= 0) {
+    //    printf("4  ns->leafn < 0! %lf\n",ns->leafn*1000);
+    //}
 
 	return;
 

@@ -55,7 +55,7 @@ int update_rooting_depth( struct rooting_zone_object *rootzone,
 				/ root_distrib_parm;
 
 	rootzone->depth = min(rootzone->depth, soil_depth-0.0001);
-	rootzone->depth = max(rootzone->depth, 0.0);
+    rootzone->depth = max(rootzone->depth, 0.5); //12162022LML avoid too shallow depth set minimum 50 cm    0.0);
 
 	return (!ok);
 } /* end update_rooting_depth */

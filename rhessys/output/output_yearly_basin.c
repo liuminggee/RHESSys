@@ -150,7 +150,6 @@ void	output_yearly_basin(
     basin[0].acc_year.denitrif= 0.0;
     basin[0].acc_year.nitrif= 0.0;
     basin[0].acc_year.num_threshold = 0;
-    basin[0].acc_year.lai = 0.0;
     basin[0].acc_year.mineralized = 0.0;
     basin[0].acc_year.uptake = 0.0;
 
@@ -172,6 +171,9 @@ void	output_yearly_basin(
     basin[0].acc_year.plantn = 0.0; // JMG10112022
     basin[0].acc_year.AGBc = 0.0; // JMG10112022
     basin[0].acc_year.BGBc = 0.0; // JMG10112022
+
+    basin[0].acc_year.sat_deficit = 0.0;
+    basin[0].acc_year.sat_deficit_z = 0.0;
 #endif
 
     return;

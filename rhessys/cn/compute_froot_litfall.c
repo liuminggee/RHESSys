@@ -68,7 +68,7 @@ int	compute_froot_litfall(
 	n4 = litfallc * epc.frootlitr_flig/LIG_CN;
 	n1 = ((c1+c2+c3+c4)/avg_cn)-n2-n3-n4;
 	/* test for negative or zero labile litter N */
-	if (n1 <= -0.000000000001){
+    if (n1 <= -1e-6){
 		printf("Error in froot_litfall()\n");
 		printf("Initial froot litter labile N <= 0.0 (%lf)\n",n1);
 		printf("Either lower the froot litter C:N, or increase the\n");
@@ -96,6 +96,7 @@ int	compute_froot_litfall(
 		cs_litr->litr3c += c3 * cover_fraction;
 		cs_litr->litr4c += c4 * cover_fraction;
 		nloss =  n1+n2+n3+n4;
+        nloss = min(nloss,ns->frootn);
 		ns->frootn -= nloss;
 		if (epc.allocation_flag == STATIC)
 			ns->frootn_store += nloss;

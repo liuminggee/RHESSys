@@ -41,7 +41,8 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 	/*------------------------------------------------------*/
 	int ok=1;
 
-	
+    //double ini_leafn = ns->leafn;
+
 	if (epc.veg_type == TREE){
 		ns->preday_totaln = (ns->npool+ns->leafn+ns->leafn_store+ns->leafn_transfer+ns->frootn_store+ns->frootn_transfer+ns->frootn +
 		ns->live_stemn + ns->livestemn_transfer + ns->livestemn_store +
@@ -108,6 +109,9 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 		ns->cwdn + ns->retransn);
 	}
 
+    //if (ini_leafn > 0 && ns->leafn <= 0) {
+    //    printf("2  ns->leafn < 0! %lf\n",ns->leafn*1000);
+    //}
 
 	return (!ok);
 }/*end update_N_stratum_daily.c*/		

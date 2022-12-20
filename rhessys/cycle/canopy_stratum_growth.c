@@ -111,6 +111,8 @@ void	canopy_stratum_growth(
         //       ,current_date.month,current_date.day,stratum[0].ID
         //       ,stratum[0].ns.retransn*1000);
 
+        //printf("nlimit:%d\n",patch[0].soil_ns.nlimit);
+
 		if (allocate_daily_growth(
 			patch[0].soil_ns.nlimit,
 			pnow,
@@ -198,9 +200,19 @@ void	canopy_stratum_growth(
 		fprintf(stderr,"FATAL ERROR: in update_N_stratum_daily");
 		exit(EXIT_FAILURE);
 	}
+
+    //if (stratum[0].ID == 813381 && (stratum[0].cs.leafc / (stratum[0].ns.leafn + 1e-12)) > 120)
+    //printf("y:%d m:%d d:%d leaf_CN:%lf froot_CN:%lf\n"
+    //       ,current_date.year
+    //       ,current_date.month
+    //       ,current_date.day
+    //       ,stratum[0].cs.leafc / (stratum[0].ns.leafn + 1e-12)
+    //       ,stratum[0].cs.frootc / (stratum[0].ns.frootn + 1e-12));
+
+
 	}
 	else  {
-		stratum[0].cs.net_psn = stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr - stratum[0].cdf.total_gr;
+        stratum[0].cs.net_psn = stratum[0].cdf.psn_to_cpool - stratum[0].cdf.total_mr - stratum[0].cdf.total_gr;
 		
 		if ( stratum[0].phen.annual_allocation == 1){
 		stratum[0].cdf.leafc_store_to_leafc_transfer = stratum[0].cs.leafc_store;

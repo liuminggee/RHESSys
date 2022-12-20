@@ -603,7 +603,7 @@ struct accumulate_patch_object
 /*----------------------------------------------------------*/
 struct rooting_zone_object
 {
-        double field_capacity;
+        double field_capacity;                                                  //12162022LML note: field capacity above the watertable and within rootzone
         double potential_sat;
         double sat;
         double unsat;
@@ -1973,7 +1973,7 @@ struct patch_object
         double  delta_canopy_storage;                   /* meters water         */
         double  deltaS;                                 /* meters water         */
         double  evap_potential;                         /* Joules               */
-        double  field_capacity;                         /* meters water         */
+        double  field_capacity;                         /* meters water         */    //12162022LML note: field capcity between rootzone and water table (if unsaturated)
         double  percent_soil_water_unfrozen;            /* 0-1          */
         double  preday_snow_stored;                     /* meters water         */
         double  preday_detention_store;                 /* meters water         */
@@ -2496,6 +2496,7 @@ struct cstate_struct
     double deadcroot_gr_snk; /* (kgC/m2) SUM of dead coarse root growth resp */
 
     double Tacc;     /* degrees C, temperature during growth/acclimation period */
+    double maximum_live_biomass_this_year; //(kgC/m2)
 } ;
 
 

@@ -829,8 +829,8 @@ int set_zero_patch_storage(struct patch_object *patch)
     patch->litter_cs.litr4c = 0;
     patch->soil_cs.soil1c = 0;
     patch->soil_cs.soil2c = 0;
-    patch->soil_cs.soil3c = 4; // kgC/m2
-    patch->soil_cs.soil4c = 21; // kgC/m2
+    patch->soil_cs.soil3c = 0;//4; // kgC/m2
+    patch->soil_cs.soil4c = 0;//21; // kgC/m2
 
     patch->litter_ns.litr1n = 0;
     patch->litter_ns.litr2n = 0;

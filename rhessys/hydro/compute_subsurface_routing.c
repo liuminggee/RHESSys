@@ -293,6 +293,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			if (grow_flag > 0) {
 				patch[0].soil_ns.nitrate += (patch[0].soil_ns.NO3_Qin
 						- patch[0].soil_ns.NO3_Qout);
+
+                //printf("0 nitrate:%lf\n",patch[0].soil_ns.nitrate);
+
 				patch[0].soil_ns.sminn += (patch[0].soil_ns.NH4_Qin
 						- patch[0].soil_ns.NH4_Qout);
 				patch[0].soil_cs.DOC += (patch[0].soil_cs.DOC_Qin
@@ -711,6 +714,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                         / patch[0].detention_store) * patch[0].surface_DOC);
                 patch[0].soil_ns.nitrate += ((infiltration
                         / patch[0].detention_store) * patch[0].surface_NO3);
+
+                printf("4 nitrate:%lf\n",patch[0].soil_ns.nitrate);
+
                 patch[0].surface_NO3 -= ((infiltration
                         / patch[0].detention_store) * patch[0].surface_NO3);
                 patch[0].soil_ns.sminn += ((infiltration
@@ -789,7 +795,6 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 patch[0].sat_deficit = 0.0;
                 patch[0].unsat_storage = 0.0;
             }
-
             patch[0].detention_store -= infiltration;
             /*--------------------------------------------------------------*/
             /* recompute saturation deficit					*/

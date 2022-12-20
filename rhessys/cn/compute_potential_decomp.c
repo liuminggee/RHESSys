@@ -246,7 +246,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	rfl4s3 = 0.29;
 	rfs1s2 = 0.28;
 	rfs2s3 = 0.46;
-	rfs3s4 = 0.55;
+    rfs3s4 = 0.99;//0.55; 12142022LML 0.55 seems too low (i.e. too much SOM being converted into humus)
+
 
 	/* calculate the corrected rate constants from the rate scalar and their
 	base values. All rate constants are (1/day) */

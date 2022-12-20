@@ -99,6 +99,8 @@ int allocate_annual_growth(				int id,
 	cnlw = epc.livewood_cn;
 	cndw = epc.deadwood_cn;
 
+
+    //double ini_leafn = ns->leafn;
 	/*--------------------------------------------------------------*/
 	/* carbon store transfers */
 	/* Move store material into transfer compartments on the annual
@@ -182,6 +184,10 @@ int allocate_annual_growth(				int id,
 
  		}
          }
+
+    //if (ns->leafn <= 0) {
+    //    printf("allocate_annual_growth  ns->leafn < 0! %lf\n",ns->leafn*1000);
+    //}
 
 	total_store =  cs->cpool;
 
@@ -295,6 +301,10 @@ int allocate_annual_growth(				int id,
 	/*  we include a delay on storage output so that the
 		veg does not die in a bad year -esp. for Grasses	*/
 	/*--------------------------------------------------------------*/
+
+    //printf("before leafc_store:%lf\tcpool:%lf\tleafc_store_to_leafc_transfer:%lf\n",cs->leafc_store*1000,cs->cpool*1000
+    //       ,cdf->leafc_store_to_leafc_transfer*1000);
+
 	cdf->leafc_store_to_leafc_transfer = cs->leafc_store * storage_transfer_prop;
 	cs->cpool += cs->leafc_store * (1.0-storage_transfer_prop);
 	cs->leafc_store = 0.0;
@@ -323,6 +333,11 @@ int allocate_annual_growth(				int id,
 		cs->cpool += cs->deadcrootc_store * (1.0-storage_transfer_prop);
 		cs->deadcrootc_store = 0.0;
 	}
+
+
+    //printf("after leafc_store:%lf\tcpool:%lf\tleafc_store_to_leafc_transfer:%lf\n",cs->leafc_store*1000,cs->cpool*1000
+    //       ,cdf->leafc_store_to_leafc_transfer*1000);
+
 
 	/* nitrogen transfers */
 	/* for grasses, we include a delay on storage output so that the
@@ -559,6 +574,17 @@ int allocate_annual_growth(				int id,
 		ns->livecrootn_transfer += ndf->livecrootn_store_to_livecrootn_transfer;
 		ns->deadcrootn_transfer += ndf->deadcrootn_store_to_deadcrootn_transfer;
 	}
+
+    //if (ns->leafn_transfer > 0 || ns->leafn_transfer > 0)
+    //printf("leafn_store_to_leafn_transfer:%lf frootn_store_to_frootn_transfer:%lf"
+    //       "leafn_transfer:%lf frootn_transfer:%lf\n"
+    //       ,ndf->leafn_store_to_leafn_transfer
+    //       ,ndf->frootn_store_to_frootn_transfer
+    //       ,ns->leafn_transfer
+    //       ,ns->leafn_transfer);
+    //if (ini_leafn > 0 && ns->leafn <= 0) {
+    //    printf("0 ns->leafn < 0! %lf\n",ns->leafn*1000);
+    //}
 
 	/* for deciduous system, force leafc and frootc to exactly 0.0 on the
 	last day */

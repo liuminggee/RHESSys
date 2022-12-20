@@ -55,7 +55,9 @@ void	output_yearly_growth_canopy_stratum( int basinID, int hillID, int zoneID,
                     */
 
     double LAI = // projected leaf area index (epc.proj_lai)
-            (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc) * stratum[0].defaults[0][0].epc.proj_sla;
+            //12172022LML (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc) * stratum[0].defaults[0][0].epc.proj_sla;
+            stratum[0].cs.leafc * stratum[0].defaults[0][0].epc.proj_sla;
+
 
     double rootc = // live croot + live froot + dead croot
             (stratum[0].cs.frootc + stratum[0].cs.live_crootc + stratum[0].cs.dead_crootc);

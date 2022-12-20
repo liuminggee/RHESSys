@@ -53,7 +53,7 @@ int	compute_leaf_litfall(
 	double n1,n2,n3,n4;
 	double nretrans, nloss;
 	double avg_cn;
-	
+    //double ini_leafn = ns->leafn;
 	avg_cn = cs->leafc/ns->leafn;
 
 	/*------------------------------------------------------*/
@@ -108,6 +108,7 @@ int	compute_leaf_litfall(
 			nloss = n1+n2+n3+n4+nretrans;
 		else
 			nloss = litfallc/avg_cn;
+        nloss = min(nloss,ns->leafn);
 		ns->retransn += nretrans;
 		ns->leafn -= nloss;
 		if ((epc.allocation_flag == STATIC) || (grow_flag == 0) )
@@ -142,6 +143,7 @@ int	compute_leaf_litfall(
 			nloss = n1+n2+n3+n4+nretrans;
 		else
 			nloss = litfallc/avg_cn;
+        nloss = min(nloss,ns->leafn);
 		ns->retransn += nretrans;
 		ns->leafn -= nloss;
 		if ((epc.allocation_flag == STATIC) || (grow_flag == 0) )
@@ -153,5 +155,10 @@ int	compute_leaf_litfall(
 		ns_litr->litr4n += n4 * cover_fraction;
 		}
 	}
+
+    //if (ini_leafn > 0 && ns->leafn <= 0) {
+    //    printf("1  ns->leafn < 0! %lf\n",ns->leafn*1000);
+    //}
+
 	return(0);
 } /*compute_leaf_litfall*/ 

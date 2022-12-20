@@ -1483,16 +1483,16 @@ void	canopy_stratum_daily_F(
             transpiration  = transpiration_rate * t_trans;
             potential_transpiration  = potential_transpiration_rate * t_trans;
 
-            if (stratum->ID == 79708 && transpiration > 10)
-                printf("p_trans:%f dry_evap:%f p_evap_rate:%f p_trans_rate:%f dry_evap:%f frain:%f ftrans:%f\n"
-                       ,transpiration*1000
-                       ,potential_transpiration*1000
-                       ,dry_evaporation*1000
-                       ,(potential_evaporation_rate*86400*1000)
-                       ,(potential_transpiration_rate*86400*1000)
-                       ,dry_evaporation*1000
-                       ,zone[0].rain_duration/86400
-                       ,t_trans/zone[0].metv.dayl);
+            //if (stratum->ID == 79708 && transpiration > 10)
+            //    printf("p_trans:%f dry_evap:%f p_evap_rate:%f p_trans_rate:%f dry_evap:%f frain:%f ftrans:%f\n"
+            //           ,transpiration*1000
+            //           ,potential_transpiration*1000
+            //           ,dry_evaporation*1000
+            //           ,(potential_evaporation_rate*86400*1000)
+            //           ,(potential_transpiration_rate*86400*1000)
+            //           ,dry_evaporation*1000
+            //           ,zone[0].rain_duration/86400
+            //           ,t_trans/zone[0].metv.dayl);
 
 
 		}
@@ -1818,6 +1818,18 @@ void	canopy_stratum_daily_F(
 			dC13_sunlit = psnout.dC13;
             stratum[0].assim_sunlit = assim_sunlit;
 
+            //if (assim_sunlit <= 0.0 && stratum[0].cs.leafc > 0) {
+            //    printf("\ny:%d m:%d d:%d assim_sunlit:%lf leafc:%lf leafn:%lf lai_sun:%lf\n"
+            //           ,current_date.year
+            //           ,current_date.month
+            //           ,current_date.day
+            //           ,assim_sunlit
+            //           ,stratum[0].cs.leafc*1000
+            //           ,stratum[0].ns.leafn*1000
+            //           ,stratum[0].epv.proj_lai_sunlit
+            //           );
+            //}
+
 			/*--------------------------------------------------------------*/
 			/* actual shade psn						*/
 			/*--------------------------------------------------------------*/
@@ -1864,8 +1876,8 @@ void	canopy_stratum_daily_F(
 					*zone[0].metv.dayl*12.011e-9 + stratum[0].cdf.leaf_day_mr;
 
 
-            //if (stratum[0].ID == 179708){
-            //    printf("mon:%d\tday:%d\tID:%d\tpsn_to_cpool(gC/m2/day):%f\tassim_sunlit_pot:%f\tassim_sunlit:%f\tlai_sunlit:%f\tppfd_sunlit:%lf\tassim_shade_pot:%lf\tassim_shade:%f\tlai_shade:%f\tppfd_shade:%lf\tdayl:%f\tday_mr:%f\tleafc:%f\tleafn:%f\tproj_sla_sunlit:%f\tproj_sla_shade:%f\tgs_sunlit:%lf\tgs_shade:%lf\n",
+            //if (stratum[0].ID == 813381 && assim_sunlit_pot <= 0.){
+            //    printf("mon:%d\tday:%d\tID:%d\tpsn_to_cpool(gC/m2/day):%lf\tassim_sunlit_pot:%lf\tassim_sunlit:%lf\tlai_sunlit:%lf\tppfd_sunlit:%llf\tassim_shade_pot:%lf\tassim_shade:%lf\tlai_shade:%lf\tppfd_shade:%lf\tdayl:%f\tday_mr:%lf\tleafc:%lf\tleafn:%lf\tproj_sla_sunlit:%lf\tproj_sla_shade:%lf\tgs_sunlit:%lf\tgs_shade:%lf\n",
             //            current_date.month,current_date.day,stratum[0].ID,stratum[0].cdf.psn_to_cpool*1000.0,assim_sunlit_pot,assim_sunlit,stratum[0].epv.proj_lai_sunlit,stratum[0].ppfd_sunlit
             //            ,assim_shade_pot,assim_shade,stratum[0].epv.proj_lai_shade,stratum[0].ppfd_shade,zone[0].metv.dayl,stratum[0].cdf.leaf_day_mr
             //            ,stratum[0].cs.leafc,stratum[0].ns.leafn,stratum[0].epv.proj_sla_sunlit,stratum[0].epv.proj_sla_shade
@@ -2222,7 +2234,8 @@ void	canopy_stratum_daily_F(
 			stratum[0].acc_year.minNSC = min(stratum[0].cs.cpool, stratum[0].acc_year.minNSC);
 
 #ifdef JMG_MORE_YEARLY_OUTPUT
-        stratum[0].acc_year.LAIx += (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc) * stratum[0].defaults[0][0].epc.proj_sla;
+        //12162022LML stratum[0].acc_year.LAIx += (stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc) * stratum[0].defaults[0][0].epc.proj_sla;
+        stratum[0].acc_year.LAIx += stratum[0].cs.leafc * stratum[0].defaults[0][0].epc.proj_sla;
         stratum[0].acc_year.height += stratum[0].epv.height;
         stratum[0].acc_year.AGBc += ( // above ground biomass carbon weight (kgC/m2)
                 stratum[0].cs.leafc + stratum[0].cs.leafc_store + stratum[0].cs.leafc_transfer + stratum[0].cs.dead_leafc + // leafc
