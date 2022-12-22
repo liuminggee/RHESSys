@@ -421,8 +421,8 @@ void  update_drainage_road(
 		patch[0].detention_store -= Qout;
 		}
 		
-    printf("drainage detention_store:%lf \n"
-           ,patch[0].detention_store * 1000);
+    //printf("drainage detention_store:%lf \n"
+    //       ,patch[0].detention_store * 1000);
 
 	/*--------------------------------------------------------------*/
 	/*	route flow to neighbours				*/

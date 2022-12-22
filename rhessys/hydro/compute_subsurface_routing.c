@@ -715,7 +715,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 patch[0].soil_ns.nitrate += ((infiltration
                         / patch[0].detention_store) * patch[0].surface_NO3);
 
-                printf("4 nitrate:%lf\n",patch[0].soil_ns.nitrate);
+                //printf("4 nitrate:%lf\n",patch[0].soil_ns.nitrate);
 
                 patch[0].surface_NO3 -= ((infiltration
                         / patch[0].detention_store) * patch[0].surface_NO3);
