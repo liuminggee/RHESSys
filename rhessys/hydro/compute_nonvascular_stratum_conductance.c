@@ -86,8 +86,8 @@ double	compute_nonvascular_stratum_conductance(
 	if (rain_capacity <  0.00000000000001)
 		adjusted_storage = 0.0;
 	else
-		adjusted_storage = max(0,((rain_stored + approx_day_end_storage )/2.0)
-		/ ( rain_capacity));
+        adjusted_storage = min(1.,max(0,((rain_stored + approx_day_end_storage )/2.0)
+        / ( rain_capacity)));                                                   //12222022LML added 1.0 as maximum
 	/*--------------------------------------------------------------*/
 	/*		Use linear fit if storage is > 0						*/
 	/*--------------------------------------------------------------*/

@@ -112,10 +112,27 @@ double	compute_ra_overstory(
 	zo_u = 0.1 * h_u;
 
 
+    //12232022LML with : R.H. Silversides (1978) Forest and Airport Wind Speeds, Atmosphere-Ocean,
+    //16:3, 293-299, DOI: 10.1080/07055900.1978.9649036
+    //calclulate wind speed above 2 meter above canopy height
+    double z0a = 0.01; //(m) roughness of airport or bareground
+    double za = z; //(m) screen hight of measurement
+    double lamda = zo_o / (h_o - d_o);
+    double z_f = 2.0;
+    double uf_ua_ratio = pow(zo_o / z0a,0.07) * log(1. / lamda + z_f / zo_o)
+                         / log(za / z0a);
+    //printf("height:%lf uf_ua_ratio:%lf wind_10m:%lf ", h_o, uf_ua_ratio, *u);
+
+    *u *= uf_ua_ratio;                                                          //(m/s) windspeed 2 meters above canopy height
+    z = h_o + 2;    //the window speed already set at 2 meters above canopy height
+
+    //printf(" wind_2m_above_canopy:%lf new_screen_hight:%lf\n", *u, z);
+
 	/* Threshold code with ref height always above canopy height - see Heddeland p37*/
-	if ( z < (h_o + 2)){
-		z = h_o + 2;
-	}
+    //12232022LML commented out
+    //if ( z < (h_o + 2)){
+    //	z = h_o + 2;
+    //}
 
 	/*--------------------------------------------------------------*/
 	/*	Compute the resistance to momentum transfer from a sourc*/
@@ -126,6 +143,8 @@ double	compute_ra_overstory(
 	ra_u = ra + log ( (z-d_o)/zo_o ) * h_o * exp(-1*cn)
 		* ( exp(-1*cn*(d_u+zo_u)/h_o) - exp(-1*cn*(d_o+zo_o)/h_o))
 		/ ( *u * 0.41 * 0.41 * cn * (h_o - d_o));
+
+    //printf("*u:%lf\n",*u);
 
 
 	/*--------------------------------------------------------------*/

@@ -1334,8 +1334,19 @@ void	canopy_stratum_daily_F(
 						* rain_duration_day);
 	stratum[0].potential_evaporation = potential_evaporation_night + potential_evaporation_day;
 
-    //printf(" potential_evaporation:%lf gsurf:%lf gs_sunlit:%lf gs_shade:%lf gs:%lf ga:%lf\n",stratum[0].potential_evaporation * 1000
-    //        ,stratum[0].gsurf,stratum[0].gs_sunlit,stratum[0].gs_shade,stratum[0].gs,stratum[0].ga);
+    //printf(" potential_evaporation:%lf gsurf:%lf gs_sunlit:%lf gs_shade:%lf gs:%lf ga:%lf rsurf:%lf rs:%lf ra:%lf rs_sun:%lf rs_shade:%lf rs_sun_pot:%lf rs_shade_pot:%lf\n",stratum[0].potential_evaporation * 1000
+    //        ,stratum[0].gsurf
+    //        ,stratum[0].gs_sunlit
+    //        ,stratum[0].gs_shade
+    //        ,stratum[0].gs
+    //        ,stratum[0].ga
+    //        ,1./(1e-12+stratum[0].gsurf)
+    //        ,1./(1e-12+stratum[0].gs)
+    //        ,1./(1e-12+stratum[0].ga)
+    //        ,1./(1e-12+stratum[0].gs_sunlit)
+    //        ,1./(1e-12+stratum[0].gs_shade)
+    //        ,1./(1e-12+stratum[0].potential_gs_sunlit)
+    //        ,1./(1e-12+stratum[0].potential_gs_shade));
 
 	/*--------------------------------------------------------------*/
 	/*	If this stratum is on the surface and has a non-zero 	*/
@@ -1483,8 +1494,8 @@ void	canopy_stratum_daily_F(
             transpiration  = transpiration_rate * t_trans;
             potential_transpiration  = potential_transpiration_rate * t_trans;
 
-            //if (stratum->ID == 79708 && transpiration > 10)
-            //    printf("p_trans:%f dry_evap:%f p_evap_rate:%f p_trans_rate:%f dry_evap:%f frain:%f ftrans:%f\n"
+            //if (potential_transpiration_rate*86400*1000 > 20)
+            //    printf("trans:%lf p_trans:%f dry_evap:%f p_evap_rate:%f p_trans_rate:%f dry_evap:%f frain:%f ftrans:%f\n"
             //           ,transpiration*1000
             //           ,potential_transpiration*1000
             //           ,dry_evaporation*1000

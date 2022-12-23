@@ -171,6 +171,13 @@ double	penman_monteith(
 		/*--------------------------------------------------------------*/
 		if ( verbose_flag > 2)
 			printf("%8.4f",e );
+
+        //if (86400 * 1000 * e / ( lhvap * 1000 ) > 50)
+        //    printf("evap(mm/day):%lf ra:%lf rs:%lf\n"
+        //           ,86400 * 1000 * e / ( lhvap * 1000 )
+        //           ,ra
+        //           ,rs);
+
 		return( e / ( lhvap * 1000 ));
 	}
 	else{

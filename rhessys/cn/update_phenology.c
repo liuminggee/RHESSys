@@ -340,14 +340,14 @@ void update_phenology(struct zone_object  *zone,
 		cdf->frootc_transfer_to_frootc=2.0*cs->frootc_transfer / remdays_transfer;
 		ndf->frootn_transfer_to_frootn=2.0*ns->frootn_transfer / remdays_transfer;
 
-        if ((cs->leafc_transfer > 0 && ns->leafn_transfer <= 0)
-                || (cs->frootc_transfer > 0 && ns->frootn_transfer <= 0)) {
-            printf("leafc_transfer:%lf leafn_transfer:%lf frc_transfer:%lf frn_transfer:%lf\n"
-                   ,cs->leafc_transfer * 1000
-                   ,ns->leafn_transfer * 1000
-                   ,cs->frootc_transfer * 1000
-                   ,ns->frootn_transfer);
-        }
+        //if ((cs->leafc_transfer > 0 && ns->leafn_transfer <= 0)
+        //        || (cs->frootc_transfer > 0 && ns->frootn_transfer <= 0)) {
+        //    printf("leafc_transfer:%lf leafn_transfer:%lf frc_transfer:%lf frn_transfer:%lf\n"
+        //           ,cs->leafc_transfer * 1000
+        //           ,ns->leafn_transfer * 1000
+        //           ,cs->frootc_transfer * 1000
+        //           ,ns->frootn_transfer);
+        //}
 
 
 		if (epc.veg_type == TREE) {
