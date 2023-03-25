@@ -677,7 +677,7 @@ double LandScape::calc_pSpreadTest(int cur_row, int cur_col,int new_row,int new_
 	localFireGrid_[new_row][new_col].pWind=p_winddir;
 	localFireGrid_[new_row][new_col].pLoad=p_load;
 
-    fprintf(stderr,"new_row:%d new_col:%d pburn:%.3f\n",new_row,new_col,temp_pBurn);
+    //fprintf(stderr,"new_row:%d new_col:%d pburn:%.3f\n",new_row,new_col,temp_pBurn);
 
 	// Here we would put other pSpread calculations, depending on the parent node and the node being tested for spread
 	if(def_.fire_verbose==1)
