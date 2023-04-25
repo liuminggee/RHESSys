@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run RHESSys (GDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Qt/gcc/RHESSys/RHESSys_WMFire_1.5_LIU_WMFIRE_OUTPUT_2",
+            "args": [
+                "-netcdfgrid", 
+                "-ncgridinterp", "10", 
+                "-Ndecayrate", "3.0", 
+                "-firespread", "100", "brw_grid-patchid.txt", "brw_grid-dem.txt", 
+                "-t", "fire-brw.tec", 
+                "-w", "fire-brw.state.Y2016M1D1H1.state.Y2015M1D1H1.state.Y1985M1D1H1.state", 
+                "-whdr", "db_fire-brw.hdr", 
+                "-r", "brw.flow", 
+                "-st", "1900", "01", "01", "01", 
+                "-ed", "1910", "12", "31", "24", 
+                "-pre", "test/test-hist-fire-1", 
+                "-s", "925.00", "0.677", 
+                "-sv", "925.00", "0.677", 
+                "-svalt", "0.622", "1.43", 
+                "-gw", "0.297", "0.096", 
+                "-g", "-b"
+            ],
+            "stopAtEntry": true,
+            "preLaunchTask": "build",
+            "cwd": "/data/adam/jonathan.gendron/rhessys/Kamiak/scenarios/hist/1900/nohs/brw",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "filterStderr": false,
+            "filterStdout": true,
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                }
+            ]
+        }
+    ]
+}
