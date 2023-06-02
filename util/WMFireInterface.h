@@ -18,7 +18,8 @@ extern "C" {
 #endif
 
 //WMFIRE_EXPORT void WMFire(fire_object** &fire_grid,const fire_default &def, double cell_res,int nrow, int ncol);
-struct fire_object** WMFire(char *output_prefix,double cell_res,int nrow, int ncol, long year,long month,struct fire_object** fire_grid,struct fire_default def);
+// struct fire_object** WMFire(char *output_prefix,double cell_res,int nrow, int ncol, long year,long month,struct fire_object** fire_grid,struct fire_default def);  // JMG: Declaration of WMFire fucntion
+struct fire_object** WMFire(char *output_prefix,double cell_res,int nrow, int ncol, long year,long month,struct fire_object** fire_grid,struct fire_default def, long syr, long smth);  // JMG: Declaration of WMFire fucntion
 
 #ifdef __cplusplus
 }

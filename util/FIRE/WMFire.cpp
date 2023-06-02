@@ -57,7 +57,8 @@ int close_enough(double a, double b)
 // WMFire is used by models that pass values defined in the rhessys_fire.h file.
 // The calling model passes a 2D grid of fire_objects, of size nrow X ncol
 //					world[0].fire_grid,*(world[0].defaults[0].fire),command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.month,current_date.year
-struct fire_object **WMFire(char *output_prefix, double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def)
+// struct fire_object **WMFire(char *output_prefix, double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def)  // definition of WMFire()
+struct fire_object **WMFire(char *output_prefix, double cell_res,  int nrow, int ncol, long year, long month, struct fire_object** fire_grid,struct fire_default def, long syr, long smth)  // definition of WMFire()
 {   if(def.fire_verbose == 3) //NREN 20190912
 	cout<<"beginning fire spread using WMFire. month, year, cell_res, nrow, ncol: \n"<<month<<" "<<year<<"  "<<cell_res<<" "<<nrow<<" "<<ncol<<"\n";
 	if(def.fire_verbose == 1)
@@ -107,7 +108,8 @@ struct fire_object **WMFire(char *output_prefix, double cell_res,  int nrow, int
 		cout<<"\nafter landscape initialize current fire\n\n";
 	landscape.Burn(randomNG); // run the current fire ---- draw drandom burn random 3
 	if(def.fire_write>0)
-        landscape.writeFire(output_prefix,month,year,def);
+        // landscape.writeFire(output_prefix,month,year,def); // JMG: Entry point for Writing WMFire Output
+		landscape.writeFire(output_prefix,month,year,def,syr,smth); // JMG: Entry point for Writing WMFire Output
 	if(def.fire_verbose==1)
 		cout<<"\nafter burn landscape\n\n";
 	return landscape.FireGrids();  // return the updated fire grid
@@ -834,7 +836,8 @@ void LandScape::calc_FireEffects(int new_row,int new_col, int iter, double cur_p
 /***************write the fire grid******************************************/
 /* with the date written to the file								*/
 /***************************************************************************/
-void LandScape::writeFire(char *output_prefix, long month, long year,struct fire_default def)
+// void LandScape::writeFire(char *output_prefix, long month, long year,struct fire_default def)
+void LandScape::writeFire(char *output_prefix, long month, long year,struct fire_default def, long syr, long smth)  //JMG: Added syr and smth
 {
 //	char const* outFile;
     std::string prefix(output_prefix);                                          //05192022LML Write to same folder as other outputs
@@ -1189,12 +1192,13 @@ void LandScape::writeFire(char *output_prefix, long month, long year,struct fire
 #else
     ofstream FOut;
     static int first_run_for_output = 1;
-    if (first_run_for_output) FOut.open(prefix + "_WMFireGridTable.csv");
+    if (first_run_for_output) FOut.open(prefix + "_WMFireGridTable.csv");  // JMG: Start of Min's CSV writing
     else FOut.open(prefix + "_WMFireGridTable.csv", ofstream::app);
 
     if (FOut.is_open()) {
         if (first_run_for_output == 1) {
-            FOut<<"year,month,row,col,SpreadIter,FailedIter,SpreadProp,LitLoad,SoilMoist,VegLoad,RelDef,PET,ET,TRANS,UnderPET,UnderET,PSlope,PDef,PLoad,PWind"<<std::endl;
+            // FOut<<"year,month,row,col,SpreadIter,FailedIter,SpreadProp,LitLoad,SoilMoist,VegLoad,RelDef,PET,ET,TRANS,UnderPET,UnderET,PSlope,PDef,PLoad,PWind"<<std::endl; //TODO: Add Syr and Smth
+			FOut<<"year,month,syr,smth,row,col,SpreadIter,FailedIter,SpreadProp,LitLoad,SoilMoist,VegLoad,RelDef,PET,ET,TRANS,UnderPET,UnderET,PSlope,PDef,PLoad,PWind"<<std::endl; //TODO: Add Syr and Smth
             first_run_for_output = 0;
         }
         for(int i=0; i<rows_; i++)
@@ -1215,8 +1219,9 @@ void LandScape::writeFire(char *output_prefix, long month, long year,struct fire
                                 RelDef = 1 - fobj->et / fobj->pet;
                         }
                     }
-                    if (month >= 6 && month <= 10)
-                        FOut<<year<<","<<month<<","<<i<<","<<j<<","
+                    if (month >= 6 && month <= 10)  // JMG: Restricts to fire season months
+                        // FOut<<year<<","<<month<<","<<i<<","<<j<<","
+						FOut<<year<<","<<month<<","<<syr<<","<<smth<<","<<i<<","<<j<<"," // JMG: Added syr and smth
                             <<lfn->iter<<","
                             <<lfn->failedIter<<","
                             <<std::setprecision(3)<<fobj->burn<<","

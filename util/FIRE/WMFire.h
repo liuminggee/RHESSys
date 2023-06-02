@@ -90,7 +90,8 @@ public:
 	void chooseIgnPix(GenerateRandom& rng); // which pixels are chosen for ignition
 	void drawNumIgn(double lambda, GenerateRandom& rng); // to test whether the randomly chosen cell should ignite
 
-        void writeFire(char *output_prefix,long month, long year,struct fire_default def); // write fire results
+		// void writeFire(char *output_prefix,long month, long year,struct fire_default def); // write fire results declaration
+	void writeFire(char *output_prefix,long month, long year,struct fire_default def, long syr, long smth); // JMG: write fire results declaration
 	struct fire_object** &FireGrids() { return fireGrid_; } // the fire grid
 	fire_default& FireDefault() {return def_;} // fire default values
 	fire_years& FireYears() {return cur_fire_; } 

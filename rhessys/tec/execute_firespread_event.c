@@ -289,7 +289,8 @@ void execute_firespread_event(
 	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);}
 // needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
 #ifndef LIU_BURN_ALL_AT_ONCE
-    world[0].fire_grid=WMFire(command_line[0].output_prefix,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
+    // world[0].fire_grid=WMFire(command_line[0].output_prefix,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
+	world[0].fire_grid=WMFire(command_line[0].output_prefix,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire), world[0].track_simtime.syr, world[0].track_simtime.smth);
 #endif
     if(world[0].defaults[0].fire[0].fire_verbose == 3) {
  	printf("Finished calling WMFire\n"); }
