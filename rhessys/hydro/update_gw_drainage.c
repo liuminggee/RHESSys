@@ -79,9 +79,23 @@ int update_gw_drainage(
     //       ,patch[0].detention_store*1000);
 
 	drainage = sat_to_gw_coeff * patch[0].detention_store;
+
+    //06212023LML if waterbody, no drainage
+    if (patch[0].IsWaterBody == STREAM) drainage = 0;
+
+    //if (current_date.year == 1984 && current_date.month == 1 && (current_date.day >= 22 || current_date.day <= 24))
+    //if (patch[0].ID == 81497 && current_date.year == 1984)
+    //printf("year:%d month:%d day:%d patch_id:%d sat_to_gw_coeff:%lf detention_store:%lf patch[0].gw_drainage:%lf fraction:%lf gw.storage:%lf\n",
+    //       current_date.year,current_date.month,current_date.day,
+    //       patch[0].ID, sat_to_gw_coeff,patch[0].detention_store*1000,
+    //       drainage*1000, patch[0].area / hillslope[0].area,
+    //       hillslope[0].gw.storage*1000);
+
 	patch[0].detention_store -= drainage;
 	patch[0].gw_drainage = drainage;
 	hillslope[0].gw.storage += (drainage * patch[0].area / hillslope[0].area);
+
+
 
 	/*------------------------------------------------------*/
 	/*	determine associated N leached			*/

@@ -90,7 +90,7 @@ struct soil_default *construct_soil_defaults(
 		//	exit(EXIT_FAILURE);
 		//} /*end if*/
 
-		printf("Reading %s\n", default_files[i]);
+        if (command_line[0].verbose_flag > 0) printf("Reading %s\n", default_files[i]);
                 paramCnt = 0;
                 if (paramPtr != NULL)
                     free(paramPtr);
@@ -112,7 +112,7 @@ struct soil_default *construct_soil_defaults(
         defobj[0].psi_air_entry = 		getDoubleParam(&paramCnt, &paramPtr, "psi_air_entry", "%lf", 0.218, 1);
         defobj[0].psi_max = 		getDoubleParam(&paramCnt, &paramPtr, "psi_max", "%lf", 0.01, 1);
         defobj[0].soil_depth = 		getDoubleParam(&paramCnt, &paramPtr, "soil_depth", "%lf", 200.0, 1);
-         printf("soil_depth defs is: %lf\n",defobj[0].soil_depth);
+        if (command_line[0].verbose_flag > 0) printf("soil_depth defs is: %lf\n",defobj[0].soil_depth);
         defobj[0].m_z = 			getDoubleParam(&paramCnt, &paramPtr, "m_z", "%lf", 0.4, 1);
         defobj[0].detention_store_size = 	getDoubleParam(&paramCnt, &paramPtr, "detention_store_size", "%lf", 0.0, 1);
         defobj[0].deltaz = 		getDoubleParam(&paramCnt, &paramPtr, "deltaZ", "%lf", 1.0, 1); // param name contains uppercase "Z" in param file
@@ -131,7 +131,7 @@ struct soil_default *construct_soil_defaults(
         defobj[0].snow_water_capacity = 		getDoubleParam(&paramCnt, &paramPtr, "snow_water_capacity", "%lf", 0.0, 1);
         defobj[0].snow_light_ext_coef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_light_ext_coef", "%lf", 10000.0, 1);
         defobj[0].snow_melt_Tcoef = 		getDoubleParam(&paramCnt, &paramPtr, "snow_melt_Tcoef", "%lf", 0.005, 1);  //11202022LML 1.6-6.0 mm/degree-dayC  E11-5 USDA Part 630 Hydrology National ENgineering Handbook
-        printf("snow melting coef: %lf\n",defobj[0].snow_melt_Tcoef);
+        if (command_line[0].verbose_flag > 0) printf("snow melting coef: %lf\n",defobj[0].snow_melt_Tcoef);
         defobj[0].snow_albedo_flag = 	parse_albedo_flag(getStrParam(&paramCnt, &paramPtr, "snow_albedo_flag", "%s", "age", 1));
         defobj[0].bats_b = 		getDoubleParam(&paramCnt, &paramPtr, "bats_b", "%lf", 2.0, 1);
         defobj[0].bats_r3 = 		getDoubleParam(&paramCnt, &paramPtr, "bats_r3", "%lf", 0.3, 1);
@@ -150,7 +150,7 @@ struct soil_default *construct_soil_defaults(
             defobj[0].N_decay_rate = command_line[0].N_decayrate; //11042022LML original soil parameter of 0.12 is too low
 		 // this is for controling co2 effect on stomatal conductance
         defobj[0].m_CO2_effect = getIntParam(&paramCnt, &paramPtr, "m_CO2_effect", "%d", 0, 1); //default is off
-        printf("\n The CO2 effect on plants conductance is : %d", defobj[0].m_CO2_effect);
+        if (command_line[0].verbose_flag > 0) printf("\n The CO2 effect on plants conductance is : %d", defobj[0].m_CO2_effect);
 		/*
 		if (command_line[0].tmp_value > ZERO)
             defobj[0].N_decay_rate *= command_line[0].tmp_value;
@@ -261,9 +261,9 @@ struct soil_default *construct_soil_defaults(
 		/*      Fire effect parameters                          	*/
 		/*--------------------------------------------------------------*/
         defobj[0].overstory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "overstory_height_thresh", "%lf", 6, 1);
-        printf("\n the fire effect model overstory height thresh: %lf\n",defobj[0].overstory_height_thresh);
+        //printf("\n the fire effect model overstory height thresh: %lf\n",defobj[0].overstory_height_thresh);
         defobj[0].understory_height_thresh = getDoubleParam(&paramCnt, &paramPtr, "understory_height_thresh", "%lf", 4, 1);
-        printf("\n the fire effect model understory height thresh: %lf\n",defobj[0].understory_height_thresh);
+        //printf("\n the fire effect model understory height thresh: %lf\n",defobj[0].understory_height_thresh);
 
 
         //10112022LML

@@ -40,6 +40,7 @@ void update_hillslope_accumulator(
     for (int h = 0 ; h < basin[0].num_hillslopes; h++ ){
         struct hillslope_object *hillslope = basin[0].hillslopes[h];
 		hillslope[0].acc_month.length += 1;
+        hillslope[0].acc_year.h_baseflow += hillslope[0].base_flow;
 #ifdef JMG_MORE_YEARLY_OUTPUT
         if((command_line[0].output_flags.yearly == 1)&&(command_line[0].h != NULL)){
         hillslope[0].acc_year.hill_base_flow += hillslope[0].base_flow;
@@ -82,11 +83,13 @@ void update_hillslope_accumulator(
 					hillslope[0].acc_year.DOC_loss += patch[0].cdf.total_DOC_loss * scale;
 					hillslope[0].acc_year.DON_loss += patch[0].ndf.total_DON_loss * scale;
 					hillslope[0].acc_year.psn += patch[0].net_plant_psn * scale;
+                    hillslope[0].acc_year.pcp += patch[0].pcp * scale;
 					hillslope[0].acc_year.et += (patch[0].evaporation
 						+ patch[0].evaporation_surf +
 						patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone +
 						patch[0].transpiration_unsat_zone + patch[0].transpiration_sat_zone) * scale;
 					hillslope[0].acc_year.streamflow += (patch[0].streamflow) * scale;
+
 					hillslope[0].acc_year.lai += patch[0].lai * scale;
 #ifdef JMG_MORE_YEARLY_OUTPUT
                     hillslope[0].acc_year.pch_pcp += patch[0].zone->rain + patch[0].zone->snow * scale;

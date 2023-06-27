@@ -153,6 +153,9 @@ void  update_drainage_stream(
 
 	if (route_to_stream < 0.0) route_to_stream = 0.0;
 
+    //06222023LML all outflow will become surface detention store (then flowout)
+    if (patch[0].IsWaterBody) route_to_stream = 0;
+
 		
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount with baseflow		*/
@@ -216,6 +219,12 @@ void  update_drainage_stream(
 			patch[0].rz_storage+patch[0].unsat_storage,
 			patch[0].sat_deficit, &(patch[0].litter));
 		patch[0].detention_store += return_flow;  
+
+        //if (patch[0].ID == 81497)
+        //printf("detention_store:%lf return_flow_stream:%lf \n",
+        //       patch[0].detention_store*1000,
+        //       return_flow*1000);
+
 		patch[0].sat_deficit += (return_flow - (patch[0].unsat_storage+patch[0].rz_storage));;
 		patch[0].unsat_storage = 0.0;
 		patch[0].rz_storage = 0.0;
@@ -277,6 +286,11 @@ void  update_drainage_stream(
 	/*	note we assume that this happens before return_flow losses */
 	/*--------------------------------------------------------------*/
 
+    //if (patch[0].ID == 64301) {
+    //    printf("detention_store:%lf \n"
+    //           ,patch[0].detention_store);
+    //}
+
 	if ((patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) &&
 		(patch[0].detention_store > ZERO)) {
 		Qout = (patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size);
@@ -298,9 +312,20 @@ void  update_drainage_stream(
 		patch[0].surface_NH4  -= Nout;
 		patch[0].streamflow_NH4 += Nout;
 		patch[0].detention_store -= Qout;
-		patch[0].return_flow += Qout; 
+        patch[0].return_flow += Qout;  //06222023LML note: confusing.
 		patch[0].hourly_sur2stream_flow += Qout;
+
+        //if (patch[0].ID == 64301) {
+        //    printf("detention_store(mm):%lf Qout(mm):%lf return_flow(mm):%lf\n"
+        //           ,patch[0].detention_store*1000
+        //           ,Qout*1000
+        //           ,patch[0].return_flow*1000);
+        //}
+
 		}
+
+    //06222023LML note: the baseflow (i.e. route_to_stream) is not deducted from soil storage pools
+
 //#ifdef LIU_OMP_PATCH_LOCK
 //     omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
 //#endif

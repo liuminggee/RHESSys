@@ -53,7 +53,7 @@ void	output_yearly_hillslope(	int basinID,
 #ifdef JMG_MORE_YEARLY_OUTPUT
     char out_basic[] = "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-    char out_basic[] = "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d\n";
+    char out_basic[] = "%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #endif
 
 #ifdef JMG_TRACKING
@@ -72,19 +72,19 @@ void	output_yearly_hillslope(	int basinID,
         simtime->syr,
 #endif
 
-		current_date.year-1,
+        current_date.year,
 		basinID,
 		hillslope[0].ID,
 #ifndef JMG_MORE_YEARLY_OUTPUT
         hillslope[0].acc_year.streamflow * 1000.0,
+        hillslope[0].acc_year.h_baseflow * 1000.0,
         hillslope[0].acc_year.stream_NO3 * 1000.0,
         hillslope[0].acc_year.denitrif * 1000.0,
         hillslope[0].acc_year.DOC_loss * 1000.0,
         hillslope[0].acc_year.DON_loss * 1000.0,
+        hillslope[0].acc_year.pcp * 1000.,
         hillslope[0].acc_year.et * 1000.0,
         hillslope[0].acc_year.psn * 1000.0,
-        hillslope[0].acc_year.lai/ hillslope[0].acc_year.length,
-        hillslope[0].acc_year.num_threshold,
         hillslope[0].acc_year.lai/ hillslope[0].acc_year.length,
         hillslope[0].acc_year.nitrif * 1000.0,
         hillslope[0].acc_year.mineralized * 1000.0,
@@ -101,7 +101,8 @@ void	output_yearly_hillslope(	int basinID,
         (hillslope[0].acc_year.pch_unsat_storage / hillslope[0].acc_year.length) * 1000.0, // average daily unsat_storage
         (hillslope[0].acc_year.hill_gw_storage / hillslope[0].acc_year.length) * 1000.0, // average daily gw_storage
 #endif
-		hillslope[0].area
+        hillslope[0].area,
+        (hillslope[0].acc_year.pcp-hillslope[0].acc_year.et-hillslope[0].acc_year.streamflow-hillslope[0].acc_year.h_baseflow) * 1000
 		);
 	if (check <= 0) {
 		fprintf(stdout,
@@ -111,7 +112,11 @@ void	output_yearly_hillslope(	int basinID,
 	/*	reset accumulator variables				*/
 	/*--------------------------------------------------------------*/
 	hillslope[0].acc_year.streamflow = 0.0;
+
+    hillslope[0].acc_year.h_baseflow = 0.0;
+
 	hillslope[0].acc_year.stream_NO3 = 0.0;
+    hillslope[0].acc_year.pcp = 0.0;
 	hillslope[0].acc_year.et = 0.0;
 	hillslope[0].acc_year.psn = 0.0;
 	hillslope[0].acc_year.lai = 0.0;

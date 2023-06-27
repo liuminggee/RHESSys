@@ -290,10 +290,10 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			Simulate the world for the start of this day e		*/
 			/*--------------------------------------------------------------*/
-#ifdef LIU_DISPLY_RUN_INFO
+//#ifdef LIU_DISPLY_RUN_INFO
             //if ( current_date.hour == 1 ) printf("Current_date runyear = %d clim_year = %d mon = %d day = %d\n",
             //       year,current_date.year,current_date.month,current_date.day); /*ning*/
-#endif
+//#endif
             //fflush(stdout);
 			if ( current_date.hour == 1 ){
                 world_daily_I(
@@ -381,6 +381,7 @@ void	execute_tec(
                                     world[0].basins[b],
                                     current_date,
                                     outfile->basin->daily);
+                                if (command_line[0].grow_flag != 0)
                                 output_growth_basin(
                                     world[0].basins[b],
                                     current_date,
@@ -407,15 +408,24 @@ void	execute_tec(
 				/*			Perform any requested yearly output					*/
 				/*--------------------------------------------------------------*/
 				 if (command_line[0].output_flags.yearly_growth == 1) {reset_flag=0;}
+
+                //06192023LML note: this yearly output is conducted end of day and might cause one day's shift
 				if ((command_line[0].output_flags.yearly == 1) &&
 					(command_line[0].output_yearly_date.month==current_date.month)&&
-					(command_line[0].output_yearly_date.day == current_date.day))
+                    (command_line[0].output_yearly_date.day == current_date.day)) {
+
+                    //printf("current_date year%d month:%d day:%d\n",
+                    //        current_date.year,
+                    //        command_line[0].output_yearly_date.month,
+                    //        command_line[0].output_yearly_date.day);
+
 							execute_yearly_output_event(
 							reset_flag,
 							world,
 							command_line,
 							current_date,
 							outfile);
+                }
 
 				if ((command_line[0].output_flags.yearly_growth == 1) &&
 					(command_line[0].output_yearly_date.month==current_date.month)&&
@@ -517,9 +527,9 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
 				/*				increment year  								*/
 				/*-------------------------------------------------------------*/
-#ifdef LIU_DISPLY_RUN_INFO
-                printf("\nYear %d\n", current_date.year);
-#endif
+//#ifdef LIU_DISPLY_RUN_INFO
+                if (command_line[0].verbose_flag == -7) printf("\nYear %d\n", current_date.year);
+//#endif
 				year = year + 1;
                 current_date.year= next_date.year;
 
@@ -531,9 +541,9 @@ void	execute_tec(
 //#ifdef LIU_BURN_ALL_AT_ONCE
                 if (command_line[0].fire_spin_flag != 0) {
                     if(spins_index < command_line[0].fire_spins) {
-#ifdef LIU_DISPLY_RUN_INFO
-                        printf("Spins:%d Spin_year:%d\n",spins_index,spin_year_index);
-#endif
+//#ifdef LIU_DISPLY_RUN_INFO
+                        if (command_line[0].verbose_flag == -7) printf("Spins:%d Spin_year:%d\n",spins_index,spin_year_index);
+//#endif
                         if (spin_year_index < (command_line[0].fire_spin_period - 1)) {
                             spin_year_index++;
 

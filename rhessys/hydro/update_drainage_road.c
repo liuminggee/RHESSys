@@ -200,8 +200,9 @@ void  update_drainage_road(
 		if (route_to_patch < 0.0) route_to_patch = 0.0;
 		if (route_to_stream < 0.0) route_to_stream = 0.0;
 		if ((route_to_stream + route_to_patch) > available_sat_water) {
-			route_to_patch *= (available_sat_water)/(route_to_patch + route_to_stream);
-			route_to_stream *= (available_sat_water)/(route_to_patch + route_to_stream);
+            route_to_patch *= (available_sat_water)/(route_to_patch + route_to_stream);
+            route_to_stream *= (available_sat_water)/(route_to_patch + route_to_stream);
+
 		}
 		/*--------------------------------------------------------------*/
 		/* compute Nitrogen leaching amount				*/
@@ -335,6 +336,12 @@ void  update_drainage_road(
 			patch[0].rz_storage+patch[0].unsat_storage,
 			patch[0].sat_deficit, &(patch[0].litter));
 		patch[0].detention_store += return_flow;  
+
+        //if (patch[0].ID == 81497)
+        //printf("detention_store:%lf return_flow_road:%lf \n",
+        //       patch[0].detention_store*1000,
+        //       return_flow*1000);
+
 		patch[0].sat_deficit += (return_flow - (patch[0].unsat_storage+patch[0].rz_storage));;
 		patch[0].unsat_storage = 0.0;
 		patch[0].rz_storage = 0.0;

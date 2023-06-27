@@ -65,7 +65,7 @@ void	output_yearly_basin(
 #ifdef JMG_MORE_YEARLY_OUTPUT
     char out_basic[] = "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-    char out_basic[] = "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %lf %lf\n";
+    char out_basic[] = "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %lf %lf %lf %lf %lf\n";
 #endif
 
 #ifdef JMG_TRACKING
@@ -101,7 +101,9 @@ void	output_yearly_basin(
         basin[0].acc_year.num_threshold,
         basin[0].acc_year.TPET * 1000.0,
         basin[0].acc_year.PET * 1000.0,
-        basin[0].acc_year.PE * 1000.0
+        basin[0].acc_year.PE * 1000.0,
+        basin[0].acc_year.pcp * 1000.0,
+        (basin[0].acc_year.pcp-basin[0].acc_year.et-basin[0].acc_year.streamflow)*1000
 #else
             basin[0].acc_year.pcp * 1000.0,
             basin[0].acc_year.et * 1000.0,
@@ -152,9 +154,9 @@ void	output_yearly_basin(
     basin[0].acc_year.num_threshold = 0;
     basin[0].acc_year.mineralized = 0.0;
     basin[0].acc_year.uptake = 0.0;
-
+    basin[0].acc_year.pcp = 0.0;
 #ifdef JMG_MORE_YEARLY_OUTPUT
-    basin[0].acc_year.pcp = 0.0; // JMG10112022
+    //basin[0].acc_year.pcp = 0.0; // JMG10112022
     basin[0].acc_year.baseflow = 0.0; // JMG10112022
     basin[0].acc_year.hill_base_flow = 0.0; // JMG10112022
     basin[0].acc_year.gw_drainage = 0.0; // JMG10112022

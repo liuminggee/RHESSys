@@ -344,9 +344,14 @@ void		surface_daily_F(
 
 		// Avoid over-estimating ET from surfaces with no detention store size
 		//   (e.g. impervious surface) by gating ET by detention_store_size
+        //06222023LML If waterbody, calclulate current day's evaporation
+        if (patch[0].IsWaterBody) {
+            detention_store_evaporation = min(detention_store_potential_evaporation,patch[0].detention_store);
+        } else {
 		detention_store_evaporation = min(detention_store_potential_evaporation,
 				min(patch[0].detention_store,
 						patch[0].soil_defaults[0][0].detention_store_size));
+        }
 
 		patch[0].detention_store -= detention_store_evaporation;
 
@@ -367,6 +372,13 @@ void		surface_daily_F(
 	}
 	
 	patch[0].evaporation_surf += detention_store_evaporation;
+
+    //if (patch[0].ID == 64301) {
+    //    printf("detention(mm):%lf evaporation_surf(mm):%lf detention_store_evaporation(mm):%lf\n"
+    //           ,patch[0].detention_store*1000
+    //           ,patch[0].evaporation_surf*1000
+    //           ,detention_store_evaporation*1000);
+    //}
 	
 	
 	/*** Update patch radiation to remove any radiation used to evaporate pond. ***/

@@ -165,6 +165,7 @@ void  update_drainage_land(
                                   patch[0].innundation_list[d].gamma
                                   );
 
+    //05312023LML note: it is total soil water content in saturated zone (m3)
     available_sat_water = max(((psoil_def[0].soil_water_cap
 			- max(patch[0].sat_deficit,0.0))
 			* patch[0].area),0.0);
@@ -176,6 +177,7 @@ void  update_drainage_land(
 
 	std_scale = command_line[0].std_scale;
 
+    //05312023LML note: it is subflow from this patch
 	route_to_patch =  time_int * compute_varbased_flow(
 		patch[0].num_soil_intervals,
 		patch[0].std * std_scale, 
@@ -268,6 +270,13 @@ void  update_drainage_land(
 
 
 		patch[0].detention_store += return_flow;  
+
+
+        //if (patch[0].ID == 81497)
+        //printf("detention_store:%lf return_flow:%lf \n",
+        //       patch[0].detention_store*1000,
+        //       patch[0].return_flow*1000);
+
 		patch[0].sat_deficit += (return_flow - (patch[0].unsat_storage+patch[0].rz_storage));
 		patch[0].unsat_storage = 0.0;
 		patch[0].rz_storage = 0.0;
@@ -389,13 +398,24 @@ void  update_drainage_land(
 		/*--------------------------------------------------------------*/
         double Qin =	fgamma * route_to_patch;
 		if (Qin < 0) printf("\n warning negative routing from patch %d with gamma %lf", patch[0].ID, total_gamma);
-		if (command_line[0].grow_flag > 0) {
+        //06222023LML added surface waterbody option
+        if (neigh[0].IsWaterBody) {
+          if (command_line[0].grow_flag > 0) {
+            neigh[0].surface_DON += fgamma * DON_leached_to_patch;
+            neigh[0].surface_DOC += fgamma * DOC_leached_to_patch;
+            neigh[0].surface_NO3 += fgamma * NO3_leached_to_patch;
+            neigh[0].surface_NH4 += fgamma * NH4_leached_to_patch;
+          }
+          neigh[0].detention_store += Qin;
+        } else {
+          if (command_line[0].grow_flag > 0) {
             neigh[0].soil_ns.DON_Qin += fgamma * DON_leached_to_patch;
             neigh[0].soil_cs.DOC_Qin += fgamma * DOC_leached_to_patch;
             neigh[0].soil_ns.NO3_Qin += fgamma * NO3_leached_to_patch;
             neigh[0].soil_ns.NH4_Qin += fgamma * NH4_leached_to_patch;
+          }
+          neigh[0].Qin += Qin;
         }
-		neigh[0].Qin += Qin;
 //#ifdef LIU_OMP_PATCH_LOCK
 //        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 //#endif
@@ -443,6 +463,12 @@ void  update_drainage_land(
 
         double Qin = fgamma * route_to_surface;
 		neigh[0].detention_store += Qin;// need fix this
+
+        //if (neigh[0].ID == 81497)
+        //printf("detention_store:%lf Qin:%lf \n",
+        //       neigh[0].detention_store*1000,
+        //       Qin*1000);
+
 		neigh[0].surface_Qin += Qin;
         double infiltration = 0;
 		/*--------------------------------------------------------------*/

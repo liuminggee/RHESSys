@@ -87,6 +87,19 @@ double	compute_N_leached(int verbose_flag,
             int which_element_to_simulate
             //,double *transmissivity
                           );
+double	compute_field_capacity(
+                               int	verbose_flag,
+                               int	curve,
+                               double	psi_air_entry,
+                               double	pore_size_index,
+                               double	p3,
+                               double	p4,
+                               double	p_0,
+                               double	p,
+                               double   inDingman_coef,                         //10112022LML if not use, set -9999
+                               double	z_water_table,
+                               double	z,
+                               double	z_surface);
 double	compute_field_capacity_from_soildef(
                                int	verbose_flag,
                                struct soil_default *psoildef,                         //10112022LML if not use, set -9999

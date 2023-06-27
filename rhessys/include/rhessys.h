@@ -200,6 +200,9 @@
 #define P1HIGH 5
 #define P2HIGH 6
 
+//06212023 LML: DEFINE WATER STRATA TYPE
+#define STRATUM_WATER 6
+
 enum LEACH_ELEMENT {LNO3,LNH4,LDON,LDOC,LEACH_ELEMENT_counts};                                       //10122022LML for N leaching
 
 /*----------------------------------------------------------*/
@@ -528,9 +531,9 @@ struct accumulate_patch_object
    double day7pet;
    double maxtrans;
    double maxpet;
-   double TPET;                                                                 //06292022LML = PET + PE
-   double PET;                                                                  //06292022LML
-   double PE;                                                                   //06292022LML
+   double TPET;                                                                 //06292022LML potential evaptranspiration (i.e. PET + PE)
+   double PET;                                                                  //06292022LML potential transpiration
+   double PE;                                                                   //06292022LML potential evaporation
    double lai;
    double snowpack;
    double sm_deficit;
@@ -538,7 +541,11 @@ struct accumulate_patch_object
    double stream_DON;
    double stream_NO3;
    double stream_NH4;
-   double streamflow;
+   double streamflow;                                                           //LML note: for basin, it is (hillslope_baseflow + patch_streamflow)
+                                                                                //for hillslope, it is patch_streamflow only
+
+   double h_baseflow;                                                           //06142023LML hillslope baseflow (i.e. from gw_storage)
+   double p_gw_drainage;
 #ifdef JMG_MORE_YEARLY_OUTPUT
    double baseflow; // JMG09082022
    double returnflow; // JMG09082022
@@ -1058,7 +1065,7 @@ struct hillslope_object
         double  area;                   /* sq meters */
         double  riparian_area;          /* sq meters */
         double  slope;                  /* degrees */
-        double  base_flow;              /* meters               */
+        double  base_flow;              /* meters               */ //LML note: flow from groundwater storage
         double  hourly_base_flow;       /* meters   */
         double  streamflow_NO3;         /* kgN/m2/day           */
         double  streamflow_NH4;         /* kgN/m2/day           */
@@ -1430,7 +1437,7 @@ struct	soil_default
 struct  innundation_object
         {
         double  critical_depth;         /* m */
-        double  gamma;                  /*09092022LML (m); it is total downstream patach perimeter X slope (tan(slope_degree)) */
+        double  gamma;                  /*09092022LML (m); it is total downstream patch perimeter X slope (tan(slope_degree)) */
         int     num_neighbours;
         struct  neighbour_object *neighbours;
         };
@@ -1769,7 +1776,7 @@ struct patch_object
         double  z;                                                                      /* meters       */
         double  area;                   /* sq meters    */
         double  acc_year_trans;         /* m water      */
-        double  base_flow;              /* m water */
+        double  base_flow;              /* m water */  //(LML) flow to streams (only for STREAM patch)
         double  cap_rise;               /* m water / day */
         double  tmp;                    /* diagnostic variable - open units */
         double  daily_fire_litter_turnover;                     /* (DIM) 0-1 */
@@ -1787,8 +1794,8 @@ struct patch_object
         double	gw_drainage_hourly;     /* m/day  */
         double  hourly_rz_drainage;     /* m water  */
         double  hourly_unsat_drainage;  /* m water  */
-        double  hourly_subsur2stream_flow;      /* m water */
-        double  hourly_sur2stream_flow;  /* m water  */
+        double  hourly_subsur2stream_flow;      /* m water */ //LML note: from baseflow to streamflow. outputs
+        double  hourly_sur2stream_flow;  /* m water  */ //LML note: from detention to streamflow. outputs
         double  hourly_stream_flow;     /* m water */
         double  interim_sat;            /* m */
         double  stream_gamma;           /* meters**2/day        */
@@ -1860,10 +1867,10 @@ struct patch_object
         double  psi;                    /* MPa          */
         double  psi_max_veg; /* MPa */
         double  Qin_total;                      /* m /day       */
-        double  Qout_total;                     /* m /day       */
-        double  Qin;                    /* m /day       */
-        double  Qout;                   /* m /day       */
-        double  streamflow;             /* m /day       */
+        double  Qout_total;                     /* m /day       */ //LML note: baseflow (i.e. from saturated soil layer) + surface flow
+        double  Qin;                    /* m /day       */ //LML note: flow in from above drainage patches to saturated soil layer
+        double  Qout;                   /* m /day       */ //LML note: flow out of patch from saturated soil layer
+        double  streamflow;             /* m /day       */ //LML note: only over stream patch, including return_flow & baseflow.
         double  streamflow_DOC;         /* kgC/m2/day   */
         double  streamflow_DON;         /* kgN/m2/day   */
         double  streamflow_NO3;         /* kg/m2/day    */
@@ -1871,7 +1878,7 @@ struct patch_object
         double  road_cut_depth;         /* m */
         double  rain_throughfall;       /* m water      */
         double  recharge;       /* m water      */
-        double  return_flow;            /* m water      */
+        double  return_flow;            /* m water      */ //LML note: for STREAM patch, it is the excess detention storage (than capacity)`
         double  snow_throughfall;       /* m water      */
         double  rain_throughfall_24hours;       /* m water,used for 24 hours accumulated throughfall    */
         double  rain_throughfall_final; /* m water      */
@@ -1938,6 +1945,7 @@ struct patch_object
         double overland_flow; /* m/s */
         double  T_canopy;  /* deg C */
         double  T_canopy_final;  /* deg C */
+        double pcp;             //(m/day) 06202023LML
         struct  base_station_object     **base_stations;
         struct  soil_default            **soil_defaults;
         struct  landuse_default         **landuse_defaults;
@@ -1968,6 +1976,7 @@ struct patch_object
 /*      Surface Hydrology  stuff                        */
 /*----------------------------------------------------------*/
         bool     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */
+        bool     IsWaterBody;                           /* 06212023LML 1: is 0: is not */
         double  water_balance;                          /* meters water         */
         double  delta_snowpack;                         /* meters               */
         double  delta_canopy_storage;                   /* meters water         */
@@ -3137,7 +3146,7 @@ struct  canopy_strata_object
         double  snow_stored;                                    /*  meters      */
         double  sublimation;                                    /*  meters      */
         double  surface_heat_flux;                              /*  kJ/day      */
-        double  PET;                                            /*  m water/day */
+        double  PET;                                            /*  m water/day */ /*Liu note: potential transpiration*/
         double  PE;                                             /*  m water/day */
         double  transpiration_unsat_zone;                       /*  m water/day */
         double  transpiration_sat_zone;                         /* m water /day */

@@ -70,7 +70,7 @@ struct surface_energy_default *construct_surface_energy_defaults(
 		/*		Try to open the ith default file.						*/
 		/*--------------------------------------------------------------*/
                 paramCnt = 0;
-                printf("Reading %s\n", default_files[i]);
+                if (command_line[0].verbose_flag > 0) printf("Reading %s\n", default_files[i]);
                 if (paramPtr != NULL)
                     free(paramPtr);
 

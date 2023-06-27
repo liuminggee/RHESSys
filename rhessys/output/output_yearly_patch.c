@@ -56,7 +56,7 @@ void	output_yearly_patch(
 #ifdef JMG_MORE_YEARLY_OUTPUT
     char out_basic[] = "%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #else
-    char out_basic[] = "%lf %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n";
+    char out_basic[] = "%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 #endif
 
 #ifdef JMG_TRACKING
@@ -105,16 +105,22 @@ void	output_yearly_patch(
 			patch[0].acc_year.Qout_total * 1000.0,
 			patch[0].acc_year.rec_wyd,
 			patch[0].acc_year.rec_pet_wyd,
-			patch[0].acc_year.ndays_sat, patch[0].acc_year.ndays_sat70, 
+            patch[0].acc_year.ndays_sat,
+            patch[0].acc_year.ndays_sat70,
 			patch[0].acc_year.midsm_wyd,
-            patch[0].z,
+            patch[0].area,
             patch[0].acc_year.TPET*1000.0,
             patch[0].acc_year.PET*1000.0,
             patch[0].acc_year.PE*1000.0,
-            patch[0].acc_year.pcp*1000.0, patch[0].acc_year.burn,
-			patch[0].acc_year.snowin*1000.0, patch[0].acc_year.potential_recharge*1000.0,
-			patch[0].acc_year.recharge*1000.0, patch[0].acc_year.potential_recharge_wyd,
-            patch[0].acc_year.recharge_wyd
+            patch[0].acc_year.pcp*1000.0,
+            patch[0].acc_year.burn,
+            patch[0].acc_year.snowin*1000.0,
+            patch[0].acc_year.potential_recharge*1000.0,
+            patch[0].acc_year.recharge*1000.0,
+            patch[0].acc_year.potential_recharge_wyd,
+            patch[0].acc_year.recharge_wyd,
+            patch[0].acc_year.p_gw_drainage*1000,
+            (patch[0].acc_year.pcp-patch[0].acc_year.et-patch[0].acc_year.streamflow-patch[0].acc_year.p_gw_drainage)*1000.0
 #else
             patch[0].acc_year.pcp*1000.0,
             patch[0].acc_year.streamflow * 1000.0, // streamflow (mm/yr)
@@ -187,7 +193,8 @@ void	output_yearly_patch(
 	patch[0].acc_year.Qin_total = 0.0;
 	patch[0].acc_year.Qout_total = 0.0;
 	patch[0].acc_year.pcp = 0.0;
-	patch[0].acc_year.streamflow = 0.0;    
+    patch[0].acc_year.streamflow = 0.0;
+    patch[0].acc_year.p_gw_drainage = 0.0;
 #ifdef JMG_MORE_YEARLY_OUTPUT    
     patch[0].acc_year.baseflow = 0.0; // JMG09082022
     patch[0].acc_year.returnflow = 0.0; // JMG09082022

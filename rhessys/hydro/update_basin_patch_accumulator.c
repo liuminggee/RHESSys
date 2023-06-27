@@ -243,7 +243,7 @@ void update_basin_patch_accumulator(
                     patch[0].acc_year.midsm_wyd = patch[0].acc_year.wyd;
 
                 patch[0].acc_year.wyd = patch[0].acc_year.wyd + 1;
-
+                patch[0].acc_year.p_gw_drainage += patch[0].gw_drainage;
 #ifdef JMG_MORE_YEARLY_OUTPUT
                 patch[0].acc_year.n_deposition += basin->hillslopes[h][0].zones[z][0].ndep_NO3 + basin->hillslopes[h][0].zones[z][0].ndep_NH4; // JMG09272022
                 patch[0].acc_year.soilc += patch[0].soil_cs.soil1c + patch[0].soil_cs.soil2c + patch[0].soil_cs.soil3c + patch[0].soil_cs.soil4c; // JMG09272022
@@ -251,7 +251,7 @@ void update_basin_patch_accumulator(
                 patch[0].acc_year.litrc += patch[0].litter_cs.litr1c + patch[0].litter_cs.litr2c + patch[0].litter_cs.litr3c + patch[0].litter_cs.litr4c; // JMG09272022
                 patch[0].acc_year.litrn += patch[0].litter_ns.litr1n + patch[0].litter_ns.litr2n + patch[0].litter_ns.litr3n + patch[0].litter_ns.litr4n; // JMG09272022
 
-                patch[0].acc_year.pcp += patch[0].zone->rain + patch[0].zone->snow;
+                //patch[0].acc_year.pcp += patch[0].zone->rain + patch[0].zone->snow;
                 patch[0].acc_year.rz_storage += patch[0].rz_storage; // JMG10112022
                 patch[0].acc_year.unsat_storage += patch[0].unsat_storage; // JMG10112022
                 patch[0].acc_year.gw_drainage += patch[0].gw_drainage; // JMG10112022
@@ -448,10 +448,10 @@ void update_basin_patch_accumulator(
                       basin[0].acc_year.streamflow += (patch[0].streamflow)
                               * scale_pch;
                       basin[0].acc_year.lai += patch[0].lai * scale_pch;
-
+                      basin[0].acc_year.pcp += (patch[0].zone->rain + patch[0].zone->snow) * scale_pch;
   #ifdef JMG_MORE_YEARLY_OUTPUT
                       basin[0].acc_year.n_deposition += (patch[0].zone->ndep_NH4 + patch[0].zone->ndep_NO3) * scale_pch; // JMG10112022
-                      basin[0].acc_year.pcp += (patch[0].zone->rain + patch[0].zone->snow) * scale_pch;
+                      //basin[0].acc_year.pcp += (patch[0].zone->rain + patch[0].zone->snow) * scale_pch;
                       basin[0].acc_year.baseflow += patch[0].base_flow * scale_pch; // JMG10112022 after hillslope[0].base_flow * scale_pch is added
                       basin[0].acc_year.hill_base_flow += patch[0].base_flow * scale_pch; // JMG10112022 after hillslope[0].base_flow * scale_pch is added
                       basin[0].acc_year.gw_drainage += patch[0].gw_drainage * scale_pch; // JMG10112022

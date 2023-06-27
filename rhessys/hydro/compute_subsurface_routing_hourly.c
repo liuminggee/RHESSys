@@ -402,6 +402,12 @@ void compute_subsurface_routing_hourly(
 		      			* (patch[0].sat_deficit - patch[0].unsat_storage
 			      		- patch[0].rz_storage);
 					patch[0].detention_store += excess;
+
+                    //if (patch[0].ID == 81497)
+                    //printf("detention_store:%lf excess:%lf \n",
+                    //       patch[0].detention_store*1000,
+                    //       excess*1000);
+
 					patch[0].sat_deficit = 0.0;
 					patch[0].unsat_storage = 0.0;
 					patch[0].rz_storage = 0.0;
@@ -552,6 +558,12 @@ void compute_subsurface_routing_hourly(
 										/ neigh[0].area;
 								neigh[0].detention_store += Qout * patch[0].area
 										/ neigh[0].area;
+
+                                //if (neigh[0].ID == 81497)
+                                //printf("detention_store:%lf Qout_2:%lf \n",
+                                //       neigh[0].detention_store*1000,
+                                //       Qout*1000);
+
 								if (grow_flag > 0) {
 									neigh[0].surface_DOC += (DOC_out
 											* patch[0].area / neigh[0].area);

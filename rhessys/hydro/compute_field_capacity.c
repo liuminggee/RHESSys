@@ -190,7 +190,7 @@ double	compute_field_capacity(
 
 	field_capacity = min(field_capacity,max_field_capacity);
 	field_capacity = max(field_capacity, 0.0);	
-	
+    //printf("field_capacity:%f\n",field_capacity);
 	return(field_capacity);
 } /*compute_field_capacity*/ 
 

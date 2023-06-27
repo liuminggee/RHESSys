@@ -425,6 +425,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                         * (patch[0].sat_deficit - patch[0].unsat_storage
                                 - patch[0].rz_storage);
                 patch[0].detention_store += excess;
+
+                //if (patch[0].ID == 81497)
+                //printf("detention_store:%lf excess:%lf \n",
+                //       patch[0].detention_store*1000,
+                //       excess*1000);
+
+
                 patch[0].sat_deficit = 0.0;
                 patch[0].unsat_storage = 0.0;
                 patch[0].rz_storage = 0.0;
@@ -465,8 +472,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             /*--------------------------------------------------------------*/
             /*	final overland flow routing				*/
             /*--------------------------------------------------------------*/
-            patch[0].overland_flow += patch[0].detention_store
-                                - patch[0].soil_defaults[0][0].detention_store_size;
+            //06012023LML added max
+            patch[0].overland_flow += max(patch[0].detention_store
+                                - patch[0].soil_defaults[0][0].detention_store_size,0);
 
             if (((excess = patch[0].detention_store
                     - patch[0].soil_defaults[0][0].detention_store_size)
@@ -583,6 +591,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                                     / neigh[0].area;
                             neigh[0].detention_store += Qout * patch[0].area
                                     / neigh[0].area;
+
+                            //if (neigh[0].ID == 81497)
+                            //printf("detention_store:%lf Qout:%lf \n",
+                            //       neigh[0].detention_store*1000,
+                            //       Qout*1000);
+
+
                             if (grow_flag > 0) {
                                 neigh[0].surface_DOC += (DOC_out
                                         * patch[0].area / neigh[0].area);
@@ -915,8 +930,16 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             if (patch[0].drainage_type == STREAM
                 || patch[0].innundation_list[0].num_neighbours == 0             //09132022LML add this option
                ) {
-                patch[0].streamflow += patch[0].return_flow
-                    + patch[0].base_flow;
+                patch[0].streamflow += patch[0].return_flow + patch[0].base_flow;
+
+                //if (patch[0].ID == 64301) {
+                //    printf("patch detention_store(mm):%lf streamflow(mm):%lf return_flow(mm):%lf base_flow(mm):%lf\n"
+                //           ,patch[0].detention_store*1000
+                //           ,patch[0].streamflow*1000
+                //           ,patch[0].return_flow*1000
+                //           ,patch[0].base_flow*1000);
+                //}
+
             }
 //#ifdef LIU_OMP_PATCH_LOCK
 //            omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
@@ -965,6 +988,21 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			+ hillslope[0].preday_hillslope_detention_store - hillslope[0].preday_hillslope_sat_deficit
 			- (hillslope[0].hillslope_rz_storage + hillslope[0].hillslope_unsat_storage + hillslope[0].hillslope_detention_store
 					- hillslope[0].hillslope_sat_deficit) - hillslope[0].hillslope_outflow;
+
+    if ((water_balance > 0.00001)|| (water_balance < -0.00001)){
+            printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for hillslope %d",
+                water_balance*1000,
+                current_date.day,
+                current_date.month,
+                current_date.year,
+                hillslope[0].ID);
+            printf("\n\tdelta_rz_storage:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_rz_storage - hillslope[0].preday_hillslope_rz_storage)*1000,hillslope[0].hillslope_rz_storage*1000,hillslope[0].preday_hillslope_rz_storage*1000);
+            printf("\n\tdelta_unsat_storage:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_unsat_storage - hillslope[0].preday_hillslope_unsat_storage)*1000,hillslope[0].hillslope_unsat_storage*1000,hillslope[0].preday_hillslope_unsat_storage*1000);
+            printf("\n\tdelta_detention_store:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_detention_store - hillslope[0].preday_hillslope_detention_store)*1000,hillslope[0].hillslope_detention_store*1000,hillslope[0].preday_hillslope_detention_store*1000);
+            printf("\n\tdelta_sat_deficit:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_sat_deficit - hillslope[0].preday_hillslope_sat_deficit)*1000,hillslope[0].hillslope_sat_deficit*1000,hillslope[0].preday_hillslope_sat_deficit*1000);
+            printf("\n\thillslope_outflow:%lf",hillslope[0].hillslope_outflow*1000);
+
+}
 
 
 	if((command_line[0].output_flags.yearly == 1)

@@ -74,7 +74,7 @@ struct zone_default *construct_zone_defaults(
 		//	exit(EXIT_FAILURE);
 		//} /*end if*/
                 paramCnt = 0;
-                printf("Reading %s\n", default_files[i]);
+                if (command_line[0].verbose_flag > 0) printf("Reading %s\n", default_files[i]);
                 if (paramPtr != NULL)
                     free(paramPtr);
 
@@ -87,7 +87,7 @@ struct zone_default *construct_zone_defaults(
 		default_object_list[i].dewpoint_lapse_rate =	getDoubleParam(&paramCnt, &paramPtr, "dewpoint_lapse_rate", "%lf", 0.0015, 1);
 		default_object_list[i].max_effective_lai =	getDoubleParam(&paramCnt, &paramPtr, "max_effective_lai", "%lf", 10.0, 1);
 		default_object_list[i].lapse_rate =		getDoubleParam(&paramCnt, &paramPtr, "lapse_rate", "%lf", 0.0064, 1);
-		printf("The lapse rate is : %lf\n",default_object_list[i].lapse_rate); //NRen calibrate lapse rate
+        if (command_line[0].verbose_flag > 0) printf("The lapse rate is : %lf\n",default_object_list[i].lapse_rate); //NRen calibrate lapse rate
 		default_object_list[i].pptmin =			getDoubleParam(&paramCnt, &paramPtr, "pptmin", "%lf", 0.0254, 1);
 		default_object_list[i].sea_level_clear_sky_trans = getDoubleParam(&paramCnt, &paramPtr, "sea_level_clear_sky_trans", "%lf", 0.75, 1);
 		default_object_list[i].temcf = 			getDoubleParam(&paramCnt, &paramPtr, "temcf", "%lf", 0.4, 1);
@@ -109,13 +109,13 @@ struct zone_default *construct_zone_defaults(
 			}
 		default_object_list[i].wind =			getDoubleParam(&paramCnt, &paramPtr, "wind", "%lf", 1.0, 1);
 		default_object_list[i].max_snow_temp =		getDoubleParam(&paramCnt, &paramPtr, "max_snow_temp", "%lf", 1.0, 1);
-		 printf("max_snow_temperature: %lf\n",default_object_list[i].max_snow_temp);
+        if (command_line[0].verbose_flag > 0) printf("max_snow_temperature: %lf\n",default_object_list[i].max_snow_temp);
 		default_object_list[i].min_rain_temp =		getDoubleParam(&paramCnt, &paramPtr, "min_rain_temp", "%lf", -1.0, 1);
-        printf("min_rain_temperature: %lf\n",default_object_list[i].min_rain_temp);
+        if (command_line[0].verbose_flag > 0) printf("min_rain_temperature: %lf\n",default_object_list[i].min_rain_temp);
 		default_object_list[i].ndep_NO3 =		getDoubleParam(&paramCnt, &paramPtr, "n_deposition", "%lf", 0.001, 1) / 365.0; // variable name different than parameter name
-        printf("ndep_NO3: %lf\n",default_object_list[i].ndep_NO3);
+        if (command_line[0].verbose_flag > 0) printf("ndep_NO3: %lf\n",default_object_list[i].ndep_NO3);
         default_object_list[i].rain_duration_default =		getDoubleParam(&paramCnt, &paramPtr, "rain_duration_default", "%lf", 3, 1);
-        printf("rain_duration_default: %lf\n",default_object_list[i].rain_duration_default);
+        if (command_line[0].verbose_flag > 0) printf("rain_duration_default: %lf\n",default_object_list[i].rain_duration_default);
 
 		/*--------------------------------------------------------------*/
 		/*	convert from annual to daily				*/
@@ -124,13 +124,13 @@ struct zone_default *construct_zone_defaults(
 		/*--------------------------------------------------------------*/
 		default_object_list[i].wind_direction = getDoubleParam(&paramCnt, &paramPtr, "wind_direction", "%lf", 180.0, 1); // parameter name is "wind" in param file
 		default_object_list[i].lapse_rate_tmin = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmax", "%lf", default_object_list[i].lapse_rate, 1);
-		printf("The lapse rate tmin : %lf\n",default_object_list[i].lapse_rate_tmin);
+        if (command_line[0].verbose_flag > 0) printf("The lapse rate tmin : %lf\n",default_object_list[i].lapse_rate_tmin);
 		default_object_list[i].lapse_rate_tmax = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_tmin", "%lf", default_object_list[i].lapse_rate, 1);
-		printf("The lapse rate tmax is : %lf\n",default_object_list[i].lapse_rate_tmax);
+        if (command_line[0].verbose_flag > 0) printf("The lapse rate tmax is : %lf\n",default_object_list[i].lapse_rate_tmax);
 		default_object_list[i].wet_lapse_rate = 	getDoubleParam(&paramCnt, &paramPtr, "wet_lapse_rate", "%lf", 0.0049, 1);
-		printf("The wet lapse rate is : %lf\n",default_object_list[i].wet_lapse_rate);
+        if (command_line[0].verbose_flag > 0) printf("The wet lapse rate is : %lf\n",default_object_list[i].wet_lapse_rate);
 		default_object_list[i].lapse_rate_precip_default = getDoubleParam(&paramCnt, &paramPtr, "lapse_rate_precip_default", "%lf", -999.0, 1);
-		printf("The lapse rate precipitation default is : %lf\n",default_object_list[i].lapse_rate_precip_default);
+        if (command_line[0].verbose_flag > 0) printf("The lapse rate precipitation default is : %lf\n",default_object_list[i].lapse_rate_precip_default);
 		default_object_list[i].psen[PTHRESH] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.pthresh", "%lf", 0.0, 1);
 		default_object_list[i].psen[PTYPELOW] = 	getDoubleParam(&paramCnt, &paramPtr, "psen.ptypelow", "%lf", 1.0, 1);
 		default_object_list[i].psen[P1LOW] = 		getDoubleParam(&paramCnt, &paramPtr, "psen.p1low", "%lf", 0.0, 1);
@@ -148,9 +148,9 @@ struct zone_default *construct_zone_defaults(
         default_object_list[i].search_x = getDoubleParam(&paramCnt, &paramPtr, "search_x", "%lf", 3376.0, 1); // the default value is for DayMet data which has grid around 4km by 4km
         default_object_list[i].search_y = getDoubleParam(&paramCnt, &paramPtr, "search_y", "%lf", 4638.0, 1);
         default_object_list[i].res_patch = getDoubleParam(&paramCnt, &paramPtr, "res_patch", "%lf", 100, 1);
-        printf("\n the searching distance x %lf, searching distance y %lf, res_patch %lf \n", default_object_list[i].search_x, default_object_list[i].search_y, default_object_list[i].res_patch);
+        if (command_line[0].verbose_flag > 0) printf("\n the searching distance x %lf, searching distance y %lf, res_patch %lf \n", default_object_list[i].search_x, default_object_list[i].search_y, default_object_list[i].res_patch);
         default_object_list[i].grid_interpolation = getIntParam(&paramCnt, &paramPtr, "grid_interpolation", "%d", 0,1); //change the default to not do interpolation NREN 2019/1019
-        printf("\n the netcdf grid data interploation is %d \n", default_object_list[i].grid_interpolation);
+        if (command_line[0].verbose_flag > 0) printf("\n the netcdf grid data interploation is %d \n", default_object_list[i].grid_interpolation);
 
 		/*--------------------------------------------------------------*/
 		/* read any optional (tagged) defaults here			*/
@@ -158,7 +158,7 @@ struct zone_default *construct_zone_defaults(
 		/*	CO2 is initialized/default to 322 ppm			*/
 		/*--------------------------------------------------------------*/
 		default_object_list[i].atm_CO2 = 		getDoubleParam(&paramCnt, &paramPtr, "atm_CO2", "%lf", 322.0, 1);
-		printf("default CO2 values is : %lf\n",default_object_list[i].atm_CO2);
+        if (command_line[0].verbose_flag > 0) printf("default CO2 values is : %lf\n",default_object_list[i].atm_CO2);
 		/*--------------------------------------------------------------*/
 		/*      if grow flag allocate a grow default structure for the  */
 		/*      ith object.                                             */

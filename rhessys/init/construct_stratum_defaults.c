@@ -83,7 +83,7 @@ struct stratum_default *construct_stratum_defaults(
 		/*--------------------------------------------------------------*/
 		/*		Try to open the ith default file.		*/
 		/*--------------------------------------------------------------*/
-		printf("Reading %s\n", default_files[i]);
+        if (command_line[0].verbose_flag > 0) printf("Reading %s\n", default_files[i]);
                 paramCnt = 0;
                 if (paramPtr != NULL)
                     free(paramPtr);

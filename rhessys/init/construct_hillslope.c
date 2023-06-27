@@ -304,6 +304,9 @@ struct hillslope_object *construct_hillslope(
 	hillslope[0].acc_year.num_threshold = 0;
 	hillslope[0].acc_year.et = 0.0;
 	hillslope[0].acc_year.streamflow = 0.0;
+
+    hillslope[0].acc_year.h_baseflow = 0.0;
+
 	hillslope[0].acc_year.length = 0;
 	hillslope[0].acc_year.denitrif = 0.0;
 	hillslope[0].acc_year.DOC_loss = 0.0;

@@ -245,7 +245,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 #ifdef JMG_MORE_YEARLY_OUTPUT
     char out_basic_basin_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-    char out_basic_basin_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+    char out_basic_basin_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
 
 #ifdef JMG_TRACKING
@@ -274,8 +274,17 @@ void add_headers(struct world_output_file_object *world_output_files,
         "DOC",
         "DON",
         "et",
-        "psn","lai","nitrif",
-        "mineralized", "uptake", "num_thresh","tpet","pet","pe"
+        "psn",
+        "lai",
+        "nitrif",
+        "mineralized",
+        "uptake",
+        "num_thresh",
+        "tpet",
+        "pet",
+        "pe",
+        "pcp",
+        "net_water_flux"
 #else
                     "pcp",
                     "et",
@@ -422,7 +431,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 #ifdef JMG_MORE_YEARLY_OUTPUT
     char out_basic_hillslope_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-    char out_basic_hillslope_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+    char out_basic_hillslope_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
 
 #ifdef JMG_TRACKING
@@ -447,13 +456,18 @@ void add_headers(struct world_output_file_object *world_output_files,
         "hillslopeID",
 #ifndef JMG_MORE_YEARLY_OUTPUT
         "streamflow",
+        "baseflow",
         "streamflow_NO3",
         "denitrif",
         "DOC",
         "DON",
+        "pcp",
         "et",
-        "psn","lai","nitrif",
-                    "mineralized", "uptake",
+        "psn",
+        "lai",
+        "nitrif",
+        "mineralized",
+        "uptake",
 #else
         "pch_pcp",
         "pch_et",
@@ -466,7 +480,8 @@ void add_headers(struct world_output_file_object *world_output_files,
         "pch_unsat_storage",
         "hill_gw_storage",
 #endif
-        "area");
+        "area",
+        "net_water_flux");
     }
     /*--------------------------------------------------------------*/
     /*	Zone file headers					*/
@@ -692,7 +707,7 @@ void add_headers(struct world_output_file_object *world_output_files,
 #ifdef JMG_MORE_YEARLY_OUTPUT
     char out_basic_patch_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #else
-    char out_basic_patch_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+    char out_basic_patch_yearly[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
 #endif
 
 #ifdef JMG_TRACKING
@@ -721,18 +736,43 @@ void add_headers(struct world_output_file_object *world_output_files,
             "num_threshold_sat_def",
             "peaksweday",
             "meltday",
-            "pklai",
-            "peaklaiday",
             "leach",
             "denitrif",
             "DOC_loss",
             "DON_loss",
-            "psn", "trans",
-            "et","lai","nitrif","mineralized",
-            "uptake","Theta","sd",
-            "pkswe", "pktrans", "pkpet", "streamflow", "Qin","Qout","rec.wyd","rec.pet.wyd",
-            "ndays_sat", "ndays_sat70", "midsm_wyd",
-            "area","tpet","pet","pe","snowin_pcp","pot_recharge","recharge","recharge.wyd","pot_recharge.wyd"
+            "psn",
+            "trans",
+            "et",
+            "lai",
+            "nitrif",
+            "mineralized",
+            "uptake",
+            "Theta",
+            "sd",
+            "pkswe",
+            "pktrans",
+            "pkpet",
+            "streamflow",
+            "Qin",
+            "Qout",
+            "rec.wyd",
+            "rec.pet.wyd",
+            "ndays_sat",
+            "ndays_sat70",
+            "midsm_wyd",
+            "area",
+            "tpet",
+            "pet",
+            "pe",
+            "precipitation",
+            "burn",
+            "snowin_pcp",
+            "pot_recharge",
+            "recharge",
+            "pot_recharge.wyd",
+            "recharge.wyd",
+            "gw_drainage",
+            "net_water_flux"
 #else
             "precip",
             "streamflow",

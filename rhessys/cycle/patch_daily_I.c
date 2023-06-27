@@ -414,6 +414,11 @@ void		patch_daily_I(
 	edible_leafc = 0.0;
 	grazing_mean_nc = 0.0;
 	cnt = 0;
+    //06212023LML
+    patch[0].preday_rain_stored = patch[0].litter.rain_stored;
+    patch[0].preday_snow_stored = 0;
+    patch[0].preday_detention_store = patch[0].detention_store;
+
 	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 		/*--------------------------------------------------------------*/
 		/*	Cycle through the canopy strata				*/
@@ -539,6 +544,14 @@ void		patch_daily_I(
 	patch[0].recharge=0;
 	patch[0].rz_drainage=0;
 	patch[0].unsat_drainage=0;
+
+    //06212023LML
+    patch[0].preday_detention_store = patch[0].detention_store;
+    patch[0].preday_unsat_storage = patch[0].unsat_storage;
+    patch[0].preday_rz_storage = patch[0].rz_storage;
+    patch[0].preday_sat_deficit = patch[0].sat_deficit;
+    patch[0].preday_snowpack = patch[0].snowpack.water_depth + patch[0].snowpack.water_equivalent_depth;
+
 
 	return;
 }/*end patch_daily_I.c*/

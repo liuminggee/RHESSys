@@ -255,7 +255,9 @@ void		hillslope_hourly(
 	hillslope[0].gw.Qout += hillslope[0].gw.hourly_Qout; // this is the daily gw.Qout, used in hillslop_daily_F
 	hillslope[0].base_flow += hillslope[0].hourly_base_flow; // daily base_flow
 
-    //printf("base_flow:%lf gw.Qout:%lf gw_storage:%lf\n",
+    //if (current_date.year == 1984 && current_date.month == 1 && (current_date.day >= 22 && current_date.day <= 24))
+    //printf("year:%d month:%d day:%d hour:%d base_flow:%lf gw.Qout:%lf gw_storage:%lf\n",
+    //       current_date.year,current_date.month,current_date.day,current_date.hour,
     //       hillslope[0].base_flow*1000,hillslope[0].gw.Qout*1000,hillslope[0].gw.storage*1000);
  
 

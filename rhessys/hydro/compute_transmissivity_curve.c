@@ -151,6 +151,8 @@ double 	*compute_transmissivity_curve(
 				lower_z,
 				depth_z);
 
+            //printf("didx:%d fclayer:%f\n",didx,fclayer);
+
 
         if (m > ZERO) {
 #ifndef LIU_GAMMA_TRANSMISSIVITY_NEW

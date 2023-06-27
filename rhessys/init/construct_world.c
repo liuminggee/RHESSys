@@ -423,7 +423,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 			exit(EXIT_FAILURE);
 		}
 		header_file_flag = 1;
-		printf("Reading specified world file header %s\n", command_line->world_header_filename);
+        if (command_line[0].verbose_flag > 0) printf("Reading specified world file header %s\n", command_line->world_header_filename);
 	} else {
 		// Set up file name for Option 2. ${WORLDFILE_NAME}.hdr
 		if ( snprintf(command_line->world_header_filename, FILEPATH_LEN, "%s.hdr", command_line->world_filename) >= FILEPATH_LEN ) {

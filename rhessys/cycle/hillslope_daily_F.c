@@ -128,7 +128,7 @@ void		hillslope_daily_F(
 			current_date);
 	}
 	else{
-		hillslope[0].base_flow += 0.0;
+        //hillslope[0].base_flow += 0.0;
 	}
 
 

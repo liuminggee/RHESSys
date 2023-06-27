@@ -122,6 +122,14 @@ void sort_patch_layers( struct patch_object *patch)
 			/*--------------------------------------------------------------*/
 			/*			check if this stratum has layer i height*/
 			/*--------------------------------------------------------------*/
+
+            //printf("patchID:%d lalyer:(%d/%d) strata:(%d/%d) height:%lf patch_height:%lf\n",
+            //       patch[0].ID,i,patch[0].num_layers,j,patch[0].num_canopy_strata,patch[0].canopy_strata[j][0].epv.height
+            //        ,patch[0].layers[i].height);
+
+            //06122023LML note: if layers height is zero and epv height is zero
+            //the total cover might greater than one, which will affect strata process and mass balance!
+
             if (close_enough(patch[0].canopy_strata[j][0].epv.height,
                 patch[0].layers[i].height)) {
 			/*--------------------------------------------------------------*/
@@ -141,10 +149,22 @@ void sort_patch_layers( struct patch_object *patch)
 		/*		this layer does not add to 1.0			*/
 		/*--------------------------------------------------------------*/
 		if ( cover_fraction > 1.0 ){
-			/*printf( "\nFATAL ERROR: in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
-				patch[0].layers[i].height);
+            //printf( "\nFATAL ERROR: in sort_patch_layers cover fraction of layer height %f greater than 1.0\n",
+            //	patch[0].layers[i].height);
+            /*
+            printf( "\nWarning: in sort_patch_layers cover fraction of layer height %f greater than 1.0. Adjustment will be conducted.\n",
+                patch[0].layers[i].height);
+
 			printf("\n for patch %d, cover fraction %lf\n", patch[0].ID, cover_fraction);
-			patch[0].layers[i].null_cover = 0.0;*/
+            patch[0].layers[i].null_cover = 0.0;
+
+            printf("patchID:%d layer:(%d/%d) num_canopy_strata:(%d) coverfraction:%lf epv[0]_height:%lf epv[1]_height:%lf patch_height:%lf\n",
+                       patch[0].ID,i,patch[0].num_layers,patch[0].num_canopy_strata,cover_fraction
+                       ,patch[0].canopy_strata[0][0].epv.height
+                       ,patch[0].canopy_strata[1][0].epv.height
+                       ,patch[0].layers[i].height);
+            */
+
 		}
 		else {
 			patch[0].layers[i].null_cover = 1.0 - cover_fraction;

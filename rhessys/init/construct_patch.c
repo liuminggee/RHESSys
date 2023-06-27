@@ -292,6 +292,7 @@ struct patch_object *construct_patch(
     patch[0].acc_year.snowpack = 0.0;
     patch[0].acc_year.theta = 0.0;
     patch[0].acc_year.streamflow = 0.0;
+    patch[0].acc_year.p_gw_drainage = 0.0;
 #ifdef JMG_MORE_YEARLY_OUTPUT
     patch[0].acc_year.baseflow = 0.0; // JMG09082022
     patch[0].acc_year.returnflow = 0.0; // JMG09082022 -> add rz_storage, un    sat_stor, and gw.storage
@@ -718,6 +719,8 @@ if (command_line[0].beetlespread_flag == 1) {
 
     //printf("            Patch_ID:%d\n",patch[0].ID);
 
+    //06212023LML check if it is water
+    patch[0].IsWaterBody = 0;
     for ( i=0 ; i<patch[0].num_canopy_strata ; i++ ){
         patch[0].canopy_strata[i] = construct_canopy_strata(
             command_line,
@@ -726,6 +729,10 @@ if (command_line[0].beetlespread_flag == 1) {
             num_world_base_stations,
             num_world_extra_base_stations,
             world_base_stations,defaults);
+
+        //06212023LML
+        if (patch[0].canopy_strata[i][0].defaults[0][0].ID == STRATUM_WATER)
+            patch[0].IsWaterBody = 1;
         /*--------------------------------------------------------------*/
         /*      Aggregate rain and snow stored already for water balance*/
         /*--------------------------------------------------------------*/
@@ -757,6 +764,9 @@ if (command_line[0].beetlespread_flag == 1) {
         patch[0].rootzone.depth = max(patch[0].rootzone.depth,
              patch[0].canopy_strata[i][0].rootzone.depth);
     } /*end for*/
+
+    //06212023LML
+    if (patch[0].IsWaterBody) patch[0].drainage_type = STREAM;
 
     patch[0].wilting_point = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/
                         patch[0].soil_defaults[0][0].psi_air_entry)

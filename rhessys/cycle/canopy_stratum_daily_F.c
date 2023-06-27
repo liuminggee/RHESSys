@@ -1248,6 +1248,12 @@ void	canopy_stratum_daily_F(
 	rnet_trans_shade = max(rnet_trans_shade, 0.0);
 	rnet_trans_sunlit = max(rnet_trans_sunlit, 0.0);
 
+    //if ((patch[0].ID == 64301) && (rnet_trans_sunlit > 0)) {
+    //  printf("rnet_trans_sunlit:%lf rnet_trans_shade:%lf proj_lai:%lf",rnet_trans_sunlit*1000
+    //         ,rnet_trans_shade*1000
+    //         ,stratum[0].epv.proj_lai);
+    //}
+
 	if ( command_line[0].verbose_flag == -5 ){
 		printf("\n          BEFORE TRANS: rnet_trans_sun=%lf rnet_trans_shade=%lf p_sunlit=%lf Kstar=%lf Lstar=%lf surfheat=%lf",
 			   rnet_trans_sunlit,
@@ -1753,6 +1759,10 @@ void	canopy_stratum_daily_F(
 			else
 				psnout.A = 0.0;
 			assim_sunlit = psnout.A;
+
+            //printf("A:%f g:%f lc:%f irad:%f pa:%f t:%f\n",psnout.A,psnin.g,
+            //       psnin.lnc,psnin.irad,psnin.pa,psnin.t);
+
             double assim_sunlit_pot = assim_sunlit;
 
 
