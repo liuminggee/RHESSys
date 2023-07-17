@@ -94,6 +94,14 @@ double	compute_rain_stored(
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
 	storage_evaporated =	min(potential_evaporation,stratum[0].rain_stored);
+
+
+    //printf("potential_evaporation=%.1f rain_stored=%.1f storage_evaporated=%.1f\n",
+    //       potential_evaporation*1000,
+    //       stratum[0].rain_stored*1000,
+    //       storage_evaporated*1000);
+
+
 	/*--------------------------------------------------------------*/
 	/*	Update amount of rain in storage after evaporation.	*/
 	/*	m = m							*/
@@ -121,6 +129,11 @@ double	compute_rain_stored(
 	/*--------------------------------------------------------------*/
 	stratum[0].evaporation =  storage_evaporated +
 		potential_interception_evaporated;
+
+    //printf("potential_interception_evaporated=%.1f evaporation=%.1f\n",
+    //       potential_interception_evaporated*1000,
+    //       stratum[0].evaporation*1000);
+
 	/*--------------------------------------------------------------*/
 	/*	Adjust the amount of remaining potential evaporation	*/
 	/*--------------------------------------------------------------*/
@@ -150,14 +163,14 @@ double	compute_rain_stored(
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
 
-	if (verbose_flag == -5) {
+    if (verbose_flag == -5) {
 		printf("                    RAIN STORED END:rainstor=%lf throughfall=%lf oldrainstor=%lf evap=%lf potevap=%lf",
 			   rain_storage,
 			   throughfall,
 			   stratum[0].rain_stored,
 			   stratum[0].evaporation,
 			   stratum[0].potential_evaporation);
-	}
+    }
 
 	*rain = throughfall;
 

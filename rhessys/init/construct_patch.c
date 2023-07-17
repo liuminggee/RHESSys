@@ -345,7 +345,7 @@ struct patch_object *construct_patch(
         patch[0].fire.understory_pet = 0;
         patch[0].fire.trans = 0;
         // here set fire.understory_et and fire.understory_pet = 0;
-        }
+    }
 
     /*-------------------------------------------------------------*/
     /* initialize the beetle object NREN 2019218                   */
@@ -481,11 +481,11 @@ struct patch_object *construct_patch(
 
     /*--------------------------------------------------------------*/
     if (command_line[0].firespread_flag == 1) {
-    patch[0].fire_defaults = (struct fire_default **)
+      patch[0].fire_defaults = (struct fire_default **)
         alloc( sizeof(struct fire_default *),"defaults",
         "construct_patch" );
-    i = 0;
-    while (defaults[0].fire[i].ID != fire_parm_ID) {
+      i = 0;
+      while (defaults[0].fire[i].ID != fire_parm_ID) {
         i++;
         /*--------------------------------------------------------------*/
         /*  Report an error if no match was found.  Otherwise assign    */
@@ -497,8 +497,17 @@ struct patch_object *construct_patch(
                 fire_parm_ID, patch[0].ID);
             exit(EXIT_FAILURE);
         }
-    } /* end-while */
-    patch[0].fire_defaults[0] = &defaults[0].fire[i];
+      } /* end-while */
+      patch[0].fire_defaults[0] = &defaults[0].fire[i];
+
+      //07122023LML
+      int days = patch[0].fire_defaults[0][0].ndays_average;
+      initialize_FIFO_Queue(&patch[0].fire.Q_pet,days);
+      initialize_FIFO_Queue(&patch[0].fire.Q_et,days);
+      initialize_FIFO_Queue(&patch[0].fire.Q_trans,days);
+      initialize_FIFO_Queue(&patch[0].fire.Q_understory_et,days);
+      initialize_FIFO_Queue(&patch[0].fire.Q_understory_pet,days);
+
     }
 
 /* if beetlespread flag is set assign beetle defaults values */

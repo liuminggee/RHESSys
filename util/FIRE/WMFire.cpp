@@ -789,8 +789,17 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 //				cout<<"using deficit for moisture: cur_moist: "<<cur_moist"\n";
 		}
 */
-		if(def_.fire_verbose==1)
-			cout<<"in test ignition p_moisture: "<<p_moisture<<"  moisture: "<<cur_moist<<"\n\n";
+        if(def_.fire_verbose==1)
+            cout<<"col:" << cur_col << " row:" << cur_row
+                << " spread_calc_type:" << def_.spread_calc_type
+                <<" p_moisture: "<<p_moisture
+                <<"  moisture: "<<cur_moist
+                << " understory et/pet:" << (pfire->understory_et/(pfire->understory_pet))
+                << " overcanopy et/pet:" << (pfire->et/(pfire->pet))
+                <<"\n\n";
+
+
+
         cur_load=(1-def_.veg_fuel_weighting)*pfire->fuel_litter+(def_.veg_fuel_weighting)*pfire->fuel_veg;
         p_load=calc_sigmoid(def_.load_k1,def_.load_k2,cur_load); //1/(1+exp(-(def_.load_k1*(cur_load-def_.load_k2))));
 		if(def_.fire_verbose==1)

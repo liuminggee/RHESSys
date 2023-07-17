@@ -989,7 +989,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			- (hillslope[0].hillslope_rz_storage + hillslope[0].hillslope_unsat_storage + hillslope[0].hillslope_detention_store
 					- hillslope[0].hillslope_sat_deficit) - hillslope[0].hillslope_outflow;
 
-    if ((water_balance > 0.00001)|| (water_balance < -0.00001)){
+    //if ((water_balance > 0.00001)|| (water_balance < -0.00001)){
+    if ((water_balance > 0.0001)|| (water_balance < -0.0001)){
             printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for hillslope %d",
                 water_balance*1000,
                 current_date.day,

@@ -298,12 +298,25 @@
 // script to reflect the current RHESSys version.
 const char RHESSYS_VERSION[] = "5.14.3";
 
+//07142023LML for debuging info
+#ifdef LIU_CHECK_FIRE_OCCURENCE
+FILE *global_debug;
+char global_debug_filename[200];
+#endif
+
 /*--------------------------------------------------------------*/
 /*	Main line of code.											*/
 /*--------------------------------------------------------------*/
 int	main( int main_argc, char **main_argv)
 
 {
+    //07142023LML for printing out global debug info
+    #ifdef LIU_CHECK_FIRE_OCCURENCE
+    sprintf(global_debug_filename,"check_et_pet_ratio_for_pmoisture_fire.txt");
+    global_debug=fopen(global_debug_filename, "a");
+    #endif
+
+
 	clock_t startClock = clock();
 	/*--------------------------------------------------------------*/
 	/*	Non-function definitions. 									*/
@@ -489,6 +502,9 @@ int	main( int main_argc, char **main_argv)
 #endif
 
     printf("\ntime cost = %ld seconds\n",(endClock - startClock)/CLOCKS_PER_SEC);
+    #ifdef LIU_CHECK_FIRE_OCCURENCE
+    fclose(global_debug);
+    #endif
 
 	return(EXIT_SUCCESS);
 	

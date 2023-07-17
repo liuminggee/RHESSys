@@ -1340,7 +1340,19 @@ void	canopy_stratum_daily_F(
 						* rain_duration_day);
 	stratum[0].potential_evaporation = potential_evaporation_night + potential_evaporation_day;
 
-    //printf(" potential_evaporation:%lf gsurf:%lf gs_sunlit:%lf gs_shade:%lf gs:%lf ga:%lf rsurf:%lf rs:%lf ra:%lf rs_sun:%lf rs_shade:%lf rs_sun_pot:%lf rs_shade_pot:%lf\n",stratum[0].potential_evaporation * 1000
+    //if (stratum[0].potential_evaporation > 0.01)
+    //printf(" potential_evaporation:%lf potential_evaporation_night:%.1f potential_evaporation_day:%.1f daylength(hr):%.1f rain_duration_day:%.1f nightlength:%.1f rain_duration_night:%f potential_evaporation_rate_night:%.1f potential_rainy_evaporation_rate_night:%.1f potential_evaporation_rate_day:%.1f potential_rainy_evaporation_rate_day:%.1f gsurf:%lf gs_sunlit:%lf gs_shade:%lf gs:%lf ga:%lf rsurf:%lf rs:%lf ra:%lf rs_sun:%lf rs_shade:%lf rs_sun_pot:%lf rs_shade_pot:%lf\n"
+    //        ,stratum[0].potential_evaporation * 1000
+    //        ,potential_evaporation_night*1000
+    //        ,potential_evaporation_day*1000
+    //        ,daylength/3600
+    //        ,rain_duration_day/3600
+    //        ,nightlength/3600
+    //        ,rain_duration_night/3600
+    //        ,potential_evaporation_rate_night * 86400 * 1000
+    //        ,potential_rainy_evaporation_rate_night * 86400 * 1000
+    //        ,potential_evaporation_rate_day * 86400 * 1000
+    //        ,potential_rainy_evaporation_rate_day * 86400 * 1000
     //        ,stratum[0].gsurf
     //        ,stratum[0].gs_sunlit
     //        ,stratum[0].gs_shade
@@ -2011,13 +2023,17 @@ void	canopy_stratum_daily_F(
 		if(stratum[0].epv.height<=patch[0].soil_defaults[0][0].understory_height_thresh)
 		{
 //			printf("Found an understory stratum!\n");
-			patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +
-			(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1);
+            //patch[0].fire.understory_et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_et  +
+            //(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone))/(patch[0].fire_defaults[0][0].ndays_average + 1);
+            enqueue_FIFO_Queue(&patch[0].fire.Q_understory_et,(stratum[0].transpiration_sat_zone + stratum[0].transpiration_unsat_zone));
+
 		//	+ stratum[0].evaporation))/ // MCK: look at et without the evaporation part
 
-			patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +
-			(stratum[0].PET))/
-			(patch[0].fire_defaults[0][0].ndays_average + 1);
+            //patch[0].fire.understory_pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.understory_pet  +
+            //(stratum[0].PET))/
+            //(patch[0].fire_defaults[0][0].ndays_average + 1);
+            enqueue_FIFO_Queue(&patch[0].fire.Q_understory_pet,stratum[0].PET);
+
 //		printf("Debugging understory et and pet,stratum PET, stratum transpiration sat and unsat, stratum evaporation: %lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",patch[0].fire.understory_et,patch[0].fire.understory_pet, stratum[0].PET,stratum[0].transpiration_sat_zone, stratum[0].transpiration_unsat_zone,stratum[0].evaporation);
 
 		}

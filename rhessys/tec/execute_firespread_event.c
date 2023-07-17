@@ -141,7 +141,8 @@ void execute_firespread_event(
             pfire->burned = 0;
             //printf("col:%d\trow:%d\tign_available=1\n",j,i);
 		}
-//    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
+        //if (patch_fire_grid[i][j].num_patches > 0)
+        //  printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_fire_grid[i][j].num_patches);
         int num_patches = patch_fire_grid[i][j].num_patches;
         for (int p=0; p < num_patches; ++p) { // should just be 1 now...
 //printf("Patch p: %d\n",p);
@@ -189,6 +190,13 @@ void execute_firespread_event(
             pfire->relative_humidity += patch[0].zone[0].relative_humidity * f_patch;
             pfire->z += patch[0].z*f_patch; // elevation
             pfire->temp += patch[0].zone[0].metv.tavg*f_patch;// temperature? mk
+
+            patch[0].fire.et = avgvalue_FIFO_Queue(&patch[0].fire.Q_et) * 1000;                         //m->mm
+            patch[0].fire.pet = avgvalue_FIFO_Queue(&patch[0].fire.Q_pet) * 1000;                       //m->mm
+            patch[0].fire.trans = avgvalue_FIFO_Queue(&patch[0].fire.Q_trans) * 1000;                   //m->mm
+            patch[0].fire.understory_et = avgvalue_FIFO_Queue(&patch[0].fire.Q_understory_et) * 1000;   //m->mm
+            patch[0].fire.understory_pet = avgvalue_FIFO_Queue(&patch[0].fire.Q_understory_pet) * 1000; //m->mm
+
             pfire->et += patch[0].fire.et * f_patch;
             pfire->pet += patch[0].fire.pet * f_patch;
             pfire->trans += patch[0].fire.trans * f_patch; //where is fire.trans
@@ -226,12 +234,37 @@ void execute_firespread_event(
         //	printf("et: %f  pet: %f  ",pfire->et,pfire->pet);
 		}
 
-        pfire->et *= 1000; // convert to mm
-        pfire->pet *= 1000; // convert to mm
-        pfire->understory_et *= 1000; // convert to mm
-        pfire->understory_pet *= 1000; // convert to mm
-        pfire->trans *= 1000;//NEW NR
+        //07122023LML commented out
+        //pfire->et *= 1000; // convert to mm
+        //pfire->pet *= 1000; // convert to mm
+        //pfire->understory_et *= 1000; // convert to mm
+        //pfire->understory_pet *= 1000; // convert to mm
+        //pfire->trans *= 1000;//NEW NR
 
+        if (num_patches >= 1 && pfire->understory_et >= 1e-12 && pfire->understory_pet > 1e-12 && pfire->pet > 1e-12) {
+          //printf("year:%d month:%d day:%d",current_date.year,current_date.month,current_date.day);
+          ////printf(" num_patches:%d",num_patches);
+          //printf(" col:%d,row:%d ",j,i);
+          //printf(" understory et(%.1fmm)/pet(%.1fmm):%.2f",pfire->understory_et,pfire->understory_pet,(pfire->understory_et/(pfire->understory_pet)));
+          //printf(" overcanopy et(%.1fmm)/pet(%.1fmm):%.2f\n",pfire->et,pfire->pet,(pfire->et/(pfire->pet)));
+
+          //hard code for testing...
+          //FILE *pFile2;
+          //char *filename;
+          //sprintf(filename,"/home/liuming/temp/check_pmoisture_fire_%d.txt",current_date.year);
+          //pFile2=fopen(filename, "a");
+          #ifdef LIU_CHECK_FIRE_OCCURENCE
+          #pragma omp critical
+          {
+            fprintf(global_debug,"year:%d month:%d day:%d",current_date.year,current_date.month,current_date.day);
+            //printf(" num_patches:%d",num_patches);
+            fprintf(global_debug," col:%d,row:%d ",j,i);
+            fprintf(global_debug," understory et(%.1fmm)/pet(%.1fmm):%.2f",pfire->understory_et,pfire->understory_pet,(pfire->understory_et/(pfire->understory_pet)));
+            fprintf(global_debug," overcanopy et(%.1fmm)/pet(%.1fmm):%.2f\n",pfire->et,pfire->pet,(pfire->et/(pfire->pet)));
+          }
+          #endif
+          //fclose(pFile2);
+        }
 
       } //j
     } //i
@@ -272,15 +305,15 @@ void execute_firespread_event(
                 pfire->wind = mean_wind;
                 pfire->temp=mean_temp;
                 pfire->z=patch_fire_grid[i][j].elev;
-                pfire->et=mean_et*1000; // convert to mm
-                pfire->pet=mean_pet*1000; // convert to mm
-                pfire->understory_et=mean_understory_et*1000; // convert to mm
-                pfire->understory_pet=mean_understory_pet*1000; // convert to mm
-                pfire->trans=mean_trans*1000;//NEW NR
+                pfire->et=mean_et; //*1000; // convert to mm
+                pfire->pet=mean_pet; //*1000; // convert to mm
+                pfire->understory_et=mean_understory_et; //*1000; // convert to mm
+                pfire->understory_pet=mean_understory_pet; //*1000; // convert to mm
+                pfire->trans=mean_trans; //*1000;//NEW NR
 	//	printf("in denom if take 2 update values\n");
 			  }
-		     }
-		}
+             }//j
+        }//i
 	}
 
 	/*--------------------------------------------------------------*/

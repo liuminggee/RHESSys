@@ -84,3 +84,4 @@ int is_approximately(const double value,const double target,const double toleran
 { return ((value) < ((target) +(tolerance))) && ((value) > ((target) - (tolerance)));}
 #endif
 
+

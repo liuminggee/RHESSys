@@ -2332,21 +2332,52 @@ void		patch_daily_F(
 
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {
-		patch[0].fire.et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.et  +
-		(patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone
-		+ patch[0].evaporation + patch[0].evaporation_surf
-		+ patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone))/
-		(patch[0].fire_defaults[0][0].ndays_average + 1);
+        //printf("PatchID:%d fire_et_old(mm):%.1f fire_pet_old(mm):%.1f ",patch[0].ID,patch[0].fire.et*1000,patch[0].fire.pet*1000);
+        //printf("PatchID:%d fire_et_old(mm):%.1f fire_pet_old(mm):%.1f "
+        //        ,patch[0].ID,avgvalue_FIFO_Queue(&patch[0].fire.Q_et)*1000
+        //        ,avgvalue_FIFO_Queue(&patch[0].fire.Q_pet)*1000);
 
-		patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet
-				+ patch[0].PET) /
-		(patch[0].fire_defaults[0][0].ndays_average + 1);
+        //original way for calculating moving average is problematic
+        double today_et = patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone
+                + patch[0].evaporation + patch[0].evaporation_surf
+                + patch[0].exfiltration_unsat_zone + patch[0].exfiltration_sat_zone;
+
+        //printf(" et(mm):%.1f trans:%.1f evap(canopy_evap+snow_sub):%.1f evap(water):%.1f exf_unsat(mm):%.1f exf_sat:%.1f\n"
+        //       ,today_et*1000
+        //       ,(patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone)*1000
+        //       ,patch[0].evaporation*1000
+        //       ,patch[0].evaporation_surf*1000
+        //       ,patch[0].exfiltration_unsat_zone*1000
+        //       ,patch[0].exfiltration_sat_zone*1000);
+
+
+
+
+
+        //patch[0].fire.et = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.et  +
+        //                    today_et)/
+        //                    (patch[0].fire_defaults[0][0].ndays_average + 1);
+        enqueue_FIFO_Queue(&patch[0].fire.Q_et,today_et);
+
+        //printf("Q_et:\n");
+        //printQueue_FIFO_Queue(&patch[0].fire.Q_et);
+
+        //patch[0].fire.pet = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.pet
+        //		+ patch[0].PET) /
+        //(patch[0].fire_defaults[0][0].ndays_average + 1);
+        enqueue_FIFO_Queue(&patch[0].fire.Q_pet,patch[0].PET);
 
 		//trans NREN
-		patch[0].fire.trans = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.trans
-				+ (patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone)) /
-		(patch[0].fire_defaults[0][0].ndays_average + 1);
+        //patch[0].fire.trans = (patch[0].fire_defaults[0][0].ndays_average*patch[0].fire.trans
+        //		+ (patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone)) /
+        //(patch[0].fire_defaults[0][0].ndays_average + 1);
+        enqueue_FIFO_Queue(&patch[0].fire.Q_trans,(patch[0].transpiration_sat_zone + patch[0].transpiration_unsat_zone));
 
+
+        //printf(" fire_et_new(mm):%.1f fire_pet_new(mm):%.1f\n",patch[0].ID,patch[0].fire.et,patch[0].fire.pet);
+        //printf(" fire_et_new(mm):%.1f fire_pet_new(mm):%.1f\n",patch[0].ID
+        //        ,avgvalue_FIFO_Queue(&patch[0].fire.Q_et)*1000
+        //        ,avgvalue_FIFO_Queue(&patch[0].fire.Q_pet)*1000);
 		}
 
 

@@ -57,21 +57,29 @@ double	compute_potential_rain_interception(
 	/*--------------------------------------------------------------*/
 	interception_coef = 1-stratum[0].gap_fraction;
 
-	if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG)
-		potential_interception = min(interception_coef * rain,
-		//	stratum[0].epv.proj_pai
-			stratum[0].epv.proj_pai_when_red //NREN 20180804 in update_phenology, if there is no beetle attack,the proj_pai_when_red = proj_pai
-			* stratum[0].defaults[0][0].specific_rain_capacity
-			- stratum[0].rain_stored);
-	else
+    if (stratum[0].defaults[0][0].epc.veg_type != NON_VEG) {
+        //07132023LML confine maximum intercepted water to 4 mm according to https://en.wikipedia.org/wiki/Interception_(water)
+        double maxint = min(0.004,//	stratum[0].epv.proj_pai
+                            stratum[0].epv.proj_pai_when_red //NREN 20180804 in update_phenology, if there is no beetle attack,the proj_pai_when_red = proj_pai
+                             * stratum[0].defaults[0][0].specific_rain_capacity);
+        potential_interception = min(interception_coef * rain
+                                     ,maxint - stratum[0].rain_stored);
+    } else {
 		potential_interception = min(rain, (
 			stratum[0].defaults[0][0].specific_rain_capacity
 			- stratum[0].rain_stored));
+    }
 
+    //07132023LML confine maximum intercepted water to 4 mm according to https://en.wikipedia.org/wiki/Interception_(water)
 	potential_interception = max(potential_interception, 0.0);
 
-    //printf(" rain:%lf potential_interception:%lf pai:%lf rain_capacity:%lf\n"
-    //       ,rain*1000,potential_interception*1000,stratum[0].epv.proj_pai_when_red,stratum[0].defaults[0][0].specific_rain_capacity*1000);
+    //printf(" rain:%lf rain_stored:%lf potential_interception:%lf proj_lai:%lf pai:%lf rain_capacity:%lf\n"
+    //       ,rain*1000
+    //       ,stratum[0].rain_stored*1000
+    //       ,potential_interception*1000
+    //       ,stratum[0].epv.proj_lai
+    //       ,stratum[0].epv.proj_pai_when_red
+    //       ,stratum[0].defaults[0][0].specific_rain_capacity*1000);
 
 	return( potential_interception );
 } /*end compute_potential_rain_interception */

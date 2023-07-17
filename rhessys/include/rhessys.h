@@ -144,6 +144,9 @@
 //#include <iomanip>
 
 #include "../../util/WMFireInterface.h" /* required for fire spread*/
+
+
+
 /*----------------------------------------------------------*/
 /*      Define macros.                                      */
 /*----------------------------------------------------------*/
@@ -1687,16 +1690,42 @@ struct  soil_n_object
 /*----------------------------------------------------------*/
 /*      Define the fire structure.      */
 /*----------------------------------------------------------*/
+//For moving average
+typedef struct FIFO_Node {
+ double data;
+ struct FIFO_Node* next;
+} FIFO_Node;
 
+typedef struct {
+    FIFO_Node* front;
+    FIFO_Node* rear;
+    int size;
+    int maxsize;
+} FIFO_Queue;
+
+
+void initialize_FIFO_Queue(FIFO_Queue* queue, int maxisize);
+int isEmpty_FIFO_Queue(FIFO_Queue* queue);
+double dequeue_FIFO_Queue(FIFO_Queue* queue);
+void enqueue_FIFO_Queue(FIFO_Queue* queue, double value);
+int peek_FIFO_Queue(FIFO_Queue* queue);
+void printQueue_FIFO_Queue(FIFO_Queue* queue);
+double avgvalue_FIFO_Queue(FIFO_Queue* queue);
 
 struct patch_fire_water_object
 {
-        double pet;                     /* mm */
-        double et;                      /* mm */
-        double trans;
+    double pet;                     /* mm */
+    double et;                      /* mm */
+    double trans;
     double understory_et; /*mm; understory layer et*/
     double understory_pet; /*mm; understory layer pet*/
 
+    //07122023LML for calculating moving average
+    FIFO_Queue Q_pet;                                                           //(m)
+    FIFO_Queue Q_et;                                                            //(m)
+    FIFO_Queue Q_trans;                                                         //(m)
+    FIFO_Queue Q_understory_et;                                                 //(m)
+    FIFO_Queue Q_understory_pet;                                                //(m)
 };
 
 
@@ -1784,8 +1813,8 @@ struct patch_object
         double  delta_snow_stored;      /* m water      */
         double  detention_store;        /* m water      */
         double  effective_lai;          /* avg of strata m^2/m^2        */
-        double  evaporation;            /* m  water*/
-        double  evaporation_surf;       /* m  water*/
+        double  evaporation;            /* m  water*///LML note: snowpack_sublimation + strata_evap + strata_sublimation
+        double  evaporation_surf;       /* m  water*///LML note: detention evap
         double  ga;                     /* m/s */
         double  ga_final;               /* m/s */
         double  gasnow;                 /* m/s */
@@ -3310,6 +3339,12 @@ struct surface_energy_default {
         double damping_depth; /* m */
         double iteration_threshold; /* degrees C */
         };
+
+//07142023LML for debuging info
+#ifdef LIU_CHECK_FIRE_OCCURENCE
+extern FILE *global_debug;
+extern char global_debug_filename[200];
+#endif
 
 #endif
 

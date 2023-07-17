@@ -140,6 +140,7 @@ double	penman_monteith(
 		printf("%8.2f %8.4f ",Rnet, vpd);
 	
     if ( verbose_flag == -5) {
+    //if ( e / ( lhvap * 1000 ) * 1000.0 * 86400 >= 30) {
         printf("\n          PENMAN: s=%8.4f ra=%8.4f rs=%8.4f Rnet=%8.4f gamma=%8.4f vpd=%8.4f rho=%8.4f CP=%8.4f Tair=%lf Pair=%lf LE=%8.4f e_mm/day=%8.4f\n",
 			   s , ra, rs,
 			   Rnet,gamma,vpd,

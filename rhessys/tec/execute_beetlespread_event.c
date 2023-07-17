@@ -103,7 +103,7 @@ void execute_beetlespread_event(
 				    world[0].beetle_grid[i][j].Precip_wy = 0.0;
 				    world[0].beetle_grid[i][j].abc = 0.0;  // abc is the above ground carbon to represent the stand structure
 		}
-	    printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_beetle_grid[i][j].num_patches);
+        //printf("checking num patches. row %d col %d numPatches %d\n",i,j,patch_beetle_grid[i][j].num_patches);
 		for (p=0; p < world[0].patch_beetle_grid[i][j].num_patches; ++p) {
 			patch = world[0].patch_beetle_grid[i][j].patches[p];
 			printf("Patch p: %d,\n",p);
