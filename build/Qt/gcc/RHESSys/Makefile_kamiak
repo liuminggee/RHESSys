@@ -720,7 +720,7 @@ OBJECTS       = compute_toc_wind.o \
 		output_fire.o \
 		update_beetle_attack_mortality.o
 DESTDIR       = 
-TARGET        = RHESSys_WMFire_1.5_LIU_WMFIRE_OUTPUT_2
+TARGET        = RHESSys_WMFire_1.5_LIU_WMFIRE_OUTPUT_4
 first: all
 ####### Build rules
 

@@ -8,29 +8,30 @@
             "name": "Run RHESSys (GDB)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Qt/gcc/RHESSys/RHESSys_WMFire_1.5_LIU_WMFIRE_OUTPUT_2",
+            "program": "${workspaceFolder}/build/Qt/gcc/RHESSys/RHESSys_WMFire_1.5_LIU_WMFIRE_OUTPUT_4",
             "args": [
-                "-firespin", "5", "3",
+                "-firespin", "10", "1",
                 "-netcdfgrid", 
                 "-ncgridinterp", "10", 
                 "-Ndecayrate", "3.0", 
                 "-firespread", "100", "brw_grid-patchid.txt", "brw_grid-dem.txt", 
-                "-t", "fire-pch_79708.tec", 
-                "-w", "pch_79708_init_soil.state.Y2016M1D1H1.state", 
-                "-whdr", "fire-pch_79708.hdr", 
-                "-r", "pch_79708.flow", 
+                "-t", "pch_76620.tec", 
+                "-w", "pch_76620_init.state", 
+                "-whdr", "fire-pch_76620.hdr",
+                // "-whdr", "pch_76620.hdr",
+                "-r", "pch_76620.flow", 
                 "-st", "1900", "01", "01", "01", 
                 "-ed", "1910", "12", "31", "24", 
-                "-pre", "test/test-hist-fire-1", 
+                "-pre", "test/undercheck", 
                 "-s", "925.00", "0.677", 
                 "-sv", "925.00", "0.677", 
                 "-svalt", "0.622", "1.43", 
                 "-gw", "0.297", "0.096", 
-                "-g", "-b"
+                "-g", "-b", "-p", "-c"
             ],
             "stopAtEntry": true,
             "preLaunchTask": "build",
-            "cwd": "/data/adam/jonathan.gendron/rhessys/Kamiak/scenarios/hist/1900/nohs/pch_79708",
+            "cwd": "/data/adam/jonathan.gendron/rhessys/Kamiak/scenarios/hist/1900/nohs/pch_76620",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -43,6 +44,18 @@
                     "ignoreFailures": false
                 }
             ]
+        },
+        {
+            "name": "RHESSys-WMFire Post Process",
+            "type": "python",
+            "request": "launch",
+            "program": "/data/adam/jonathan.gendron/rhessys/RHESSysUtil/src/scripts/wmfire/main/AnalyzeWMFire.py",
+            "args": ["undercheck_WMFireGridTable.csv", 
+                "/data/adam/jonathan.gendron/rhessys/RHESSysUtil/src/scripts/wmfire/BRW_col-row-patchID.csv", 
+                "./", 
+                "syr_sim", "mod_sim", "typ_sim", "setfile_idx", "set_idx", "wmfire_seed"
+            ],
+            "cwd": "/data/adam/jonathan.gendron/rhessys/Kamiak/scenarios/hist/1900/nohs/pch_76620/test"
         }
     ]
 }
