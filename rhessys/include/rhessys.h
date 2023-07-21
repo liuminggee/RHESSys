@@ -1897,7 +1897,7 @@ struct patch_object
         double  psi_max_veg; /* MPa */
         double  Qin_total;                      /* m /day       */
         double  Qout_total;                     /* m /day       */ //LML note: baseflow (i.e. from saturated soil layer) + surface flow
-        double  Qin;                    /* m /day       */ //LML note: flow in from above drainage patches to saturated soil layer
+        double  Qin;                    /* m /day       */ //LML note: flow in from upstream drainage patches to saturated soil layer
         double  Qout;                   /* m /day       */ //LML note: flow out of patch from saturated soil layer
         double  streamflow;             /* m /day       */ //LML note: only over stream patch, including return_flow & baseflow.
         double  streamflow_DOC;         /* kgC/m2/day   */
@@ -1907,7 +1907,10 @@ struct patch_object
         double  road_cut_depth;         /* m */
         double  rain_throughfall;       /* m water      */
         double  recharge;       /* m water      */
-        double  return_flow;            /* m water      */ //LML note: for STREAM patch, it is the excess detention storage (than capacity)`
+        double  return_flow;            /* m water      */ //LML note: for STREAM patch only, it is the excess detention storage (than capacity);
+                                                           //and will be flowout end of the day. Confusing as flux or state variable
+                                                           //now treated as a state variable (but may clear out quick)
+        double  return_flow_printout;   //07202023LML
         double  snow_throughfall;       /* m water      */
         double  rain_throughfall_24hours;       /* m water,used for 24 hours accumulated throughfall    */
         double  rain_throughfall_final; /* m water      */
@@ -1943,8 +1946,8 @@ struct patch_object
         double  surface_NO3_Qin;                /* kg/m2 day    */
         double  surface_NO3_Qout;       /* kg/m2 day    */
         double  surface_ns_leach;       /* kg/m2 day    */
-        double  surface_Qin;            /* m day        */
-        double  surface_Qout;           /* m day        */
+        double  surface_Qin;            /* m day        */ //LML note: flow in from upstream surface land patch; output varaiable only
+        double  surface_Qout;           /* m day        */ //LML note: flow out of surface land patch; output varaiable only
         double  surface_DON;            /* kgN/m2       */
         double  surface_DOC;            /* kgC/m2       */
         double  infiltration_excess;    /* m water      */
@@ -1971,7 +1974,7 @@ struct patch_object
         double  wilting_point;          /* mm */
         double overstory_fraction; /* 0-1 */
         double trans_reduc_perc; /*0-1*/
-        double overland_flow; /* m/s */
+        double overland_flow; /* m/s */ //LML note: m/day land patch flowout detention store higher than capacity
         double  T_canopy;  /* deg C */
         double  T_canopy_final;  /* deg C */
         double pcp;             //(m/day) 06202023LML

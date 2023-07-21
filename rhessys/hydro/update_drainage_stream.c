@@ -117,6 +117,12 @@ void  update_drainage_stream(
 	NH4_leached_to_stream = 0.0;
 	DON_leached_to_stream = 0.0;
 	DOC_leached_to_stream = 0.0;
+#ifdef LIU_CHECK_WATER_BALANCE
+    //07192023LML check waterbalance
+    double pre_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+    double pre_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+    double pre_patch_total = pre_patch_surface_water - pre_patch_total_deficit;
+#endif
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
@@ -156,7 +162,6 @@ void  update_drainage_stream(
     //06222023LML all outflow will become surface detention store (then flowout)
     if (patch[0].IsWaterBody) route_to_stream = 0;
 
-		
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount with baseflow		*/
 	/*--------------------------------------------------------------*/
@@ -221,7 +226,7 @@ void  update_drainage_stream(
 		patch[0].detention_store += return_flow;  
 
         //if (patch[0].ID == 81497)
-        //printf("detention_store:%lf return_flow_stream:%lf \n",
+        //printf("detention_store(mm):%lf return_flow_stream(mm):%lf \n",
         //       patch[0].detention_store*1000,
         //       return_flow*1000);
 
@@ -312,7 +317,7 @@ void  update_drainage_stream(
 		patch[0].surface_NH4  -= Nout;
 		patch[0].streamflow_NH4 += Nout;
 		patch[0].detention_store -= Qout;
-        patch[0].return_flow += Qout;  //06222023LML note: confusing.
+        patch[0].return_flow += Qout;
 		patch[0].hourly_sur2stream_flow += Qout;
 
         //if (patch[0].ID == 64301) {
@@ -324,7 +329,36 @@ void  update_drainage_stream(
 
 		}
 
-    //06222023LML note: the baseflow (i.e. route_to_stream) is not deducted from soil storage pools
+#ifdef LIU_CHECK_WATER_BALANCE
+    //07192023LML check water balance
+    double post_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+    double post_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+    double post_patch_total = post_patch_surface_water - post_patch_total_deficit;
+
+    double total_fluxout = 0;//route_to_stream / patch[0].area;                 //Qout will be counted in later update deficit routine
+                                                                                //extra surface water will be stored in detention store or return_flow
+    double water_balance = pre_patch_total - post_patch_total - total_fluxout;
+
+    if (fabs(water_balance) >= 0.0001) {
+        printf("Error: waterblance from update_drainage_stream:\n");
+        printf(" waterbalance(mm):%.1f\n",water_balance*1000);
+        printf("   surface_water change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_surface_water-pre_patch_surface_water)*1000
+               ,pre_patch_surface_water*1000
+               ,post_patch_surface_water*1000);
+        printf("   total_deficit change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_total_deficit-pre_patch_total_deficit)*1000
+               ,pre_patch_total_deficit*1000
+               ,post_patch_total_deficit*1000);
+        printf("   patch_total change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_total-pre_patch_total)*1000
+               ,pre_patch_total*1000
+               ,post_patch_total*1000);
+        printf("   patch fluxout: %.1f\n",total_fluxout*1000);
+    }
+#endif
+    //07192023LML note: the outflux is baseflow, or Qout, and the added water to returnflow.
+    //06222023LML note: the baseflow (i.e. route_to_stream) is not deducted from soil storage pools (SOLVED!)
 
 //#ifdef LIU_OMP_PATCH_LOCK
 //     omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);

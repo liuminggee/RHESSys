@@ -181,7 +181,7 @@ void	output_hillslope(				int basinID,
 			aunsat_drainage += patch[0].unsat_drainage * patch[0].area;
 			acap_rise += patch[0].cap_rise * patch[0].area;
 			abase_flow += patch[0].base_flow * patch[0].area;
-			areturn_flow += patch[0].return_flow * patch[0].area;
+            areturn_flow += patch[0].return_flow_printout * patch[0].area;  //07202023LML replaced with printout
 			aevaporation += patch[0].evaporation * patch[0].area;
 			aPET += (patch[0].PET) * patch[0].area; //output pet
 			asublimation += patch[0].snowpack.sublimation * patch[0].area; //output snow sublimation

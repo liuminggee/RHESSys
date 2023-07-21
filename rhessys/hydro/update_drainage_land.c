@@ -123,7 +123,7 @@ void  update_drainage_land(
 	double route_to_surface;  /* m3 */
 	double return_flow,route_to_patch ;  /* m3 */
 	double available_sat_water; /* m3 */
-    double Qout;  /* m */
+    double Qout = 0;  /* m */
     double innundation_depth; /* m */
 	double total_gamma;
     double Nout; /* kg/m2 */
@@ -147,7 +147,12 @@ void  update_drainage_land(
 	DOC_leached_to_surface = 0.0;
 	DON_leached_to_surface = 0.0;
     struct  soil_default *psoil_def = patch[0].soil_defaults[0];
-
+#ifdef LIU_CHECK_WATER_BALANCE
+    //07192023LML check waterbalance
+    double pre_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+    double pre_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+    double pre_patch_total = pre_patch_surface_water - pre_patch_total_deficit;
+#endif
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
 	/*--------------------------------------------------------------*/
@@ -196,6 +201,7 @@ void  update_drainage_land(
 	if ( route_to_patch > available_sat_water) 
         route_to_patch *= available_sat_water/route_to_patch;
     double pQout = route_to_patch / patch[0].area;
+
 	/*--------------------------------------------------------------*/
 	/* compute Nitrogen leaching amount				*/
 	/*--------------------------------------------------------------*/
@@ -242,10 +248,10 @@ void  update_drainage_land(
 	}
 
 	
-    patch[0].Qout += pQout;
+    patch[0].Qout += pQout;                                                     //Will be counted to update water table in later routine
     //09132022LML
     if (patch[0].innundation_list[0].num_neighbours == 0) {
-        patch[0].base_flow += (pQout);
+        patch[0].base_flow += pQout;
     }
 
 
@@ -266,7 +272,7 @@ void  update_drainage_land(
 			patch[0].sat_deficit, &(patch[0].litter));
 
 
-        //fprintf(stderr,"return_flow:%lf\n",return_flow);
+        //fprintf(stderr,"return_flow(mm):%lf\n",return_flow*1000);
 
 
 		patch[0].detention_store += return_flow;  
@@ -338,9 +344,11 @@ void  update_drainage_land(
     if ( (patch[0].detention_store > psoil_def[0].detention_store_size) &&
 		(patch[0].detention_store > ZERO) ){
 
-        patch[0].overland_flow += patch[0].detention_store - psoil_def[0].detention_store_size;
-		
-        Qout = (patch[0].detention_store - psoil_def[0].detention_store_size);
+        Qout = patch[0].detention_store - psoil_def[0].detention_store_size;
+        patch[0].overland_flow += Qout;
+
+        //printf("Qout(mm):%.1f detention_store:%.1f\n",Qout*1000,patch[0].detention_store*1000);
+
         double ffrac = min(1.0, (Qout/ patch[0].detention_store));
 		if (command_line[0].grow_flag > 0) {
             Nout = ffrac * patch[0].surface_DOC;
@@ -356,7 +364,7 @@ void  update_drainage_land(
 			NH4_leached_to_surface = Nout * patch[0].area;
 			patch[0].surface_NH4 -= Nout;
 			}
-		route_to_surface = (Qout *  patch[0].area);
+        route_to_surface = Qout *  patch[0].area;
 		patch[0].detention_store -= Qout;
 		patch[0].surface_Qout += Qout;
 
@@ -366,6 +374,34 @@ void  update_drainage_land(
         }
 
     }//if
+
+#ifdef LIU_CHECK_WATER_BALANCE
+    //07192023LML check water balance
+    double post_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+    double post_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+    double post_patch_total = post_patch_surface_water - post_patch_total_deficit;
+
+    double total_fluxout = Qout; //patch[0].Qout will be counted to watertable in later routine; this is surface flow out
+    double water_balance = pre_patch_total - post_patch_total - total_fluxout;
+
+    if (fabs(water_balance) >= 0.0001) {
+        printf("Error: patch outflow waterblance from update_drainage_land:\n");
+        printf(" waterbalance(mm):%.1f\n",water_balance*1000);
+        printf("   surface_water change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_surface_water-pre_patch_surface_water)*1000
+               ,pre_patch_surface_water*1000
+               ,post_patch_surface_water*1000);
+        printf("   total_deficit change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_total_deficit-pre_patch_total_deficit)*1000
+               ,pre_patch_total_deficit*1000
+               ,post_patch_total_deficit*1000);
+        printf("   patch_total change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_total-pre_patch_total)*1000
+               ,pre_patch_total*1000
+               ,post_patch_total*1000);
+        printf("   patch fluxout: %.1f\n",total_fluxout*1000);
+    }
+#endif
 
 //#ifdef LIU_OMP_PATCH_LOCK
 //        omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
@@ -387,6 +423,9 @@ void  update_drainage_land(
       int numnb = patch[0].innundation_list[d].num_neighbours;
     //#pragma omp parallel for
       for (int j = 0; j < numnb; j++) {
+
+        //07202023LML this routine seems problematic since the flow to downstream neighbors may not be able to be processed after the time loop but the flux has been cleared out at the beging of day
+
         struct  neighbour_object *nbo = &patch[0].surface_innundation_list[d].neighbours[j];
         struct  patch_object *neigh = nbo->patch;
 //#ifdef LIU_OMP_PATCH_LOCK
@@ -436,6 +475,8 @@ void  update_drainage_land(
       }
     //#pragma omp parallel for
       numnb = patch[0].innundation_list[d].num_neighbours;
+      //test balance
+      double sum_Qin = 0;
       for (int j = 0; j < numnb; j++) {
         struct  neighbour_object *nbo = &patch[0].surface_innundation_list[d].neighbours[j];
         struct  patch_object *neigh = nbo->patch;
@@ -462,13 +503,21 @@ void  update_drainage_land(
 		/*--------------------------------------------------------------*/
 
         double Qin = fgamma * route_to_surface;
-		neigh[0].detention_store += Qin;// need fix this
+        sum_Qin += Qin * neigh[0].area;
 
+#ifdef LIU_CHECK_WATER_BALANCE
+        //07192023LML check neigh waterbalance
+        double pre_neigh_surface_water = neigh[0].detention_store + neigh[0].return_flow;
+        double pre_neigh_total_deficit = neigh[0].sat_deficit - (neigh[0].rz_storage + neigh[0].unsat_storage);
+        double pre_neigh_total = pre_neigh_surface_water - pre_neigh_total_deficit;
+#endif
+
+
+		neigh[0].detention_store += Qin;// need fix this
         //if (neigh[0].ID == 81497)
         //printf("detention_store:%lf Qin:%lf \n",
         //       neigh[0].detention_store*1000,
         //       Qin*1000);
-
 		neigh[0].surface_Qin += Qin;
         double infiltration = 0;
 		/*--------------------------------------------------------------*/
@@ -547,7 +596,38 @@ void  update_drainage_land(
 //#ifdef LIU_OMP_PATCH_LOCK
 //        omp_unset_lock(&locks_patch[0][neigh[0].Unique_ID_index]);
 //#endif
+#ifdef LIU_CHECK_WATER_BALANCE
+        //07192023LML check water balance
+        double post_neigh_surface_water = neigh[0].detention_store + neigh[0].return_flow;
+        double post_neigh_total_deficit = neigh[0].sat_deficit - (neigh[0].rz_storage + neigh[0].unsat_storage);
+        double post_neigh_total = post_neigh_surface_water - post_neigh_total_deficit;
+
+        double neigh_total_fluxout = -Qin;
+        double neigh_water_balance = pre_neigh_total - post_neigh_total - neigh_total_fluxout;
+
+        if (fabs(neigh_water_balance) >= 0.0001) {
+            printf("Error: neigh outflow waterblance from update_drainage_land:\n");
+            printf(" waterbalance(mm):%.1f\n",neigh_water_balance*1000);
+            printf("   surface_water change(%.1f): pre:%.1f post:%.1f\n"
+                   ,(post_neigh_surface_water-pre_neigh_surface_water)*1000
+                   ,pre_neigh_surface_water*1000
+                   ,post_neigh_surface_water*1000);
+            printf("   total_deficit change(%.1f): pre:%.1f post:%.1f\n"
+                   ,(post_neigh_total_deficit-pre_neigh_total_deficit)*1000
+                   ,pre_neigh_total_deficit*1000
+                   ,post_neigh_total_deficit*1000);
+            printf("   neigh_total change(%.1f): pre:%.1f post:%.1f\n"
+                   ,(post_neigh_total-pre_neigh_total)*1000
+                   ,pre_neigh_total*1000
+                   ,post_neigh_total*1000);
+            printf("   neigh fluxout: %.1f\n",total_fluxout*1000);
+        }
+#endif
       }//j
+      if (fabs(sum_Qin - route_to_surface) >= 1) {
+          printf("Balance error in update_drainage_land:\n");
+          printf(" sum_Qin:%.1f route_to_surface:%.1f\n",sum_Qin,route_to_surface);
+      }
 
     } /* end if redistribution flag */
 

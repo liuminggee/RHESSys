@@ -105,7 +105,9 @@ void  update_drainage_road(
 	double route_to_patch;  /* m3 */
 	double road_int_depth;  /* m of H2O */
 	double available_sat_water, route_total; /* m3 */
-	double  Qin, Qout, Qstr_total;  /* m */
+    double  Qin;            /* m */
+    double Qout = 0;        /* m */
+    double Qstr_total;      /* m */
 	double total_gamma, percent_loss;
 	double Nin, Nout; /* kg/m2 */ 
 	double percent_tobe_routed;
@@ -128,6 +130,12 @@ void  update_drainage_road(
 	route_to_patch = 0.0;
 	return_flow=0.0;
 
+#ifdef LIU_CHECK_WATER_BALANCE
+    //07192023LML check waterbalance
+    double pre_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+    double pre_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+    double pre_patch_total = pre_patch_surface_water - pre_patch_total_deficit;
+#endif
 
 	/*--------------------------------------------------------------*/
 	/*	m and K are multiplied by sensitivity analysis variables */
@@ -405,6 +413,10 @@ void  update_drainage_road(
 	if ((patch[0].detention_store > patch[0].soil_defaults[0][0].detention_store_size) &&
 		(patch[0].detention_store > ZERO) ) {
 		Qout = (patch[0].detention_store - patch[0].soil_defaults[0][0].detention_store_size);
+
+        //07192023LML warning: need tracking this flow
+
+
 		if (command_line[0].grow_flag > 0) {
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
 			patch[0].surface_NO3  -= Nout;
@@ -422,12 +434,40 @@ void  update_drainage_road(
 			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
 			patch[0].surface_DOC  -= Nout;
 			patch[0].next_stream[0].streamflow_DOC += (Nout * patch[0].area / patch[0].next_stream[0].area);
-			}
-		patch[0].next_stream[0].streamflow += (Qout * patch[0].area / patch[0].next_stream[0].area);
+        }
+        //patch[0].next_stream[0].streamflow += (Qout * patch[0].area / patch[0].next_stream[0].area);
+        patch[0].next_stream[0].return_flow += (Qout * patch[0].area / patch[0].next_stream[0].area); //07202023LML should goes to stream patch's return_flow which will be prossed at least at next day
+        patch[0].next_stream[0].surface_Qin += (Qout * patch[0].area / patch[0].next_stream[0].area); //07192023LML
 		patch[0].next_stream[0].hourly_sur2stream_flow += Qout *  patch[0].area / patch[0].next_stream[0].area;
 		patch[0].detention_store -= Qout;
-		}
-		
+    }
+#ifdef LIU_CHECK_WATER_BALANCE
+    //07192023LML check water balance
+    double post_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+    double post_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+    double post_patch_total = post_patch_surface_water - post_patch_total_deficit;
+
+    double total_fluxout = Qout; //patch[0].Qout will be counted to watertabke at later routine; here only count surface flowout
+    double water_balance = pre_patch_total - post_patch_total - total_fluxout;
+
+    if (fabs(water_balance) >= 0.0001) {
+        printf("Error: patch outflow waterblance from update_drainage_road:\n");
+        printf(" waterbalance(mm):%.1f\n",water_balance*1000);
+        printf("   surface_water change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_surface_water-pre_patch_surface_water)*1000
+               ,pre_patch_surface_water*1000
+               ,post_patch_surface_water*1000);
+        printf("   total_deficit change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_total_deficit-pre_patch_total_deficit)*1000
+               ,pre_patch_total_deficit*1000
+               ,post_patch_total_deficit*1000);
+        printf("   patch_total change(%.1f): pre:%.1f post:%.1f\n"
+               ,(post_patch_total-pre_patch_total)*1000
+               ,pre_patch_total*1000
+               ,post_patch_total*1000);
+        printf("   patch fluxout: %.1f\n",total_fluxout*1000);
+    }
+#endif
     //printf("drainage detention_store:%lf \n"
     //       ,patch[0].detention_store * 1000);
 

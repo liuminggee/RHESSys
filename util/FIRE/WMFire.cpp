@@ -789,7 +789,7 @@ int LandScape::testIgnition(int cur_row, int cur_col, GenerateRandom& rng) // ne
 //				cout<<"using deficit for moisture: cur_moist: "<<cur_moist"\n";
 		}
 */
-        if(def_.fire_verbose==1)
+        //if(def_.fire_verbose==1)
             cout<<"col:" << cur_col << " row:" << cur_row
                 << " spread_calc_type:" << def_.spread_calc_type
                 <<" p_moisture: "<<p_moisture

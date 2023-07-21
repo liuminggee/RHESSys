@@ -402,6 +402,19 @@ struct patch_object *construct_patch(
     patch[0].fertilizer_NH4 = 0.0;
     patch[0].grazing_Closs = 0.0;
 
+    /*--------------------------------------------------------------*/
+    /*	initialize lateral fluxes 07202023LML                      	*/
+    /*--------------------------------------------------------------*/
+    patch[0].soil_ns.NO3_Qin = 0;
+    patch[0].soil_ns.NH4_Qin = 0;
+    patch[0].soil_ns.DON_Qin = 0;
+    patch[0].soil_cs.DOC_Qin = 0;
+    patch[0].surface_DON_Qin = 0;
+    patch[0].surface_DOC_Qin = 0;
+    patch[0].surface_NO3_Qin = 0;
+    patch[0].surface_NH4_Qin = 0;
+
+
     /* for calculating above ground litter proportion NREN 20190927 */
     patch[0].prop_litrc_above_ground = 0.85; // this is hard coded at the beginning all these litter is from leaf
 

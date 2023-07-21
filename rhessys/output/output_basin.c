@@ -248,7 +248,7 @@ void	output_basin(			int routing_flag,
                         || patch[0].innundation_list[0].num_neighbours == 0     //09132022LML
                        )
 						astreamflow += patch[0].streamflow*patch[0].area;
-                    areturn_flow += patch[0].return_flow * patch[0].area;
+                    areturn_flow += patch[0].return_flow_printout * patch[0].area; //07202023LML replaced with printout
                     abase_flow += patch[0].base_flow * patch[0].area;
                     if (isnan(patch[0].base_flow)==1) {
                         printf("warning, the patchID %ld have NaN baseflow\n", patch[0].ID);
@@ -256,7 +256,7 @@ void	output_basin(			int routing_flag,
 				}
 				else {
 						/* for Topmodel version compute only return flow and later added to streamflow */
-						areturn_flow += patch[0].return_flow * patch[0].area;
+                        areturn_flow += patch[0].return_flow_printout * patch[0].area; //07202023LML replaced with printout
 				}
 				for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 					for ( c=0 ; c<patch[0].layers[layer].count; c++ ){

@@ -46,7 +46,7 @@ int zero_patch_daily_flux( struct patch_object *patch,
 	/*--------------------------------------------------------------*/
 	/* daily hydro  & N fluxes					*/
 	/*--------------------------------------------------------------*/
-	patch[0].return_flow = 0.0;
+    //patch[0].return_flow = 0.0;   07202023 LML the returnflow may not processed yet!
 	patch[0].streamflow = 0.0;
 	patch[0].streamflow_NO3 = 0.0;
 	patch[0].streamflow_NH4 = 0.0;

@@ -111,7 +111,7 @@ void	output_patch(
 					patch[0].rz_drainage*1000,
 					patch[0].unsat_drainage*1000,
 					(patch[0].snowpack.sublimation + asub)*1000,
-					patch[0].return_flow*1000.0,
+                    patch[0].return_flow_printout*1000.0, //07202023LML replaced with printout
 					patch[0].evaporation*1000.0,
 					patch[0].evaporation_surf*1000.0,
 					(patch[0].exfiltration_sat_zone + patch[0].exfiltration_unsat_zone) * 1000.0,

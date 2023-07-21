@@ -2437,7 +2437,7 @@ void		patch_daily_F(
 		- patch[0].delta_snowpack - patch[0].delta_rain_stored
 		- patch[0].delta_snow_stored - patch[0].detention_store;
 
-    if (patch[0].ID == 64301) {
+    //if (patch[0].ID == 64301) {
       if ((patch[0].water_balance > 0.00000001)||
           (patch[0].water_balance < -0.00000001)){
         printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for patch %d of type %d",
@@ -2466,7 +2466,7 @@ void		patch_daily_F(
         printf("\n\tdelta_snow_stored:%lf\n",patch[0].delta_snow_stored*1000);
 
       }
-    }
+    //}
 
 
 

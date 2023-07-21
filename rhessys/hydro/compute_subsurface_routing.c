@@ -137,7 +137,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
     for (int i = 0; i < hillslope->route_list->num_patches; i++) {
         struct patch_object *patch = hillslope->route_list->list[i];
 		patch[0].streamflow = 0.0;
-		patch[0].return_flow = 0.0;
+        //07202023LML patch[0].return_flow = 0.0;
 		patch[0].base_flow = 0.0;
 		patch[0].infiltration_excess = 0.0;
 		preday_hillslope_rz_storage += patch[0].rz_storage * patch[0].area;
@@ -148,7 +148,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		hillslope_area += patch[0].area;
 		patch[0].Qin_total = 0.0;
 		patch[0].Qout_total = 0.0;
-		patch[0].Qin = 0.0;
+        //07202023LML patch[0].Qin = 0.0; //07202023LML the Qin might not been processed yet from neighboring patches
 		patch[0].Qout = 0.0;
 		patch[0].surface_Qin = 0.0;
 		patch[0].surface_Qout = 0.0;
@@ -167,9 +167,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].S = patch[0].unsat_storage / patch[0].sat_deficit;
 
 		if (grow_flag > 0) {
-			patch[0].soil_ns.NO3_Qin = 0.0;
+            //07202023LML patch[0].soil_ns.NO3_Qin = 0.0;
 			patch[0].soil_ns.NO3_Qout = 0.0;
-			patch[0].soil_ns.NH4_Qin = 0.0;
+            //07202023LML patch[0].soil_ns.NH4_Qin = 0.0;
 			patch[0].soil_ns.NH4_Qout = 0.0;
 			patch[0].soil_ns.NO3_Qin_total = 0.0;
 			patch[0].soil_ns.NO3_Qout_total = 0.0;
@@ -190,13 +190,13 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 			patch[0].soil_ns.leach = 0.0;
 			patch[0].surface_ns_leach = 0.0;
 			patch[0].soil_ns.DON_Qout = 0.0;
-			patch[0].soil_ns.DON_Qin = 0.0;
+            //07202023LML patch[0].soil_ns.DON_Qin = 0.0;
 			patch[0].soil_cs.DOC_Qout = 0.0;
-			patch[0].soil_cs.DOC_Qin = 0.0;
+            //07202023LML patch[0].soil_cs.DOC_Qin = 0.0;
 			patch[0].surface_DON_Qout = 0.0;
-			patch[0].surface_DON_Qin = 0.0;
+            //07202023LML patch[0].surface_DON_Qin = 0.0;
 			patch[0].surface_DOC_Qout = 0.0;
-			patch[0].surface_DOC_Qin = 0.0;
+            //07202023LML patch[0].surface_DOC_Qin = 0.0;
 
 			patch[0].streamNO3_from_surface	= 0.0;
 			patch[0].streamNO3_from_sub = 0.0;
@@ -405,13 +405,25 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		} /* end i */
 
 
-        if (k == (n_timesteps -1))
+        if (k == (n_timesteps -1)) //end day
         {
             double leached[LEACH_ELEMENT_counts];
             //10172022LML seems no benifit #pragma omp parallel for
             for (int i = 0; i < hillslope->route_list->num_patches; i++) {
               struct patch_object *patch = hillslope->route_list->list[i];
               double excess = 0;
+#ifdef LIU_CHECK_WATER_BALANCE
+              //07192023LML check waterbalance
+              double pre_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+              double pre_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+              double pre_patch_total = pre_patch_surface_water - pre_patch_total_deficit;
+              double total_Q_leave_patch = 0;
+#endif
+
+
+
+
+
 //#ifdef LIU_OMP_PATCH_LOCK
 //              omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
               ////            printf("compute_subsurface_routing:locked_patch:%d,thread:%d num_streads:%d\n"
@@ -543,7 +555,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
                     for (int j = 0; j < patch->surface_innundation_list[d].num_neighbours; j++) {
                         struct patch_object *neigh = patch->surface_innundation_list[d].neighbours[j].patch;
-                        double Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma;
+                        double Qout = excess * patch->surface_innundation_list[d].neighbours[j].gamma; //m
                         double NO3_out,NH4_out,DON_out,DOC_out,Nout;
                         if (grow_flag > 0) {
                             NO3_out = Qout / patch[0].detention_store
@@ -562,8 +574,10 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                         if (neigh[0].drainage_type == STREAM) {
                             neigh[0].Qin_total += Qout * patch[0].area
                                     / neigh[0].area;
+                            //07202023LML since it may not be processes at end of day on return_flow (will be cleared)
                             neigh[0].return_flow += Qout * patch[0].area
                                     / neigh[0].area;
+
                             if (grow_flag > 0) {
                                 neigh[0].streamflow_DOC += (DOC_out
                                         * patch[0].area / neigh[0].area);
@@ -638,6 +652,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                     }
                     patch[0].detention_store -= excess;
                     patch[0].Qout_total += excess;
+#ifdef LIU_CHECK_WATER_BALANCE
+                    total_Q_leave_patch += excess; //07192023LML
+#endif
                 }
             }
 
@@ -930,7 +947,12 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             if (patch[0].drainage_type == STREAM
                 || patch[0].innundation_list[0].num_neighbours == 0             //09132022LML add this option
                ) {
-                patch[0].streamflow += patch[0].return_flow + patch[0].base_flow;
+                patch[0].streamflow += patch[0].return_flow + patch[0].base_flow; //LML note: patch base_flow will be diducted from later routine
+#ifdef LIU_CHECK_WATER_BALANCE
+                total_Q_leave_patch += patch[0].return_flow;
+#endif
+                patch[0].return_flow_printout = patch[0].return_flow;
+                patch[0].return_flow = 0;                                       //07182023LML (returnflow will be flowout at end of the day, treated as storage)
 
                 //if (patch[0].ID == 64301) {
                 //    printf("patch detention_store(mm):%lf streamflow(mm):%lf return_flow(mm):%lf base_flow(mm):%lf\n"
@@ -938,8 +960,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                 //           ,patch[0].streamflow*1000
                 //           ,patch[0].return_flow*1000
                 //           ,patch[0].base_flow*1000);
-                //}
-
+                //}    
             }
 //#ifdef LIU_OMP_PATCH_LOCK
 //            omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
@@ -952,7 +973,8 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 
             #pragma omp critical (test1)
             {
-            hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
+            if (patch[0].drainage_type == STREAM || patch[0].innundation_list[0].num_neighbours == 0)
+              hillslope[0].hillslope_return_flow += (patch[0].return_flow) * patch[0].area;
             hillslope[0].hillslope_outflow += (patch[0].streamflow) * patch[0].area;
             hillslope[0].hillslope_unsat_storage += patch[0].unsat_storage * patch[0].area;
             hillslope[0].hillslope_sat_deficit += patch[0].sat_deficit * patch[0].area;
@@ -961,15 +983,40 @@ void compute_subsurface_routing(struct command_line_object *command_line,
                     * patch[0].area;
             }
 
+#ifdef LIU_CHECK_WATER_BALANCE
+            //07192023LML check water balance
+            double post_patch_surface_water = patch[0].detention_store + patch[0].return_flow;
+            double post_patch_total_deficit = patch[0].sat_deficit - (patch[0].rz_storage + patch[0].unsat_storage);
+            double post_patch_total = post_patch_surface_water - post_patch_total_deficit;
 
+            double total_fluxout = total_Q_leave_patch; //patch[0].Qout will be counted to watertable in later routine; this is surface flow out
+            double water_balance = pre_patch_total - post_patch_total - total_fluxout;
 
-
+            if (fabs(water_balance) >= 0.0001) {
+            //if (fabs(total_fluxout) >= 0.0001) {
+                printf("Error: patch outflow waterblance from compute_subsurface_routing:\n");
+                printf(" waterbalance(mm):%.1f\n",water_balance*1000);
+                printf("   surface_water change(%.1f): pre:%.1f post:%.1f\n"
+                       ,(post_patch_surface_water-pre_patch_surface_water)*1000
+                       ,pre_patch_surface_water*1000
+                       ,post_patch_surface_water*1000);
+                printf("   total_deficit change(%.1f): pre:%.1f post:%.1f\n"
+                       ,(post_patch_total_deficit-pre_patch_total_deficit)*1000
+                       ,pre_patch_total_deficit*1000
+                       ,post_patch_total_deficit*1000);
+                printf("   patch_total change(%.1f): pre:%.1f post:%.1f\n"
+                       ,(post_patch_total-pre_patch_total)*1000
+                       ,pre_patch_total*1000
+                       ,post_patch_total*1000);
+                printf("   patch fluxout: %.1f\n",total_fluxout*1000);
+            }
+#endif
 
             /*---------------------------------------------------------------------*/
             /*update accumulator variables                                            */
             /*-----------------------------------------------------------------------*/
             /* the accumulator is updated in update_hillslope_patch_accumulator.c in hillslope_daily_F.c*/
-          } //end i
+            } //end i
         } //last timestep
 
 
@@ -980,17 +1027,25 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 	hillslope[0].preday_hillslope_unsat_storage /= hillslope_area;
 	hillslope[0].preday_hillslope_detention_store /= hillslope_area;
 	hillslope[0].preday_hillslope_sat_deficit /= hillslope_area;
+    hillslope[0].preday_hillslope_return_flow /= hillslope_area;                //07182023LML
 	hillslope[0].hillslope_rz_storage /= hillslope_area;
 	hillslope[0].hillslope_unsat_storage /= hillslope_area;
 	hillslope[0].hillslope_detention_store /= hillslope_area;
 	hillslope[0].hillslope_sat_deficit /= hillslope_area;
+    hillslope[0].hillslope_return_flow /= hillslope_area;                       //07182023LML
 	water_balance = hillslope[0].preday_hillslope_rz_storage + hillslope[0].preday_hillslope_unsat_storage
 			+ hillslope[0].preday_hillslope_detention_store - hillslope[0].preday_hillslope_sat_deficit
+            + hillslope[0].preday_hillslope_return_flow //07182023LML
 			- (hillslope[0].hillslope_rz_storage + hillslope[0].hillslope_unsat_storage + hillslope[0].hillslope_detention_store
-					- hillslope[0].hillslope_sat_deficit) - hillslope[0].hillslope_outflow;
+                    + hillslope[0].hillslope_return_flow //07182023LML
+                    - hillslope[0].hillslope_sat_deficit)
+            - hillslope[0].hillslope_outflow;
 
-    //if ((water_balance > 0.00001)|| (water_balance < -0.00001)){
-    if ((water_balance > 0.0001)|| (water_balance < -0.0001)){
+    //07202023LML this balance is not correct since some pataches may not have
+    //been processed because of inflow from upstream patches. The overall method
+    //may need to be rewrote
+    //if (fabs(water_balance) >= 0.0001){
+    if (FALSE) {
             printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for hillslope %d",
                 water_balance*1000,
                 current_date.day,
@@ -1001,9 +1056,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             printf("\n\tdelta_unsat_storage:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_unsat_storage - hillslope[0].preday_hillslope_unsat_storage)*1000,hillslope[0].hillslope_unsat_storage*1000,hillslope[0].preday_hillslope_unsat_storage*1000);
             printf("\n\tdelta_detention_store:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_detention_store - hillslope[0].preday_hillslope_detention_store)*1000,hillslope[0].hillslope_detention_store*1000,hillslope[0].preday_hillslope_detention_store*1000);
             printf("\n\tdelta_sat_deficit:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_sat_deficit - hillslope[0].preday_hillslope_sat_deficit)*1000,hillslope[0].hillslope_sat_deficit*1000,hillslope[0].preday_hillslope_sat_deficit*1000);
+            printf("\n\tdelta_returnflow:%lf (current:%lf preday:%lf)",(hillslope[0].hillslope_return_flow - hillslope[0].preday_hillslope_return_flow)*1000,hillslope[0].hillslope_return_flow*1000,hillslope[0].preday_hillslope_return_flow*1000);
             printf("\n\thillslope_outflow:%lf",hillslope[0].hillslope_outflow*1000);
-
-}
+    }
 
 
 	if((command_line[0].output_flags.yearly == 1)
