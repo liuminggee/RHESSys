@@ -186,7 +186,7 @@ double	compute_vascular_stratum_conductance(
 	stratum[0].mult_conductance.tmin = m_tmin;
 	stratum[0].mult_conductance.vpd = m_vpd;
 
-	if ( verbose_flag == -5 ){
+    if ( verbose_flag == -5 ){
 		printf("\nVAS STRAT CONDUCT END: m_APAR=%lf m_tavg=%lf m_LWP=%lf m_CO2=%lf m_tmin=%lf m_vpd=%lf m_final=%lf lai=%lf frac=%lf glmax=%lf gl=%lf pchWP=%lf stratWP=%lf",
 			   m_APAR,
 			   m_tavg,
@@ -201,7 +201,7 @@ double	compute_vascular_stratum_conductance(
 			   stratum_conductance,
 			   patch[0].wilting_point,
 			   wilting_point);
-	}
+    }
 
 
 	return(stratum_conductance);

@@ -94,6 +94,11 @@ double	compute_ra_overstory(
 	d_o =  pow(10.0, (0.979 * log10(h_o+0.001) - 0.154));
 	d_u =  max(0.01*h_o, pow(10.0, (0.979 * log10(h_u+0.001) - 0.154)));
 */
+    //09212023LML in case very low canopy, assume height is 0.01 m
+    if (close_enough(h_o,0)) {
+        h_o = 0.01;
+        h_u = 0.5 * h_o;
+    }
 
 	d_o = 0.7 * h_o;
 	d_u = 0.7 * h_u;

@@ -1093,6 +1093,7 @@ struct hillslope_object
 
         struct  routing_list_object     *route_list;
         struct  routing_list_object     *surface_route_list;
+        struct  basin_object *basin;  //09222023LML
 
 /*      used in subsurface computation          */
         double hillslope_outflow;

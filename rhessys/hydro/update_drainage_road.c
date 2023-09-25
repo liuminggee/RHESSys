@@ -417,29 +417,37 @@ void  update_drainage_road(
         //07192023LML warning: need tracking this flow
 
 
-		if (command_line[0].grow_flag > 0) {
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
-			patch[0].surface_NO3  -= Nout;
-			patch[0].next_stream[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
-			patch[0].next_stream[0].streamNO3_from_surface += (Nout * patch[0].area / patch[0].next_stream[0].area);
-			patch[0].next_stream[0].hourly[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
-			patch[0].next_stream[0].hourly[0].streamflow_NO3_from_surface =+ (Nout * patch[0].area / patch[0].next_stream[0].area);
+        if (command_line[0].grow_flag > 0 && patch[0].next_stream != 0) {
+            #pragma omp critical
+            {
+              Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NO3;
+              patch[0].surface_NO3  -= Nout;
+              patch[0].next_stream[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
+              patch[0].next_stream[0].streamNO3_from_surface += (Nout * patch[0].area / patch[0].next_stream[0].area);
+              patch[0].next_stream[0].hourly[0].streamflow_NO3 += (Nout * patch[0].area / patch[0].next_stream[0].area);
+              patch[0].next_stream[0].hourly[0].streamflow_NO3_from_surface =+ (Nout * patch[0].area / patch[0].next_stream[0].area);
 
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
-			patch[0].surface_NH4  -= Nout;
-			patch[0].next_stream[0].streamflow_NH4 += (Nout * patch[0].area / patch[0].next_stream[0].area);
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
-			patch[0].surface_DON  -= Nout;
-			patch[0].next_stream[0].streamflow_DON += (Nout * patch[0].area / patch[0].next_stream[0].area);
-			Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
-			patch[0].surface_DOC  -= Nout;
-			patch[0].next_stream[0].streamflow_DOC += (Nout * patch[0].area / patch[0].next_stream[0].area);
+              Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_NH4;
+              patch[0].surface_NH4  -= Nout;
+              patch[0].next_stream[0].streamflow_NH4 += (Nout * patch[0].area / patch[0].next_stream[0].area);
+              Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DON;
+              patch[0].surface_DON  -= Nout;
+              patch[0].next_stream[0].streamflow_DON += (Nout * patch[0].area / patch[0].next_stream[0].area);
+              Nout = (min(1.0, (Qout/ patch[0].detention_store))) * patch[0].surface_DOC;
+              patch[0].surface_DOC  -= Nout;
+              patch[0].next_stream[0].streamflow_DOC += (Nout * patch[0].area / patch[0].next_stream[0].area);
+            }
         }
         //patch[0].next_stream[0].streamflow += (Qout * patch[0].area / patch[0].next_stream[0].area);
-        patch[0].next_stream[0].return_flow += (Qout * patch[0].area / patch[0].next_stream[0].area); //07202023LML should goes to stream patch's return_flow which will be prossed at least at next day
-        patch[0].next_stream[0].surface_Qin += (Qout * patch[0].area / patch[0].next_stream[0].area); //07192023LML
-		patch[0].next_stream[0].hourly_sur2stream_flow += Qout *  patch[0].area / patch[0].next_stream[0].area;
-		patch[0].detention_store -= Qout;
+        if (patch[0].next_stream != 0) {
+          #pragma omp critical
+          {
+            patch[0].next_stream[0].return_flow += (Qout * patch[0].area / patch[0].next_stream[0].area); //07202023LML should goes to stream patch's return_flow which will be prossed at least at next day
+            patch[0].next_stream[0].surface_Qin += (Qout * patch[0].area / patch[0].next_stream[0].area); //07192023LML
+            patch[0].next_stream[0].hourly_sur2stream_flow += Qout *  patch[0].area / patch[0].next_stream[0].area;
+            patch[0].detention_store -= Qout;
+          }
+        }
     }
 #ifdef LIU_CHECK_WATER_BALANCE
     //07192023LML check water balance
@@ -480,11 +488,18 @@ void  update_drainage_road(
 	/* routing to stream i.e. diversion routing */
 	/*	note all surface flows go to the stream			*/
 	/*--------------------------------------------------------------*/
-	patch[0].next_stream[0].streamflow += (route_to_stream) / patch[0].next_stream[0].area;
-	patch[0].next_stream[0].surface_Qin  += (route_to_stream) / patch[0].next_stream[0].area;
-	patch[0].next_stream[0].hourly_sur2stream_flow += route_to_stream / patch[0].next_stream[0].area;
+    if (patch[0].next_stream != 0) {
+      #pragma omp critical
+      {
+        patch[0].next_stream[0].streamflow += (route_to_stream) / patch[0].next_stream[0].area;
+        patch[0].next_stream[0].surface_Qin  += (route_to_stream) / patch[0].next_stream[0].area;
+        patch[0].next_stream[0].hourly_sur2stream_flow += route_to_stream / patch[0].next_stream[0].area;
+      }
+    }
 
-	if (command_line[0].grow_flag > 0) {
+    if (command_line[0].grow_flag > 0 && patch[0].next_stream != 0) {
+      #pragma omp critical
+      {
 		Nin = (DON_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_DON += Nin;
 		Nin = (DOC_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
@@ -497,7 +512,8 @@ void  update_drainage_road(
 
 		Nin = (NH4_leached_to_stream * patch[0].area) / patch[0].next_stream[0].area;
 		patch[0].next_stream[0].streamflow_NH4 += Nin;
-		}
+      }
+    }
 
 		
 	/*--------------------------------------------------------------*/

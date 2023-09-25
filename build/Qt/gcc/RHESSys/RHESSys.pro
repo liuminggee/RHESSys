@@ -14,8 +14,8 @@ CONFIG   -= app_bundle
 QMAKE_CC = gcc -std=c99
 QMAKE_CXXFLAGS += -fpermissive
 #-std=c++0x
-#QMAKE_CXXFLAGS += -fopenmp
-#QMAKE_CFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_CFLAGS += -fopenmp
 #QMAKE_LFLAGS += -fopenmp
 
 #QMAKE_CFLAGS += -STD=C99
@@ -42,7 +42,7 @@ DEFINES += NO_UPDATE_160419 \
            xLIU_OMP_PATCH_LOCK \
            xJMG_TRACKING \
            LITTER_CONSUMED_BASED_ON_PSPREAD \
-           LIU_CHECK_FIRE_OCCURENCE \
+           xLIU_CHECK_FIRE_OCCURENCE \
            xLIU_CHECK_WATER_BALANCE
 
 

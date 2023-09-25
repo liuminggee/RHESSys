@@ -2314,8 +2314,10 @@ void		patch_daily_F(
 			exit(EXIT_FAILURE);
 		}
 
-        if (patch[0].soil_ns.nitrate < 0)
-            fprintf(stderr,"soil_ns.nitrate < 0");
+        if (patch[0].soil_ns.nitrate < 0 && patch[0].soil_ns.nitrate >= -1.e-6)
+            patch[0].soil_ns.nitrate = 0;
+        if (patch[0].soil_ns.nitrate < -1.e-6)
+            fprintf(stderr,"soil_ns.nitrate(%f) < 0\n",patch[0].soil_ns.nitrate);
         //fprintf(stderr," p_rt_zone_d:%lf sat_deficit_z:%lf fc:%lf ",
         //        patch[0].rootzone.depth, patch[0].sat_deficit_z, patch[0].field_capacity);
 

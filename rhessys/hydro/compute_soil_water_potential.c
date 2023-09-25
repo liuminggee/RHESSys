@@ -154,16 +154,21 @@ double	compute_soil_water_potential(
 				/*printf("\n%lf %lf %lf %lf %lf",psi_air_entry,S,pore_size_index,LWP_min_spring,LWP_predawn);*/
 			break;
 		case 2:
-			if (S > ZERO) 
+            if (S > ZERO) {
+                //double temp = pow( pow(1/S,1/(1-1/pore_size_index)) -1 , 1/pore_size_index );
+                //09212023LML Seems the following equation is wrong!!!
 				LWP_predawn = min( -1.0 * 0.01 * psi_air_entry
 				* pow( pow(1/S,1/(1-1/pore_size_index)) -1 , 1/pore_size_index )
 					, LWP_min_spring);
-			else LWP_predawn = LWP_stom_closure;
+            } else {
+                LWP_predawn = LWP_stom_closure;
+            }
 			break;
 		case 3:
 			if (S > ZERO) 
 				LWP_predawn = -1.0*exp(p3+p4*log(S));
 			else LWP_predawn = LWP_stom_closure;
+            printf("p3:%.3f\tp4:%.3f\tS:%.3f\tlwp:%.3f\n",p3,p4,S,LWP_predawn);
 			break;
 		}
 	}

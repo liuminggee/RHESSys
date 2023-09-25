@@ -181,6 +181,9 @@ void	canopy_stratum_daily_I(
 	stratum[0].epv.psi_ravg = (stratum[0].defaults[0][0].epc.gs_ravg_days-1)/(stratum[0].defaults[0][0].epc.gs_ravg_days)* stratum[0].epv.psi_ravg +
 	 			1.0/(stratum[0].defaults[0][0].epc.gs_ravg_days) * stratum[0].epv.psi;
 
+    //printf("stratum[0].epv.psi:%.4f\trootzone.S:%.3f\n",stratum[0].epv.psi,stratum[0].rootzone.S);
+
+
 	if ( command_line[0].verbose_flag > 1 )
 		printf(" %8f", stratum[0].epv.psi);
 

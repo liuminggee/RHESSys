@@ -126,7 +126,7 @@ struct routing_list_object *construct_ddn_routing_topology(
 			patch[0].innundation_list[d].num_neighbours = assign_neighbours_in_hillslope(patch[0].innundation_list[d].neighbours, num_neighbours,  hillslope, routing_file);
 		
 		}
-		if (drainage_type == 2) {
+        if (drainage_type == ROAD) {
 			fscanf(routing_file,"%d %d %d %lf",
 				&patch_ID,
 				&zone_ID,

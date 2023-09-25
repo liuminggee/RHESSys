@@ -229,6 +229,7 @@ struct basin_object *construct_basin(
         command_line, world_file, num_world_base_stations,
         world_base_stations, defaults, base_station_ncheader, world
         );
+    basin[0].hillslopes[i]->basin = basin;                                      //09222023LML
 
     basin[0].area += basin[0].hillslopes[i][0].area;
     n_routing_timesteps += basin[0].hillslopes[i][0].area * basin[0].hillslopes[i][0].defaults[0][0].n_routing_timesteps;

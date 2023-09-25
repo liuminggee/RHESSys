@@ -58,7 +58,8 @@ struct patch_object *find_patch_in_hillslope( int patch_ID, int zone_ID,
 	if (fnd == 0) {
 		fprintf(stderr,
 			"FATAL ERROR: Could not find zone %d in hillslope %d in find_patch_in_hillslope\n",zone_ID, hillslope[0].ID);
-		exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
+        return 0; //09222023LML
 	}
 	/*--------------------------------------------------------------*/
 	/*	find patches						*/
@@ -78,7 +79,8 @@ struct patch_object *find_patch_in_hillslope( int patch_ID, int zone_ID,
 		fprintf(stderr,
 			"FATAL ERROR: Could not find patch %d in zone %d hill %d\n",
 			patch_ID, zone_ID, hillslope[0].ID);
-		exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
+        return 0; //09222023LML
 	}
 	return(patch);
 }

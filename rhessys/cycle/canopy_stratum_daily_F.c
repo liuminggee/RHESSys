@@ -927,7 +927,6 @@ void	canopy_stratum_daily_F(
 	/*--------------------------------------------------------------*/
 
 	if (stratum[0].snow_stored < ZERO)  {
-
 	stratum[0].gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
 		stratum[0].defaults[0][0].epc.psi_curve,

@@ -45,6 +45,7 @@ struct routing_list_object *construct_routing_topology(
 	/*--------------------------------------------------------------*/
 	//struct patch_object *find_patch(int, int, int, struct basin_object *);
 	struct patch_object *find_patch_in_hillslope(int, int, struct hillslope_object *);
+    struct hillslope_object *find_hillslope_in_basin(int, struct basin_object *);
 
 	int assign_neighbours_in_hillslope (struct neighbour_object *,
 		int,
@@ -121,7 +122,7 @@ struct routing_list_object *construct_routing_topology(
           if (patch[0].soil_defaults[0][0].m < ZERO) {
 		 	gamma = gamma * patch[0].soil_defaults[0][0].Ksat_0;
           } else {
-#ifndef LIU_GAMMA_TRANSMISSIVITY
+#ifndef LIU_GAMMA_TRANSMISSIVITY_NEW
             gamma = gamma * patch[0].soil_defaults[0][0].m * patch[0].soil_defaults[0][0].Ksat_0;   //08312022LML: seems wrong if suppose to use average Ksat
 #else
 
@@ -199,7 +200,14 @@ struct routing_list_object *construct_routing_topology(
 			if ( !surface ) {
 				patch[0].stream_gamma = gamma;
 				patch[0].road_cut_depth = width * tan(patch[0].slope);
-				stream = find_patch_in_hillslope(patch_ID, zone_ID, hillslope);
+                //09222023LML TODO: if the downstream of the road is another hillslope
+                //, need find the patch from that hillslope.
+                if (hill_ID != hillslope->ID) {
+                    struct hillslope_object *hill = find_hillslope_in_basin(hill_ID,hillslope->basin);
+                    stream = find_patch_in_hillslope(patch_ID, zone_ID, hill);
+                } else {
+                  stream = find_patch_in_hillslope(patch_ID, zone_ID, hillslope);
+                }
 				patch[0].next_stream = stream;
 			}
           }
