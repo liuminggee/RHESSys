@@ -136,6 +136,10 @@ void compute_subsurface_routing(struct command_line_object *command_line,
     //#pragma omp parallel for reduction(+ : preday_hillslope_rz_storage,preday_hillslope_unsat_storage,preday_hillslope_sat_deficit,preday_hillslope_return_flow,preday_hillslope_detention_store,hillslope_area)
     for (int i = 0; i < hillslope->route_list->num_patches; i++) {
         struct patch_object *patch = hillslope->route_list->list[i];
+
+        //if (patch[0].ID == 7646)
+        //    printf("start comp_subsurf patch[0].rz_storage:%f\n",patch[0].rz_storage);
+
 		patch[0].streamflow = 0.0;
         //07202023LML patch[0].return_flow = 0.0;
 		patch[0].base_flow = 0.0;
@@ -226,13 +230,17 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 		patch[0].preday_sat_deficit = patch[0].sat_deficit;*/
 
         //10172022LML seems no benifit #pragma omp parallel for
-		for (i = 0; i < hillslope->route_list->num_patches; i++) {
+        for (int i = 0; i < hillslope->route_list->num_patches; i++) {
             struct patch_object *patch = hillslope->route_list->list[i];
 //#ifdef LIU_OMP_PATCH_LOCK
 //            omp_set_lock(&locks_patch[0][patch[0].Unique_ID_index]);
 //            printf("compute_subsurface_routing:locked_patch:%d,thread:%d num_streads:%d\n"
 //                   ,patch[0].ID,omp_get_thread_num(),omp_get_num_threads());
 //#endif
+
+            //if (patch[0].ID == 7646)
+            //    printf("start k:%d comp_subsurf patch[0].rz_storage:%f\n",k,patch[0].rz_storage);
+
             patch[0].hourly_subsur2stream_flow = 0;
 			patch[0].hourly_sur2stream_flow = 0;
 			patch[0].hourly_stream_flow = 0;
@@ -259,6 +267,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 				update_drainage_land(patch, command_line, time_int,
 						verbose_flag);
 			}
+
+            //if (patch[0].ID == 7646)
+            //    printf("end k:%d comp_subsurf patch[0].rz_storage:%f\n",k,patch[0].rz_storage);
 //#ifdef LIU_OMP_PATCH_LOCK
 //            omp_unset_lock(&locks_patch[0][patch[0].Unique_ID_index]);
 //#endif
@@ -1016,6 +1027,9 @@ void compute_subsurface_routing(struct command_line_object *command_line,
             /*update accumulator variables                                            */
             /*-----------------------------------------------------------------------*/
             /* the accumulator is updated in update_hillslope_patch_accumulator.c in hillslope_daily_F.c*/
+
+            //if (patch[0].ID == 7646)
+            //    printf("end comp_subsurf patch[0].rz_storage:%f\n",patch[0].rz_storage);
             } //end i
         } //last timestep
 

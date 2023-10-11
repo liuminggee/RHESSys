@@ -544,6 +544,9 @@ void  update_drainage_land(
 		}
 		else infiltration = 0.0;
         double in_frac = infiltration / neigh[0].detention_store;
+
+        //printf("infiltration:%f\n",infiltration);
+
 		/*--------------------------------------------------------------*/
 		/* added an surface N flux to surface N pool	and		*/
 		/* allow infiltration of surface N				*/

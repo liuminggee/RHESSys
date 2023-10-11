@@ -237,8 +237,8 @@ double	compute_infiltration_patch(int verbose_flag,
       /*--------------------------------------------------------------*/
       /* use Ksat_vertical to limit infiltration only to pervious area */
       /*--------------------------------------------------------------*/
-
-      infiltration = infiltration * patch->Ksat_vertical;
+      if (patch->Ksat_vertical >= 0) //10042023LML some cases the world file is not generated correctly
+          infiltration = infiltration * patch->Ksat_vertical;
     }
     else {
       infiltration = 0;

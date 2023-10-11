@@ -148,18 +148,19 @@ double	compute_rain_stored(
 	/*  Update rain storage.										*/
 	/*	m = m							*/
 	/*--------------------------------------------------------------*/
-	rain_storage = min( stratum[0].rain_stored + potential_interception,
-	//	stratum[0].epv.all_pai
-		stratum[0].epv.all_pai_when_red //NREN 20180804 in update_phenology, if there is not beetle attack, the all_api_b == all_api
-		* stratum[0].defaults[0][0].specific_rain_capacity );
+    double max_rain_storage = stratum[0].epv.all_pai_when_red //NREN 20180804 in update_phenology, if there is not beetle attack, the all_api_b == all_api
+            * stratum[0].defaults[0][0].specific_rain_capacity;
+    double extra_rain_storage = max(stratum[0].rain_stored + potential_interception - max_rain_storage,0);
+    rain_storage = stratum[0].rain_stored + potential_interception - extra_rain_storage;
 	if( verbose_flag > 2)
 		printf("%8.6f ",rain_storage);
 	/*--------------------------------------------------------------*/
 	/*	Update rain throughfall.									*/
 	/*	m += m							*/
 	/*--------------------------------------------------------------*/
-	throughfall += max(potential_interception
-		- (rain_storage - stratum[0].rain_stored),0);
+    //throughfall += max(potential_interception
+    //	- (rain_storage - stratum[0].rain_stored),0);
+    throughfall += extra_rain_storage;
 	if( verbose_flag > 2)
 		printf("%8.6f ",throughfall);
 

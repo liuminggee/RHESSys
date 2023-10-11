@@ -1864,7 +1864,7 @@ struct patch_object
         double  Kdown_direct_subcanopy;         /* Kj/(m^2*day) */
         double  Kdown_diffuse_subcanopy;                /* Kj/(m^2*day) */
         double  Ksat_0;                 /* meteres/day  */
-        double  Ksat_vertical;          /* meters/day   */
+        double  Ksat_vertical;          /* meters/day   *///10052023LML note: it is unitless which is adjustment for impervious surface. 0: for impervious surface and 1 for natural land cover.
         double  lna;                    /* unitless     */
         double  lai;                    /* unitless     */
         double  Lup_soil;               /* Kj/(m^2*day) */

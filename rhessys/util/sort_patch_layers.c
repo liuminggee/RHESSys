@@ -61,6 +61,10 @@ void sort_patch_layers( struct patch_object *patch)
 		j = 0;
         while( (j<list_bottom) && ! close_enough(patch[0].canopy_strata[i][0].epv.height,
             patch[0].layers[j].height) ){
+
+            //printf("i:%d j:%d epv_height:%.3f layer_height:%.3f\n",
+            //       i,j,patch[0].canopy_strata[i][0].epv.height,patch[0].layers[j].height);
+
 			j++;
 		}
 		/*--------------------------------------------------------------*/
@@ -77,7 +81,15 @@ void sort_patch_layers( struct patch_object *patch)
 		}
 		else {
 			(patch[0].layers[j]).count++;
+            //10102023LML note: if patch and strata height are zero, multiple
+            //strates will be in this zero layer, i.e. count > 1 while the total
+            //cover fraction might be higher than 1
 		}
+
+        //if (patch[0].ID == 7918) {
+        //  printf("strata:%d j:%d,layer_height:%.3f epv_height:%.3f list_bottom:%d count:%d\n",
+        //       i,j,patch[0].layers[j].height,patch[0].canopy_strata[i][0].epv.height,list_bottom,patch[0].layers[j].count);
+        //}
 	}
 	/*--------------------------------------------------------------*/
 	/*	Define number of unique layers in this patch.		*/
@@ -95,7 +107,9 @@ void sort_patch_layers( struct patch_object *patch)
 	/*	Now construct a list of pointers to strata at each	*/
 	/*	height layer						*/
 	/*--------------------------------------------------------------*/
+
 	for ( i=0 ; i<patch[0].num_layers ; i++ ){
+
 		/*--------------------------------------------------------------*/
 		/*		Allocate the list for layer i			*/
 		/*--------------------------------------------------------------*/
@@ -118,6 +132,8 @@ void sort_patch_layers( struct patch_object *patch)
 		/*		Find all strata with height matching layer i	*/
 		/*--------------------------------------------------------------*/
 		k = 0;
+        //10102023LML
+        double max_cover_fraction = 0;
 		for ( j=0 ; j<patch[0].num_canopy_strata; j++ ){
 			/*--------------------------------------------------------------*/
 			/*			check if this stratum has layer i height*/
@@ -141,6 +157,8 @@ void sort_patch_layers( struct patch_object *patch)
 				/*		Keep a running total of the cover fraction in	*/
 				/*		this layer to check that it adds to 1.0		*/
 				/*--------------------------------------------------------------*/
+                if (patch[0].canopy_strata[j][0].cover_fraction > max_cover_fraction)
+                    max_cover_fraction = patch[0].canopy_strata[j][0].cover_fraction; //10102023LML
 				cover_fraction += patch[0].canopy_strata[j][0].cover_fraction;
 			}
 		}
@@ -164,11 +182,11 @@ void sort_patch_layers( struct patch_object *patch)
                        ,patch[0].canopy_strata[1][0].epv.height
                        ,patch[0].layers[i].height);
             */
-
 		}
-		else {
-			patch[0].layers[i].null_cover = 1.0 - cover_fraction;
-		}
+        //else {
+            //10102023LML patch[0].layers[i].null_cover = 1.0 - cover_fraction;
+        //}
+        patch[0].layers[i].null_cover = 1.0 - max_cover_fraction;
 	}
 	return;
 }

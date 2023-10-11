@@ -427,6 +427,11 @@ void		patch_daily_I(
 
 			strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
 			patch[0].preday_rain_stored += strata->cover_fraction * strata->rain_stored;
+
+            //if (patch[0].ID == 8066) {
+            //  printf("strata:%d cf:%lf preday_strata->rain_stored (mm):%lf\n",strata->ID, strata->cover_fraction, strata->rain_stored*1000);
+            //}
+
 			patch[0].preday_snow_stored += strata->cover_fraction * strata->snow_stored;
 			if ((strata[0].defaults[0][0].epc.edible == 1) && (strata[0].cs.leafc > ZERO)) {
 				edible_leafc += strata->cs.leafc * strata->cover_fraction;
@@ -445,6 +450,11 @@ void		patch_daily_I(
 				current_date );
 		}
 	}
+
+    //if (patch[0].ID == 8066) {
+    //  printf("patch[0].preday_rain_stored*1000:%lf litter.rain_stored:%lf\n",patch[0].preday_rain_stored*1000,patch[0].litter.rain_stored*1000);
+    //}
+
 	patch[0].grazing_Closs = min(edible_leafc, patch[0].grazing_Closs);
 	if (cnt > 0)
 		patch[0].grazing_mean_nc = grazing_mean_nc / cnt;
@@ -548,6 +558,9 @@ void		patch_daily_I(
     //06212023LML
     patch[0].preday_detention_store = patch[0].detention_store;
     patch[0].preday_unsat_storage = patch[0].unsat_storage;
+
+    //if (patch[0].ID == 7646) printf("patch[0].rz_storage:%f\n",patch[0].rz_storage);
+
     patch[0].preday_rz_storage = patch[0].rz_storage;
     patch[0].preday_sat_deficit = patch[0].sat_deficit;
     patch[0].preday_snowpack = patch[0].snowpack.water_depth + patch[0].snowpack.water_equivalent_depth;

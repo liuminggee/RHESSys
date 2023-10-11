@@ -16,7 +16,7 @@ QMAKE_CXXFLAGS += -fpermissive
 #-std=c++0x
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_CFLAGS += -fopenmp
-#QMAKE_LFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
 
 #QMAKE_CFLAGS += -STD=C99
 

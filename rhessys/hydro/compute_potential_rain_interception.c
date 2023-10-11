@@ -47,7 +47,7 @@ double	compute_potential_rain_interception(
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.				*/
 	/*--------------------------------------------------------------*/
-	double	potential_interception;
+    double	potential_interception = 0;
 	double	interception_coef;
 	/*--------------------------------------------------------------*/
 	/*	Compute amount potentially intercepted.			*/
@@ -64,11 +64,12 @@ double	compute_potential_rain_interception(
                              * stratum[0].defaults[0][0].specific_rain_capacity);
         potential_interception = min(interception_coef * rain
                                      ,maxint - stratum[0].rain_stored);
-    } else {
-		potential_interception = min(rain, (
-			stratum[0].defaults[0][0].specific_rain_capacity
-			- stratum[0].rain_stored));
-    }
+    } //else {
+        //10052023LML should be zero
+        //potential_interception = min(rain, (
+        //	stratum[0].defaults[0][0].specific_rain_capacity
+        //	- stratum[0].rain_stored));
+    //}
 
     //07132023LML confine maximum intercepted water to 4 mm according to https://en.wikipedia.org/wiki/Interception_(water)
 	potential_interception = max(potential_interception, 0.0);

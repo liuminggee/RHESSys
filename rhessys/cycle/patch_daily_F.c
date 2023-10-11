@@ -558,6 +558,9 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
    // preday_rootzone_depth = patch[0].rootzone.depth; //NREN 20190914 for move root water
 
+
+    //if (patch[0].ID == 7646) printf("start patch[0].rz_storage:%f\n",patch[0].rz_storage);
+
 	if (patch[0].base_stations != NULL) {
 		inx = patch[0].base_stations[0][0].dated_input[0].irrigation.inx;
 		if (inx > -999) {
@@ -580,8 +583,8 @@ void		patch_daily_F(
 	/*--------------------------------------------------------------*/
 	patch[0].rain_throughfall = zone[0].rain + irrigation;
 
-    //if (patch[0].ID == 81497 && current_date.year == 1984)
-    //printf("year:%d month:%d day:%d zone[0].rain:%lf rain_throughfall:%lf \n",
+    //if (patch[0].ID == 7918)
+    //  printf("year:%d month:%d day:%d zone[0].rain:%lf rain_throughfall:%lf \n",
     //       current_date.year,current_date.month,current_date.day,
     //       zone[0].rain*1000,
     //       patch[0].rain_throughfall*1000);
@@ -694,20 +697,21 @@ void		patch_daily_F(
     //06162023LML
     //The total strata canopy cover is not 1! Make the adjustment.
     //TODO: check where the cover_fraction is updated!!
-    float *sum_cover_fraction = (float *)calloc(patch[0].num_layers,sizeof(float));
-    for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-      sum_cover_fraction[layer] = 0;
-      for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ) {
-        sum_cover_fraction[layer] += patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->cover_fraction;
-      }
-      if (sum_cover_fraction[layer] > 1.0) {
-        //printf("Warning: patchID:%d layer:(%d/%d) Sum canopy cover (%lf) > 1\n",
-        //       patch[0].ID,layer,patch[0].num_layers,sum_cover_fraction[layer]);
-        for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ) {
-            patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->cover_fraction /= sum_cover_fraction[layer];
-        }
-      }
-    }// end layer
+    //10052023LML:  since the layers can co-exist over various height, the assumption is not correct
+    //float *sum_cover_fraction = (float *)calloc(patch[0].num_layers,sizeof(float));
+    //for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+    //  sum_cover_fraction[layer] = 0;
+    //  for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ) {
+    //    sum_cover_fraction[layer] += patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->cover_fraction;
+    //  }
+    //  if (sum_cover_fraction[layer] > 1.0) {
+    //    //printf("Warning: patchID:%d layer:(%d/%d) Sum canopy cover (%lf) > 1\n",
+    //    //       patch[0].ID,layer,patch[0].num_layers,sum_cover_fraction[layer]);
+    //    for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ) {
+    //        patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->cover_fraction /= sum_cover_fraction[layer];
+    //    }
+    //  }
+    //}// end layer
 
 
 
@@ -936,7 +940,7 @@ void		patch_daily_F(
 						patch,
 						&(patch[0].layers[layer]),
 						patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])],
-            					patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
+                        patch[0].shadow_strata[(patch[0].layers[layer].strata[stratum])],
 						command_line,
 						event,
 						current_date );
@@ -965,8 +969,8 @@ void		patch_daily_F(
 			patch[0].ustar = patch[0].ustar_final;
 			patch[0].T_canopy = patch[0].T_canopy_final;
 
-            //if (patch[0].ID == 81497 && current_date.year == 1984)
-            //printf("year:%d month:%d day:%d rain_throughfall_final:%lf \n",
+            //if (patch[0].ID == 7918)
+            //  printf("year:%d month:%d day:%d rain_throughfall_final:%lf \n",
             //       current_date.year,current_date.month,current_date.day,
             //       patch[0].rain_throughfall_final*1000);
 
@@ -1182,10 +1186,10 @@ void		patch_daily_F(
 			patch[0].ga = 0.0;
 			patch[0].wind = 0.0;
 
-            //if (patch[0].ID == 81497 && current_date.year == 1984)
-            //printf("year:%d month:%d day:%d snow_melt:%lf rain_throughfall_final:%lf \n",
+            //if (patch[0].ID == 7918 && patch[0].rain_throughfall >= 0.06)
+            //  printf("year:%d month:%d day:%d snow_melt:%lf rain_throughfall_final:%lf \n",
             //       current_date.year,current_date.month,current_date.day,
-            //       patch[0].snow_melt,
+            //       patch[0].snow_melt*1000,
             //       patch[0].rain_throughfall*1000);
 
 		}
@@ -1225,10 +1229,10 @@ void		patch_daily_F(
 		patch[0].snowpack.height = 0.0;
 		}
 
-    //if (patch[0].ID == 81497 && current_date.year == 1984)
-    //printf("year:%d month:%d day:%d snowpack.water_equivalent_depth:%lf rain_throughfall_final:%lf \n",
+    //if (patch[0].ID == 7918)
+    //  printf("year:%d month:%d day:%d snowpack.water_equivalent_depth:%lf rain_throughfall_final:%lf \n",
     //       current_date.year,current_date.month,current_date.day,
-    //       patch[0].snowpack.water_equivalent_depth,
+    //       patch[0].snowpack.water_equivalent_depth*1000,
     //       patch[0].rain_throughfall*1000);
 
 
@@ -1331,12 +1335,13 @@ void		patch_daily_F(
 			patch[0].wind_final = patch[0].layers[layer].null_cover * patch[0].wind;
 			patch[0].T_canopy_final = patch[0].layers[layer].null_cover * patch[0].T_canopy;
 
-            //if (patch[0].ID == 81497 && current_date.year == 1984) {
-            //  printf("year:%d month:%d day:%d layers[layer].height:%lf pond_height:%lf rain_throughfall:%lf\n",
-            //       current_date.year,current_date.month,current_date.day,
+            //if (patch[0].ID == 7918) {
+            //  printf("year:%d month:%d day:%d layer:%d layers[layer].height:%lf pond_height:%lf rain_throughfall:%lf\n",
+            //       current_date.year,current_date.month,current_date.day,layer,
             //       patch[0].layers[layer].height*1000,
             //       pond_height*1000,
             //       patch[0].rain_throughfall*1000);
+
 
             //  if (current_date.month == 1 && current_date.day == 23) {
             //    int debug = 1;
@@ -1347,9 +1352,9 @@ void		patch_daily_F(
             //  printf("Layers below the pond:\n");
 
 			for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
-                  //if (patch[0].ID == 81497 && current_date.year == 1984)
-                  //  printf("Layers below the pond:\n patch[0].num_layers:%d layer:%d num_stratum:%d stratum:%d\n"
-                  //        ,patch[0].num_layers,layer,patch[0].layers[layer].count,stratum);
+                  //if (patch[0].ID == 7918)
+                  //  printf("before canopy_stratum_daily_F Layers below the pond:\n patch[0].num_layers:%d layer:%d num_stratum:%d stratum:%d rain_throughfall_final:%lf\n"
+                  //        ,patch[0].num_layers,layer,patch[0].layers[layer].count,stratum,patch[0].rain_throughfall_final*1000);
 
 					canopy_stratum_daily_F(
 						world,
@@ -1363,10 +1368,13 @@ void		patch_daily_F(
 						command_line,
 						event,
 						current_date );
+
+                    //printf("after canopy_stratum_daily_F Layers below the pond:\n patch[0].num_layers:%d layer:%d num_stratum:%d stratum:%d rain_throughfall_final:%lf\n"
+                    //      ,patch[0].num_layers,layer,patch[0].layers[layer].count,stratum,patch[0].rain_throughfall_final*1000);
 			}
 
-            //if (patch[0].ID == 81497 && current_date.year == 1984)
-            //printf("year:%d month:%d day:%d after_strata rain_throughfall_final:%lf\n",
+            //if (patch[0].ID == 7918)
+            //  printf("year:%d month:%d day:%d after_strata rain_throughfall_final:%lf\n",
             //       current_date.year,current_date.month,current_date.day,
             //       patch[0].rain_throughfall_final*1000);
 
@@ -1385,8 +1393,8 @@ void		patch_daily_F(
 		}
 	}
 
-    //if (patch[0].ID == 81497 && current_date.year == 1984)
-    //printf("year:%d month:%d day:%d below_pond_rain_throughfall_final:%lf \n",
+    //if (patch[0].ID == 7918)
+    //  printf("year:%d month:%d day:%d below_pond_rain_throughfall_final:%lf \n",
     //       current_date.year,current_date.month,current_date.day,
     //       patch[0].rain_throughfall_final*1000);
 
@@ -1519,11 +1527,17 @@ void		patch_daily_F(
 	/*	Add rain throughfall to detention store for infiltration	*/
 	/*	and evaporation routines.									*/
 
+    //if (patch[0].ID == 7918)
+    //  printf("year:%d month:%d day:%d detention_store(mm):%lf rain_throughfall(mm):%lf \n",
+    //       current_date.year,current_date.month,current_date.day,
+    //       patch[0].detention_store*1000,
+    //       patch[0].rain_throughfall*1000);
+
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
 	patch[0].surface_NO3 += 0.5 * patch[0].NO3_throughfall;
 
-    //if (patch[0].ID == 64301 && current_date.year == 1984)
-    //printf("year:%d month:%d day:%d detention_store(mm):%lf rain_throughfall(mm):%lf \n",
+    //if (patch[0].ID == 7918)
+    //  printf("year:%d month:%d day:%d detention_store(mm):%lf rain_throughfall(mm):%lf \n",
     //       current_date.year,current_date.month,current_date.day,
     //       patch[0].detention_store*1000,
     //       patch[0].rain_throughfall*1000);
@@ -1548,8 +1562,8 @@ void		patch_daily_F(
 
 	patch[0].detention_store += 0.5 * patch[0].rain_throughfall;
 
-
-    //printf("detention_store:%lf rain_throughfall:%lf\n"
+    //if (patch[0].ID == 7918)
+    //  printf("detention_store:%lf rain_throughfall:%lf\n"
     //       ,patch[0].detention_store * 1000
     //       ,patch[0].rain_throughfall * 1000);
 
@@ -1675,6 +1689,10 @@ void		patch_daily_F(
 		/*	unsat_zone and sat_zone transpiration demand based on	*/
 		/*	its rooting depth profile.				*/
 		/*--------------------------------------------------------------*/
+
+        //printf("num_layers:%d layer:%d num_stratum:%d\n",patch[0].num_layers,layer,patch[0].layers[layer].count);
+
+
 		for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
 			strata =
 				patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
@@ -1696,6 +1714,12 @@ void		patch_daily_F(
 			/*      Add up canopy snow and rain stored for water balance.   */
 			/*--------------------------------------------------------------*/
 			patch[0].rain_stored += strata->cover_fraction * strata->rain_stored ;
+
+
+            //if (patch[0].ID == 8066) {
+            //  printf("strata:%d cf:%.2f strata->rain_stored(mm):%lf\n",strata->ID, strata->cover_fraction, strata->rain_stored*1000);
+            //}
+
 			patch[0].snow_stored += strata->cover_fraction * strata->snow_stored ;
 			/*--------------------------------------------------------------*/
 			/*	Add uptranspiration demand 				*/
@@ -2439,7 +2463,7 @@ void		patch_daily_F(
 		- patch[0].delta_snowpack - patch[0].delta_rain_stored
 		- patch[0].delta_snow_stored - patch[0].detention_store;
 
-    //if (patch[0].ID == 64301) {
+    if (patch[0].ID == 7918 && fabs(patch[0].water_balance) > 0.05) {
       if ((patch[0].water_balance > 0.00000001)||
           (patch[0].water_balance < -0.00000001)){
         printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for patch %d of type %d",
@@ -2465,9 +2489,14 @@ void		patch_daily_F(
         printf("\n\tdelta_sat_deficit:%lf (current:%lf preday:%lf)",(patch[0].sat_deficit - patch[0].preday_sat_deficit)*1000,patch[0].sat_deficit*1000,patch[0].preday_sat_deficit*1000);
         printf("\n\tdelta_snowpack:%lf",patch[0].delta_snowpack*1000);
         printf("\n\tdelta_rain_stored:%lf (current:%lf preday:%lf)",patch[0].delta_rain_stored*1000, patch[0].rain_stored*1000, patch[0].preday_rain_stored*1000);
+        printf("\n\tpatch[0].litter.rain_stored:%lf",patch[0].litter.rain_stored*1000);
         printf("\n\tdelta_snow_stored:%lf\n",patch[0].delta_snow_stored*1000);
 
       }
+    }
+
+    //if (patch[0].ID == 8066) {
+    //  printf("patch[0].rain_stored*1000:%lf litter.rain_stored:%lf\n",patch[0].rain_stored*1000,patch[0].litter.rain_stored*1000);
     //}
 
 
@@ -2618,19 +2647,22 @@ if ( command_line[0].verbose_flag == -5 ){
 
 
         //06162023LML recover the canopy cover adjustment
-        for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-          if (sum_cover_fraction[layer] > 1.0) {
-            for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ) {
-                patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->cover_fraction *= sum_cover_fraction[layer];
-            }
-          }
-        }// end layer
-        free(sum_cover_fraction);
+        //10052023LML commented out
+        //for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+        //  if (sum_cover_fraction[layer] > 1.0) {
+        //    for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ) {
+        //        patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])]->cover_fraction *= sum_cover_fraction[layer];
+        //    }
+        //  }
+        //}// end layer
+        //free(sum_cover_fraction);
 
 
     //if ((patch[0].ID == 64301) && (patch[0].unsat_storage > 0)) {
     //  printf("after daily_f unsat_storage:%lf\n",patch[0].unsat_storage);
     //}
+
+    //if (patch[0].ID == 7646) printf("end patch[0].rz_storage:%f\n",patch[0].rz_storage);
 
 	return;
 } /*end patch_daily_F.c*/

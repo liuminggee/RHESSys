@@ -1419,6 +1419,9 @@ void	canopy_stratum_daily_F(
 		&(rain_throughfall),
 		stratum);
 
+    //if (patch[0].ID == 8066)
+    //    printf("stratum[0].ID:%d cf:%.2f rain_stored(mm):%lf\n",stratum[0].ID,stratum[0].cover_fraction,stratum[0].rain_stored);
+
 	if (stratum[0].rain_stored > 0){
 	    NO3_stored = (stratum[0].rain_stored + stratum[0].snow_stored)
 	      	/ (stratum[0].rain_stored + stratum[0].snow_stored + rain_throughfall + snow_throughfall)
@@ -1990,31 +1993,50 @@ void	canopy_stratum_daily_F(
 	/*	fraction - we have check cover fractions sum to 1 in 	*/
 	/*	a layer when constructing the patch.			*/
 	/*--------------------------------------------------------------*/
-	patch[0].Kdown_direct_final += Kdown_direct * stratum[0].cover_fraction;
-	patch[0].Kup_direct_final += Kup_direct * stratum[0].cover_fraction;
-	patch[0].PAR_direct_final += PAR_direct * stratum[0].cover_fraction;
-	patch[0].Kdown_diffuse_final += Kdown_diffuse * stratum[0].cover_fraction;
-	patch[0].Kup_diffuse_final += Kup_diffuse * stratum[0].cover_fraction;
-	patch[0].PAR_diffuse_final += PAR_diffuse * stratum[0].cover_fraction;
-	patch[0].Ldown_final += patch[0].Ldown * stratum[0].cover_fraction;
-	patch[0].Kstar_canopy_final += (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse) * stratum[0].cover_fraction;
-	patch[0].LE_canopy_final += Rnet_used * stratum[0].cover_fraction;
+
+    //10102023LML: there is a problem for layer structure of strata.
+    //The cover_fraction should not be stratum fraction over the patch,
+    //but just be the fraction over this layer
+    double stratum_cover_fraction_layer = stratum[0].cover_fraction;
+    if (layer->count > 1) {
+        double total_cover = 0.;
+        for (int s=0 ; s<layer->count; s++) {
+            total_cover += patch[0].canopy_strata[layer->strata[s]]->cover_fraction;
+        }
+        stratum_cover_fraction_layer = (1. - layer->null_cover) * stratum_cover_fraction_layer / total_cover;
+    }
+    //for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
+
+
+    patch[0].Kdown_direct_final += Kdown_direct * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].Kup_direct_final += Kup_direct * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].PAR_direct_final += PAR_direct * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].Kdown_diffuse_final += Kdown_diffuse * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].Kup_diffuse_final += Kup_diffuse * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].PAR_diffuse_final += PAR_diffuse * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].Ldown_final += patch[0].Ldown * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].Kstar_canopy_final += (stratum[0].Kstar_direct + stratum[0].Kstar_diffuse) * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].LE_canopy_final += Rnet_used * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
 	patch[0].rain_throughfall_final += rain_throughfall
-		* stratum[0].cover_fraction;
+        * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
 	patch[0].snow_throughfall_final += snow_throughfall
-		* stratum[0].cover_fraction;
+        * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
 	patch[0].NO3_throughfall_final += NO3_throughfall
-		* stratum[0].cover_fraction;
+        * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
 	stratum[0].NO3_stored = NO3_stored;
+
+    //if (patch[0].ID == 7918)
+    //  printf("canopy_stratum_daily_F.c strata:%d rain_throughfall_final:%lf\n"
+    //        ,stratum[0].ID,patch[0].rain_throughfall_final*1000);
 
 	// // calculate et just like in patch, but also by cover fraction, a variable we include MCK, patch - level variable multiplied by stratum cover fraction, just like those variables above
 
 	patch[0].ga_final = ga;
 	patch[0].gasnow_final = gasnow;
-	patch[0].wind_final += wind * stratum[0].cover_fraction;
-	patch[0].windsnow_final += windsnow * stratum[0].cover_fraction;
-	patch[0].ustar_final += ustar * stratum[0].cover_fraction;
-	patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum[0].cover_fraction;
+    patch[0].wind_final += wind * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].windsnow_final += windsnow * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].ustar_final += ustar * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
+    patch[0].T_canopy_final += (zone[0].metv.tavg + deltaT) * stratum_cover_fraction_layer; //stratum[0].cover_fraction;
 
 	/* track variables for fire spread */
 	if (command_line[0].firespread_flag == 1) {
