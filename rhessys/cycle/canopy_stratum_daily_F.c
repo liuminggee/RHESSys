@@ -2003,7 +2003,9 @@ void	canopy_stratum_daily_F(
         for (int s=0 ; s<layer->count; s++) {
             total_cover += patch[0].canopy_strata[layer->strata[s]]->cover_fraction;
         }
-        stratum_cover_fraction_layer = (1. - layer->null_cover) * stratum_cover_fraction_layer / total_cover;
+        if (!close_enough(total_cover,0))
+            stratum_cover_fraction_layer = (1. - layer->null_cover) * stratum_cover_fraction_layer / total_cover;
+        else stratum_cover_fraction_layer = 0;
     }
     //for ( stratum=0 ; stratum<patch[0].layers[layer].count; stratum++ ){
 

@@ -2664,5 +2664,8 @@ if ( command_line[0].verbose_flag == -5 ){
 
     //if (patch[0].ID == 7646) printf("end patch[0].rz_storage:%f\n",patch[0].rz_storage);
 
-	return;
+    //printf("patch_ID:%d\tpatch[0].detention_store:%.2f\n",patch[0].ID,patch[0].detention_store*1000);
+
+
+    return;
 } /*end patch_daily_F.c*/
