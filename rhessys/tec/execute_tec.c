@@ -93,6 +93,10 @@
 #include "rhessys.h"
 #include "functions.h"
 
+#ifndef MAX_LINE_LENGTH
+#define MAX_LINE_LENGTH 1024
+#endif
+int numer_sections_char_array(char* line);
 void	execute_tec(
 					struct	tec_object *tecfile ,
 					struct command_line_object *command_line,
@@ -242,10 +246,10 @@ void	execute_tec(
 		/*		Perform the tec event.									*/
 		/*--------------------------------------------------------------*/
         handle_event(event,command_line,current_date,world);
-#ifdef LIU_BURN_ALL_AT_ONCE
-        //printf("Event: year:%d mon:%d day:%d command:%s\n",event[0].cal_date.year,
-        //        event[0].cal_date.month,event[0].cal_date.day,event[0].command);
-#endif
+//#ifdef LIU_BURN_ALL_AT_ONCE
+        printf("Event: year:%d mon:%d day:%d command:%s option:%s\n",event[0].cal_date.year,
+                event[0].cal_date.month,event[0].cal_date.day,event[0].command,event[0].option);
+//#endif
 		/*--------------------------------------------------------------*/
 		/*		read the next tec file entry.							*/
 		/*		if we are not at the end of the tec file.				*/
@@ -254,12 +258,32 @@ void	execute_tec(
 			/*--------------------------------------------------------------*/
 			/*			read in the next tec line.							*/
 			/*--------------------------------------------------------------*/
-			check = fscanf(tecfile[0].tfile,"%d %d %d %d %s\n",
+            char line[MAX_LINE_LENGTH];
+            char *token;
+            // Read a line from the file
+            if (fgets(line, MAX_LINE_LENGTH, tecfile[0].tfile) == NULL) {
+              printf("End of file reached or an error occurred while reading.\n");
+            }
+            //printf("Tokens: %d\n", numer_sections_char_array(line));
+            if (numer_sections_char_array(line) == 5) {
+              //printf("line:%s\n",line);
+              memset(event[0].option, '\0', sizeof(event[0].option));
+              //check = fscanf(tecfile[0].tfile,"%d %d %d %d %s\n",
+              check = sscanf(line,"%d %d %d %d %s\n",
 				&(event[0].cal_date.year),
 				&(event[0].cal_date.month),
 				&(event[0].cal_date.day),
 				&(event[0].cal_date.hour),
 				event[0].command);
+            } else if (numer_sections_char_array(line) == 6) {
+                check = sscanf(line,"%d %d %d %d %s %s\n",
+                  &(event[0].cal_date.year),
+                  &(event[0].cal_date.month),
+                  &(event[0].cal_date.day),
+                  &(event[0].cal_date.hour),
+                  event[0].command,
+                  event[0].option);
+            }
 			/*--------------------------------------------------------------*/
 			/*			report an error if for some reason we cant read it	*/
 			/*--------------------------------------------------------------*/
@@ -473,9 +497,11 @@ void	execute_tec(
 				/*--------------------------------------------------------------*/
                 if (command_line[0].firespread_flag == 1)
                 {
-#ifdef LIU_BURN_ALL_AT_ONCE
-                    if (command_line[0].burn_on_flag == 1)
-#endif
+//#ifdef LIU_BURN_ALL_AT_ONCE
+                    if ((!command_line[0].user_defined_fire_event_flag) ||
+                         (command_line[0].user_defined_fire_event_flag &&
+                          command_line[0].burn_on_flag == 1))
+//#endif
 					execute_firespread_event(
 						world,
 						command_line,
@@ -581,3 +607,24 @@ void	execute_tec(
 		} /*end while*/
 		return;
 } /*end execute_tec.c*/
+
+//get total number of sections from a char array
+int numer_sections_char_array(char* line) {
+    char *token;
+    // Read a line from the file
+    char *cline = malloc(strlen(line) + 1);
+    int tnum = 0;
+    if (cline != NULL) {
+        strcpy(cline, line);
+        cline[strcspn(cline, "\n")] = '\0';
+        token = strtok(cline, " \t");
+
+        while (token != NULL) {
+          //printf("Token: %s\n", token);
+          token = strtok(NULL, " \t");
+          tnum++;
+        }
+        free(cline);
+    }
+    return tnum;
+}

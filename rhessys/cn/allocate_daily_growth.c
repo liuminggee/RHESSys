@@ -347,7 +347,12 @@ int allocate_daily_growth(int nlimit,
 	/*---------------------------------------------------------------------------	*/
     //12162022LML double lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla;
     double lai = (cs->leafc + cdf->cpool_to_leafc) * epc.proj_sla;
-    excess_lai = lai - epc.max_lai;
+
+    //02132024LML
+    double max_lai = epc.max_lai;
+    if (epc.veg_type == TREE) max_lai = fmin(epc.max_lai,cs->max_leafc * epc.proj_sla);
+
+    excess_lai = lai - max_lai;
 
     //printf("month:%d\tday:%d\theight:%lf\tlai:%lf\texcess_lai:%lf\tns_limit:%d\tavailc:%lf\tmr:%lf\tpsn_cpool:%lf\tplant_calloc:%lf\texcell_c_gC:%lf\tleafc:%lf\ttransfer:%lf\tstore:%lf\tcpool:%lf\n"
     //       ,current_date.month,current_date.day,epv->height

@@ -118,7 +118,11 @@ int allocate_annual_growth(				int id,
 	/*	carbon in excess of that required for max LAI */
 	/*	is re-allocated to stemwood; for grasses it is allocated to roots */
 	/*--------------------------------------------------------------*/
-   	excess_lai = (cs->leafc + cs->leafc_store + cs->leafc_transfer) * epc.proj_sla - epc.max_lai;
+
+
+    double max_lai = epc.max_lai;
+    if (epc.veg_type == TREE) max_lai = fmin(epc.max_lai,cs->max_leafc * epc.proj_sla);
+    excess_lai = (cs->leafc + cs->leafc_store + cs->leafc_transfer) * epc.proj_sla - max_lai;
  	if ( excess_lai > ZERO) {
 
                 excess_carbon = excess_lai / epc.proj_sla;
@@ -502,30 +506,30 @@ int allocate_annual_growth(				int id,
 			ndf->livestemn_store_to_livestemn_transfer = ns->livestemn_store;
 
             //211019LML Should move the carbon to litter pool before initialize to zero!!!
-#ifndef LIU_BURN_ALL_AT_ONCE
-			cs->live_stemc = 0.0;
-			cs->dead_stemc = 0.0;
-			cs->live_crootc = 0.0;
-			cs->dead_crootc = 0.0;
-			ns->live_stemn = 0.0;
-			ns->dead_stemn = 0.0;
-			ns->live_crootn = 0.0;
-			ns->dead_crootn = 0.0;
+//#ifndef LIU_BURN_ALL_AT_ONCE
+            cs->live_stemc = 0.0;
+            cs->dead_stemc = 0.0;
+            cs->live_crootc = 0.0;
+            cs->dead_crootc = 0.0;
+            ns->live_stemn = 0.0;
+            ns->dead_stemn = 0.0;
+            ns->live_crootn = 0.0;
+            ns->dead_crootn = 0.0;
 
-			cs->deadstemc_store =  0.0;
-			cs->deadcrootc_store =  0.0;
-			ns->deadstemn_store =  0.0;
-			ns->deadcrootn_store =  0.0;
+            cs->deadstemc_store =  0.0;
+            cs->deadcrootc_store =  0.0;
+            ns->deadstemn_store =  0.0;
+            ns->deadcrootn_store =  0.0;
 
-			cs->livestemc_transfer =  0.0;
-			cs->deadstemc_transfer =  0.0;
-			cs->livecrootc_transfer =  0.0;
-			cs->deadcrootc_transfer =  0.0;
-			ns->livestemn_transfer =  0.0;
-			ns->deadstemn_transfer =  0.0;
-			ns->livecrootn_transfer =  0.0;
-			ns->deadcrootn_transfer =  0.0;
-#endif
+            cs->livestemc_transfer =  0.0;
+            cs->deadstemc_transfer =  0.0;
+            cs->livecrootc_transfer =  0.0;
+            cs->deadcrootc_transfer =  0.0;
+            ns->livestemn_transfer =  0.0;
+            ns->deadstemn_transfer =  0.0;
+            ns->livecrootn_transfer =  0.0;
+            ns->deadcrootn_transfer =  0.0;
+//#endif
 
 			cdf->livestemc_store_to_livestemc_transfer = 0.0;
 			cdf->deadstemc_store_to_deadstemc_transfer = 0.0;
@@ -599,5 +603,10 @@ int allocate_annual_growth(				int id,
 		}
 	}
 
+    //02132024LML
+    double total_stemc = cs->live_stemc + cs->dead_stemc;
+    cs->max_leafc = epc.allomatric_c * powf(total_stemc,epc.allomatric_d);
+    if (cs->max_leafc < epc.resprout_leaf_carbon)
+        cs->max_leafc = epc.resprout_leaf_carbon;
 	return (!ok);
 } /* end allocate_annual_growth */

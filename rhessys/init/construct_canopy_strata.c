@@ -766,6 +766,15 @@ struct canopy_strata_object *construct_canopy_strata(
 			world_base_stations);
 	} /*end for*/
 
+
+    //02132024LML
+    double total_stemc = canopy_strata[0].cs.live_stemc + canopy_strata[0].cs.dead_stemc;
+    canopy_strata[0].cs.max_leafc = canopy_strata[0].defaults[0][0].epc.allomatric_c
+                                    * powf(total_stemc,canopy_strata[0].defaults[0][0].epc.allomatric_d);
+    if (canopy_strata[0].cs.max_leafc < canopy_strata[0].defaults[0][0].epc.resprout_leaf_carbon)
+        canopy_strata[0].cs.max_leafc = canopy_strata[0].defaults[0][0].epc.resprout_leaf_carbon;
+
+
 	if(paramPtr!=NULL){
 	  free(paramPtr);
 	}
@@ -845,5 +854,7 @@ int set_zero_strata_storage(struct canopy_strata_object *canopy_strata)
     canopy_strata->epv.wstress_days = 0;
     canopy_strata->epv.max_fparabs = 0;
     canopy_strata->epv.min_vwc = 0.0;
+
+    canopy_strata->cs.max_leafc = 0;
     return 0;
 }

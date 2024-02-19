@@ -203,6 +203,41 @@
 #define P1HIGH 5
 #define P2HIGH 6
 
+//01122024LML
+//The following option is the default for WMFire spread model
+#define FIRE_SPREAD_EFFECT_DEFAULT 0
+//The following option is user defined the mortalities through the command line
+#define FIRE_SPREAD_EFFECT_PREDEFINED_MORTALITY 1
+//The following option is user defined the soil burnt severity through tech file
+#define FIRE_SPREAD_EFFECT_PREDEFINED_SOIL_BURNT_SEVERITY 2
+
+//#ifdef LIU_BURN_ALL_AT_ONCE
+//12222023 LML constant for burnt severity
+#define MTBS_BURNT_SEVERITY_NUMCLASSES 7
+#define MTBS_BURNT_SEVERITY_BACKGROUND 0
+#define MTBS_BURNT_SEVERITY_UNBURNTOLOW 1
+#define MTBS_BURNT_SEVERITY_LOW 2
+#define MTBS_BURNT_SEVERITY_MODERATE 3
+#define MTBS_BURNT_SEVERITY_HIGH 4
+#define MTBS_BURNT_SEVERITY_INCREASEDGREENESS 5
+#define MTBS_BURNT_SEVERITY_NONMAPPING 6
+
+#define BURNT_SEVERITY_USE_COMMAND_ARGUMENTS -9999
+#define BURNT_SEVERITY_USE_BURNT_SEVERITY_MAP 9999
+
+//BURNT_SEVERITY_LOOKUP_table
+#define BS_LITTER_LOSS_F 0
+#define BS_SOIL_F 1
+#define BS_OVERCANPY_F 2
+#define BS_UNDERCANOPY_F 3
+#define BS_PSPREAD_F 4
+#define BS_NUMCLASSES 5
+
+extern double MTBS_sbs_table[MTBS_BURNT_SEVERITY_NUMCLASSES][BS_NUMCLASSES];
+
+//#endif
+
+
 //06212023 LML: DEFINE WATER STRATA TYPE
 #define STRATUM_WATER 6
 
@@ -2050,9 +2085,12 @@ struct patch_object
 /*----------------------------------------------------------*/
 
         double  burn;                           /* 0-1 % burned */
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
         int    fire_effect_processed;           /* 0 (not processed) or 1 (processed) */
-#endif
+        //12222023LML user inputs on burnt severity
+        int burnt_severity_acount[MTBS_BURNT_SEVERITY_NUMCLASSES];
+        int dominant_burnt_severity_type;
+//#endif
         double  litterc_burned;                  /* kgC/m2 total litter carbon consumed by fire ; from fire effect model*/
         double  overstory_burn;                 /* 0-1 % save the overstory burned for burn the beetle-caused snag burn NREN 20190914 */
         double  net_plant_psn;                  /* kgC/m2 net carbon flux into patch */
@@ -2315,8 +2353,19 @@ struct  command_line_object
         int             version_flag;
         int		FillSpill_flag;
         int		evap_use_longwave_flag;
-#ifdef LIU_BURN_ALL_AT_ONCE
+        int             user_defined_fire_event_flag;                           //01172024LML
+        int             fire_spread_and_effect_mode;                            //01122024LML
+                                                                                //FIRE_SPREAD_EFFECT_DEFAULT 0
+                                                                                //FIRE_SPREAD_EFFECT_PREDEFINED_MORTALITY 1
+                                                                                //FIRE_SPREAD_EFFECT_PREDEFINED_SOIL_BURNT_SEVERITY 2
+
+//#ifdef LIU_BURN_ALL_AT_ONCE
         int             burn_on_flag;
+        int             burn_on_severity;                                       //01092024LML
+                                                                                //BURNT_SEVERITY_USE_COMMAND_ARGUMENTS: use argument to define mortality;
+                                                                                //0-6: use same severity for all patches;
+                                                                                //BURNT_SEVERITY_USE_BURNT_SEVERITY_MAP: use raster (ascii) input
+        char            burn_on_severity_filename[TEC_CMD_LEN];                 //01092024LML
         int             fire_mortality_flag;
         double          fire_pspread;                                           //0-1
         double          fire_overstory_mortality_rate;
@@ -2329,7 +2378,7 @@ struct  command_line_object
         double          fire_sc_kcons;
         double          fire_sc_ko_mort1;
         double          fire_sc_ko_mort2;
-#endif
+//#endif
         int             fire_spin_flag;
         int             fire_spin_period;                                       //years per spin (weather start from first year)
         int             fire_spins;                                             //number of spins
@@ -2402,6 +2451,7 @@ struct tec_entry
         {
         struct  date cal_date;
         char    command[TEC_CMD_LEN];
+        char    option[TEC_CMD_LEN];                                            //12132023 LML option for the events, such as filename, or magnitude, etc.
         };
 
 
@@ -2499,6 +2549,8 @@ struct cstate_struct
     double live_crootc;     /* (kgC/m2) live coarse root C */
     double dead_crootc;     /* (kgC/m2) dead coarse root C */
     double frootc;          /* (kgC/m2) fine root C */
+
+    double max_leafc;       /* (kgC/m2) the maximum leafc according to allometric relationships */ //02132024LML
 
     double snagc; //beetle snag pool
     double redneedlec; // dead leaf after beetle attack
@@ -2969,6 +3021,9 @@ struct epconst_struct
     double Tacclim_days;  /* num days for temperature acclimation */
     double Tacclim_slp;  /* slope for temperature acclimation adjutment to Q10 */
     double Tacclim_intercpt;  /* intercept for temperature acclimation for temperature acclimation adjustment to Q10 */
+    //02132024LML allometric relationship
+    double allomatric_c;  //max LAI = allomatric_c * pow(stemC,allomatric_d)
+    double allomatric_d;
 } ;
 
 /*----------------------------------------------------------*/
@@ -3253,6 +3308,7 @@ struct patch_fire_object
     struct fire_default_object *defaults;
     double elev; // elevation if read in from grid
     int wui_flag; // a flag, 1 if pixel within wui buffer, 0 otherwise
+    int MTBS_burnt_severity;                                                    //01092024LML
 };
 /* this is for beetle grid */
 struct patch_beetle_object

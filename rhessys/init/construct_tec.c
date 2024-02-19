@@ -86,6 +86,16 @@
 /*	variables and print them out (and also warn/error if it		*/
 /*	is not possible to print out a specified state variable).	*/
 /*--------------------------------------------------------------*/
+
+/* 1/9/2024 LML                                                 */
+/* add some treatment with some options                         */
+/* burn_on [severity]: severity is any the following:           */
+/*     -9999: means defined by parameter                        */
+/*     or number represents the severity for all patches        */
+/*     or file names for raster file (ascii formate), align with*/
+/*        patch raster file                                     */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -191,10 +201,10 @@ struct tec_object	*construct_tec(
 			(strcmp(command,"redefine_world_thin_snags") != 0) &&			
 			(strcmp(command,"roads_on") != 0) &&
 			(strcmp(command,"roads_off") != 0) &&
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
             (strcmp(command,"burn_on") != 0) &&
             (strcmp(command,"burn_off") != 0) &&
-#endif
+//#endif
 			(strcmp(command,"output_current_state") != 0)  ){
 			fprintf(stderr,
 				"\nFATAL ERROR: in construct_tec bad command %s for date %d %d %d %d\n ",
@@ -206,12 +216,16 @@ struct tec_object	*construct_tec(
 		/*--------------------------------------------------------------*/
 		/*	Read a line of the tec file if it exists.					*/
 		/*--------------------------------------------------------------*/
-        check = fscanf(tecfile[0].tfile,"%ld %ld %ld %ld %s\n",
+        check = fscanf(tecfile[0].tfile,"%ld %ld %ld %ld %[^\n]",
 			&(current_date.year),
 			&(current_date.month),
 			&(current_date.day),
 			&(current_date.hour),
 			command);
+        /*get first key word*/
+        char *substring = strtok(command, " \t");
+        //printf("command:%s sub:%s\n",command,substring);
+        /*get first key word*/
 	} /*end while*/
 	/*--------------------------------------------------------------*/
 	/*	Move the file pointer to the start of the tecfile and return*/

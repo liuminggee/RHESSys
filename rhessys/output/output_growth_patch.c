@@ -130,11 +130,11 @@ void	output_growth_patch(
 		}
 	}
 
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
     char out_basic[] = "%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
-#else
-    char out_basic[] = "%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
-#endif
+//#else
+//    char out_basic[] = "%ld %ld %ld %ld %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
+//#endif
 
 #ifdef JMG_TRACKING
     char out_format[1000] = "%d %d %d ";
@@ -161,11 +161,11 @@ void	output_growth_patch(
 		patch[0].ID,
 		alai,
 		aleafc+afrootc+awoodc,
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
         aleafc,
         afrootc,
         awoodc,
-#endif
+//#endif
 		aleafn+afrootn+awoodn,
 		apsn*1000,
 		aresp*1000,

@@ -345,11 +345,11 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
 
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
     char out_basic_patch_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
-#else
-    char out_basic_patch_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
-#endif
+//#else
+//    char out_basic_patch_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n";
+//#endif
 
 #ifdef JMG_TRACKING
     char out_format_patch_daily[1000] = "%s %s %s ";
@@ -377,11 +377,11 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
         "patchID",
         "lai",
         "plantc",
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
         "tot_leafc",
         "tot_frootc",
         "tot_woodc",
-#endif
+//#endif
         "plantn",
         "net_psn",
         "plant_resp",

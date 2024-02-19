@@ -323,9 +323,11 @@ void execute_firespread_event(
 	printf("calling WMFire: month %ld year %ld  cell res %lf  nrow %d ncol % d\n",current_date.month,current_date.year,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col);}
 // needs to return fire size, not just grid--create structure that includes fire size, or a 12-member array of fire sizes, and/or a tally of fires > 1000 acres
 
-#ifndef LIU_BURN_ALL_AT_ONCE
-    world[0].fire_grid=WMFire(command_line[0].output_prefix,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
-#endif
+//#ifndef LIU_BURN_ALL_AT_ONCE
+    if (!command_line->user_defined_fire_event_flag) {
+      world[0].fire_grid=WMFire(command_line[0].output_prefix,command_line[0].fire_grid_res,world[0].num_fire_grid_row,world[0].num_fire_grid_col,current_date.year,current_date.month,world[0].fire_grid,*(world[0].defaults[0].fire));
+    }
+//#endif
     if(world[0].defaults[0].fire[0].fire_verbose == 3) {
  	printf("Finished calling WMFire\n"); }
 	/*--------------------------------------------------------------*/
@@ -346,23 +348,27 @@ void execute_firespread_event(
             struct patch_fire_object *ppatch_fire = &patch_fire_grid[i][j];
             for (int p=0; p < patch_fire_grid[i][j].num_patches; ++p) {
                 struct patch_object *patch = ppatch_fire->patches[p];
-#ifndef LIU_BURN_ALL_AT_ONCE
-                patch[0].burn = pfire->burn * ppatch_fire->prop_grid_in_patch[p];
-                double pspread = patch[0].burn;
+//#ifndef LIU_BURN_ALL_AT_ONCE
+                if (!command_line->user_defined_fire_event_flag) {
+                  patch[0].burn = pfire->burn * ppatch_fire->prop_grid_in_patch[p];
+                  pspread = patch[0].burn;
                 //if(patch_fire_grid[i][j].num_patches > 0)
                 //    printf("\tp:%d prop_grid_in_patch:%f\n",p,patch_fire_grid[i][j].prop_grid_in_patch[p]);
-
-#else
+                } else {
+//#else
+                //01092024 LML be careful that one same patch may have multiple
+                //         fire pixels!
                 //total_pspread += pspread;
                 //05062022LML pspread = 1.0;                                                  //Handle the patch once for all pixels since they share same C&N pools
-                pspread = command_line[0].fire_pspread * ppatch_fire->prop_grid_in_patch[p]; //05182022LML
-                if (pspread < 0) {
+                  pspread = command_line[0].fire_pspread * ppatch_fire->prop_grid_in_patch[p]; //05182022LML
+                  if (pspread < 0) {
                     if (command_line[0].fire_understory_mortality_rate > 0)     //use predefined understory mortality rate
                         pspread = command_line[0].fire_understory_mortality_rate
                                 * ppatch_fire->prop_grid_in_patch[p];
                     else pspread = ppatch_fire->prop_grid_in_patch[p];          //assume firespread rate is 1
+                  }
                 }
-#endif
+//#endif
 // so I think here we could flag whether to turn salient fire on in wui; convert fire size in pixels to ha, assuming the cell_res is in m
 				/* (if pspread>0&world[0].fire_grid[0][0].fire_size*command_line[0].fire_grid_res*command_line[0].fire_grid_res*0.0001>=400) // also need a flag with the fire size to trigger event, because fire > 400 ha
 				{
@@ -381,7 +387,7 @@ void execute_firespread_event(
 
 				*/
 
-				if(world[0].defaults[0].fire[0].calc_fire_effects==1)
+                if(world[0].defaults[0].fire[0].calc_fire_effects==1)
 				{
                     //printf("calling WMFire: pspread is %lf \n, burn is %lf \n", pspread, fire_grid[i][j].burn);
                     //printf("row:%d col:%d patch_ID:%d\n",i,j,patch->ID);
@@ -390,13 +396,13 @@ void execute_firespread_event(
 						pspread,
 						command_line);
                 }
-			}
-		}
-	}
-#ifdef LIU_BURN_ALL_AT_ONCE
+            } //p
+        } //j
+    } //i
+//#ifdef LIU_BURN_ALL_AT_ONCE
 //    if (total_pspread > 0.1)
 //        printf("Has burn event! total_pspread:%f\n",total_pspread);
-#endif
+//#endif
 	return;
 } /*end execute_firespread_event.c*/
 

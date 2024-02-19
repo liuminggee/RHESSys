@@ -380,9 +380,10 @@ void		patch_daily_F(
 		struct mortality_struct);
 
 
-	void	compute_fire_effects(
-		struct patch_object *,
-		double);
+    void	compute_fire_effects(
+        struct patch_object *,
+        double,
+        struct	command_line_object	*);
     void  compute_beetle_effects( //NREN 20180629
         struct patch_object *,
         int inx,
@@ -714,6 +715,17 @@ void		patch_daily_F(
     //}// end layer
 
 
+    //01092024 LML
+    int calculated_fire_effect = false;
+    if(world[0].defaults[0].fire[0].calc_fire_effects==1 && command_line[0].burn_on_flag == 1 && !calculated_fire_effect)
+    {
+        //Run burnt effect at patch level
+        //printf("calling WMFire: pspread is %lf \n, burn is %lf \n", pspread, fire_grid[i][j].burn);
+        //printf("row:%d col:%d patch_ID:%d\n",i,j,patch->ID);
+        compute_fire_effects(patch,1,command_line);
+        calculated_fire_effect = true;
+    }
+
 
 	/*--------------------------------------------------------------*/
 	/* call fire effects on a particular date, based  		*/
@@ -732,9 +744,14 @@ void		patch_daily_F(
 				pspread = clim_event.value;
 
 				printf("\n Implementing fire effects with a pspread of %f in patch %d\n", pspread, patch[0].ID);
-				compute_fire_effects(
+                if (!calculated_fire_effect) {
+                  compute_fire_effects(
 					patch,
-					pspread);
+                    pspread,
+                    command_line  //01092024LML
+                    );
+                  calculated_fire_effect = true;
+                }
 
 			}
 		}
@@ -831,10 +848,9 @@ void		patch_daily_F(
                 attack_mortality = world[0].defaults[0].beetle[0].attack_mortality;
                 compute_fire_effects(
                     patch,
-                    attack_mortality
-
+                    attack_mortality,
+                    command_line //01092024LML
                 );
-
     }
 
 
@@ -2464,8 +2480,8 @@ void		patch_daily_F(
 		- patch[0].delta_snow_stored - patch[0].detention_store;
 
     //if (patch[0].ID == 7918 && fabs(patch[0].water_balance) > 0.05) {
-      if ((patch[0].water_balance > 0.00000001)||
-          (patch[0].water_balance < -0.00000001)){
+      if ((patch[0].water_balance > 0.0001 )||   //0.00000001)||
+          (patch[0].water_balance < -0.0001 )){ //-0.00000001)){
         printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for patch %d of type %d",
             patch[0].water_balance*1000,
 			current_date.day,

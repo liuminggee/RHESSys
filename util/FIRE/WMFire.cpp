@@ -146,9 +146,11 @@ LandScape::LandScape(double cell_res,struct fire_object **fire_grid,struct fire_
 	{
 		for(int j=0; j<cols_; j++)	// fill in the landscape information for each pixel
 		{
-#ifndef LIU_BURN_ALL_AT_ONCE
-			if (fireGrid_[i][j].ign_available==1)
-#endif
+//#ifndef LIU_BURN_ALL_AT_ONCE
+            if (def.user_defined_fire_event_flag ||
+                (!def.user_defined_fire_event_flag &&
+                 fireGrid_[i][j].ign_available==1))
+//#endif
 			{
 				IgnitionCells ic = {i, j}; // the cell indices give the current row and column for this pixel available for ignition
 				ignCells_.push_back(ic);		// 0 indicates that the pixel has not been burned
@@ -383,16 +385,19 @@ int LandScape::BurnCells(int iter, GenerateRandom& rng)
             if(test_burn==1 && pfire->burned==0) // only test if it is not already burned, and not beyond the border
 			{
                 test_once++;
-#ifndef LIU_BURN_ALL_AT_ONCE
-                cur_pBurn=calc_pSpreadTest(firstBurned_[x].rowId, firstBurned_[x].colId, new_row, new_col, cfire_dir[i]); // mk: calculate the spread probability for this combination of idx/idy and new_idx/new_idy
-				burned = IsBurned(rng, cur_pBurn); // mk: need to merge IsBurned with BurnTest
+//#ifndef LIU_BURN_ALL_AT_ONCE
+                if (!def_.user_defined_fire_event_flag) {
+                  cur_pBurn=calc_pSpreadTest(firstBurned_[x].rowId, firstBurned_[x].colId, new_row, new_col, cfire_dir[i]); // mk: calculate the spread probability for this combination of idx/idy and new_idx/new_idy
+                  burned = IsBurned(rng, cur_pBurn); // mk: need to merge IsBurned with BurnTest
                 //if (! close_enough(cur_pBurn,0)) burned = 1;
                 //fprintf(stderr,"ig_row:%d ig_col:%d row:%d col:%d p:%.3f\nburned = 1     DEBUGGING!!!\n"
                 //        ,firstBurned_[x].rowId,firstBurned_[x].colId,new_row,new_col,cur_pBurn);
-#else
-                                cur_pBurn = 1.0;
-                                burned = 1;
-#endif
+                } else {
+//#else
+                  cur_pBurn = 1.0;
+                  burned = 1;
+                }
+//#endif
 				if(burned==1)	// if 1 is returned, then burn the cell and update the new linked list of burned cells
 				{
 					calc_FireEffects(new_row, new_col,iter,cur_pBurn);

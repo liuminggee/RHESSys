@@ -30,6 +30,9 @@ double calc_consumption_from_motality(double kcons_coef, double mort);
 double calc_contribution_to_undercanopy(double height, struct soil_default *psoildef);
 double calc_mortality_from_under_consumption(double k1, double k2, double consumption);
 
+double MTBS_sbs_table[MTBS_BURNT_SEVERITY_NUMCLASSES][BS_NUMCLASSES];
+
+
 void compute_fire_effects(
 
 						struct patch_object *patch,
@@ -80,11 +83,54 @@ void compute_fire_effects(
 	int thin_type;
     double litter_c_consumed = 0;
 
+    //01112024LML options for handling mortality
+    //TODO: need considering remove the macro of LIU_BURN_ALL_AT_ONCE
+    double fe_psread = 0;
+    double fe_litter_loss = 0;
+    double fe_soil = 0;
+    double fe_overcanopy = 0;
+    double fe_undercanopy = 0;
+    int fe_option;                                                              //0: RHESSys default to calculate mortality and consumptions
+                                                                                //1: Use predefined mortality rate and consumption rates from command line
+                                                                                //
+
+    //Option for handling fire event
+    if (command_line[0].user_defined_fire_event_flag &&
+        command_line[0].burn_on_flag) {
+        if (command_line->burn_on_severity != BURNT_SEVERITY_USE_COMMAND_ARGUMENTS) {
+            int sb_severity = MTBS_BURNT_SEVERITY_BACKGROUND;
+            if (command_line->burn_on_severity == BURNT_SEVERITY_USE_BURNT_SEVERITY_MAP)
+              sb_severity = patch->dominant_burnt_severity_type;
+            else
+              sb_severity = command_line->burn_on_severity;
+            //get parameter from MTBS lookup table
+            fe_psread = MTBS_sbs_table[sb_severity][BS_PSPREAD_F];
+            fe_litter_loss = MTBS_sbs_table[sb_severity][BS_LITTER_LOSS_F];
+            fe_soil = MTBS_sbs_table[sb_severity][BS_SOIL_F];
+            fe_overcanopy = MTBS_sbs_table[sb_severity][BS_OVERCANPY_F];
+            fe_undercanopy = MTBS_sbs_table[sb_severity][BS_UNDERCANOPY_F];
+        } else {
+            //BURNT_SEVERITY_USE_COMMAND_ARGUMENTS
+            //use predefined mortality rate from command arguments
+            fe_psread = command_line[0].fire_pspread >= 0 ?
+                        command_line[0].fire_pspread : pspread;
+            fe_litter_loss = fe_psread;
+            fe_overcanopy = command_line[0].fire_overstory_mortality_rate;
+            fe_undercanopy = command_line[0].fire_understory_mortality_rate;
+        }
+    } else {
+        //use default fire effect module
+        fe_psread = pspread;
+        fe_litter_loss = pspread;
+    }
+
+
+
 	/*--------------------------------------------------------------*/
 	/*	Compute litter and soil removed.			*/
 	/*--------------------------------------------------------------*/
 
-	if (pspread > 0){
+    if (fe_psread > 0){
 
 	/* Litter consumption is approximated based CONSUME model outputs */
 	/* Consumption 1hr-fuel = 1 * 1hr-fuel */
@@ -115,7 +161,7 @@ void compute_fire_effects(
 			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
 
 #ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
-    litter_c_consumed *= pspread;
+    litter_c_consumed *= fe_litter_loss; //pspread;
 #endif
     patch[0].litterc_burned = litter_c_consumed;//new NREN
 
@@ -128,7 +174,7 @@ void compute_fire_effects(
 		 &(patch[0].litter_ns),
          &fire_loss
 #ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
-         ,pspread
+         ,fe_psread
 #endif
             );
     }
@@ -225,10 +271,15 @@ void compute_fire_effects(
             canopy_target[0].fe.canopy_target_stemc = canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc;
             canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
 
-            if (pspread > 0){
+            if (fe_psread > 0){
                 double default_fire_consumption_coef = canopy_target[0].defaults[0][0].consumption;                                    //coef for calculating fire consumption rate
                 double understory_mort_f = calc_mortality_from_pspread(
-                            canopy_target[0].defaults[0][0].understory_mort,pspread);
+                                             canopy_target[0].defaults[0][0].understory_mort,fe_psread);
+
+                if (command_line->user_defined_fire_event_flag) {
+                    if (fe_undercanopy >= 0) understory_mort_f = fe_undercanopy;
+                }
+
                 double target_u_fraction = calc_contribution_to_undercanopy(canopy_target[0].fe.canopy_target_height
                         ,patch[0].soil_defaults[0]);
 
@@ -247,7 +298,7 @@ void compute_fire_effects(
 			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
                 double scale = 1.;
 #ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
-                scale = pspread;
+                scale = fe_psread;
 #endif
                 canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339 * scale;
                 canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339 * scale;
@@ -279,10 +330,12 @@ void compute_fire_effects(
                             canopy_target[0].fe.canopy_subtarget_prop_mort *= canopy_target[0].fe.canopy_subtarget_height_u_prop;
                         }
 
-#ifdef LIU_BURN_ALL_AT_ONCE
-                        if (command_line[0].fire_understory_mortality_rate >= 0)
+//#ifdef LIU_BURN_ALL_AT_ONCE
+                        if (command_line->user_defined_fire_event_flag) {
+                          if (command_line[0].fire_understory_mortality_rate >= 0)
                             canopy_target[0].fe.canopy_subtarget_prop_mort = command_line[0].fire_understory_mortality_rate;
-#endif
+                        }
+//#endif
 
 
 					/* Determine the proportion of subtarget canopy mortality consumed */
@@ -319,14 +372,24 @@ void compute_fire_effects(
                     }
 
 				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
-                    canopy_target[0].fe.canopy_target_prop_mort =
-                            calc_mortality_from_under_consumption(canopy_target[0].defaults[0][0].overstory_mort_k1
-                                ,canopy_target[0].defaults[0][0].overstory_mort_k2
-                                ,canopy_target[0].fe.understory_c_consumed);
-#ifdef LIU_BURN_ALL_AT_ONCE
-                    if (command_line[0].fire_overstory_mortality_rate >= 0)
+                    //canopy_target[0].fe.canopy_target_prop_mort =
+                    //        calc_mortality_from_under_consumption(canopy_target[0].defaults[0][0].overstory_mort_k1
+                    //            ,canopy_target[0].defaults[0][0].overstory_mort_k2
+                    //            ,canopy_target[0].fe.understory_c_consumed);
+//#ifdef LIU_BURN_ALL_AT_ONCE
+                    if (command_line->user_defined_fire_event_flag) {
+                      if (command_line[0].fire_overstory_mortality_rate >= 0)
                         canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
-#endif
+                      else
+                        canopy_target[0].fe.canopy_target_prop_mort = fe_overcanopy;
+                    } else {
+                        canopy_target[0].fe.canopy_target_prop_mort =
+                          calc_mortality_from_under_consumption(
+                            canopy_target[0].defaults[0][0].overstory_mort_k1
+                            ,canopy_target[0].defaults[0][0].overstory_mort_k2
+                            ,canopy_target[0].fe.understory_c_consumed);
+                    }
+//#endif
 				/* Determine the proportion of target canopy mortality consumed */
                     canopy_target[0].fe.canopy_target_prop_mort_consumed =
                         calc_consumption_from_motality(default_fire_consumption_coef,canopy_target[0].fe.canopy_target_prop_mort);
@@ -345,10 +408,12 @@ void compute_fire_effects(
 				/* This involves computing the mortality/consumption of the target canopy based on pspread. */
 				/* Determine the proportion of carbon mortality in the target canopy */
                     canopy_target[0].fe.canopy_target_prop_mort = understory_mort_f;
-#ifdef LIU_BURN_ALL_AT_ONCE
-                if (command_line[0].fire_overstory_mortality_rate >= 0)
+//#ifdef LIU_BURN_ALL_AT_ONCE
+                if (command_line->user_defined_fire_event_flag) {
+                  if (command_line[0].fire_overstory_mortality_rate >= 0)
                     canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
-#endif
+                }
+//#endif
 				/* Adjust canopy_target_prop_mort to only account for understory component */
                     canopy_target[0].fe.canopy_target_prop_mort_u_component = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_height_u_prop;
 				/* ------- Determine mortality/consumption for overstory component of target canopy ------- */
@@ -366,10 +431,12 @@ void compute_fire_effects(
 
                         canopy_target[0].fe.canopy_subtarget_prop_mort *= canopy_target[0].fe.canopy_subtarget_height_u_prop;
                     }
-#ifdef LIU_BURN_ALL_AT_ONCE
-                    if (command_line[0].fire_understory_mortality_rate >= 0)
+//#ifdef LIU_BURN_ALL_AT_ONCE
+                    if (command_line->user_defined_fire_event_flag) {
+                      if (command_line[0].fire_understory_mortality_rate >= 0)
                         canopy_target[0].fe.canopy_subtarget_prop_mort = command_line[0].fire_understory_mortality_rate;
-#endif
+                    }
+//#endif
 				/* Determine the proportion of subtarget canopy mortality consumed */
                     canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
                         calc_consumption_from_motality(default_fire_consumption_coef,canopy_target[0].fe.canopy_subtarget_prop_mort);
@@ -415,10 +482,12 @@ void compute_fire_effects(
 				/* Combine target canopy mortality from overstory and understory components */
                     canopy_target[0].fe.canopy_target_prop_mort = max(min(canopy_target[0].fe.canopy_target_prop_mort_u_component + canopy_target[0].fe.canopy_target_prop_mort_o_component,1.0),0);
 
-#ifdef LIU_BURN_ALL_AT_ONCE
-                    if (command_line[0].fire_overstory_mortality_rate >= 0)
+//#ifdef LIU_BURN_ALL_AT_ONCE
+                    if (command_line->user_defined_fire_event_flag) {
+                      if (command_line[0].fire_overstory_mortality_rate >= 0)
                         canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
-#endif
+                    }
+//#endif
 
 				/* Determine the proportion of target canopy mortality consumed */
                     canopy_target[0].fe.canopy_target_prop_mort_consumed =
@@ -427,23 +496,34 @@ void compute_fire_effects(
 			/*--------------------------------------------------------------*/
 			/* Calculate fire effects when target canopy is short			*/
 			/*--------------------------------------------------------------*/
-
-                } else { //line 282
+                } else { //when target canopy is short
 
 				/* Determine the proportion of carbon mortality in the target canopy */
                 //12022022LML should consider the litter and cwd consumptions
-                    canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
-                    double mort_from_litter_consumption = calc_mortality_from_under_consumption(
-                                canopy_target[0].defaults[0]->overstory_mort_k1
-                                ,canopy_target[0].defaults[0]->overstory_mort_k2
-                                ,canopy_target[0].fe.understory_c_consumed);
-                    canopy_target[0].fe.canopy_target_prop_mort =
-                            max(understory_mort_f,mort_from_litter_consumption);
+                    //canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
+                    //double mort_from_litter_consumption = calc_mortality_from_under_consumption(
+                    //           canopy_target[0].defaults[0]->overstory_mort_k1
+                    //            ,canopy_target[0].defaults[0]->overstory_mort_k2
+                    //            ,canopy_target[0].fe.understory_c_consumed);
+                    //canopy_target[0].fe.canopy_target_prop_mort =
+                    //       max(understory_mort_f,mort_from_litter_consumption);
 
-#ifdef LIU_BURN_ALL_AT_ONCE
-                    if (command_line[0].fire_overstory_mortality_rate >= 0)
-                        canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
-#endif
+//#ifdef LIU_BURN_ALL_AT_ONCE
+                    if (command_line->user_defined_fire_event_flag) {
+                      if (command_line[0].fire_understory_mortality_rate >= 0)
+                        canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_understory_mortality_rate;
+                      else
+                        canopy_target[0].fe.canopy_target_prop_mort = fe_undercanopy;
+                    } else {
+                        canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
+                        double mort_from_litter_consumption = calc_mortality_from_under_consumption(
+                                    canopy_target[0].defaults[0]->overstory_mort_k1
+                                    ,canopy_target[0].defaults[0]->overstory_mort_k2
+                                    ,canopy_target[0].fe.understory_c_consumed);
+                        canopy_target[0].fe.canopy_target_prop_mort =
+                                max(understory_mort_f,mort_from_litter_consumption);
+                    }
+//#endif
 
 				/* Determine the proportion of target canopy mortality consumed */
                     canopy_target[0].fe.canopy_target_prop_mort_consumed =
@@ -513,9 +593,9 @@ void compute_fire_effects(
                         / (1 - canopy_target[0].fe.canopy_target_prop_c_consumed);
                 }
 
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
                 //canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = canopy_target[0].fe.canopy_target_prop_c_remain;
-#endif
+//#endif
 
 			/* For understory vegetation, complete mortality of leaves was assumed if a patch was burned, regardless of pspread */
 			/* Following code adjusts canopy_target_prop_c_remain_adjusted to be 1 when canopy is understory */
@@ -746,7 +826,64 @@ double calc_contribution_to_undercanopy(double height, struct soil_default *psoi
     else return (psoildef[0].overstory_height_thresh - height)
         / (psoildef[0].overstory_height_thresh-psoildef[0].understory_height_thresh);
 }
+//01092024LML Construct soil burnt severity loopup table
+int create_MTBS_soil_burnt_severity_loolup_table() {
+    //01092024LML need check with experts
+    //Original value are identified from Appendix E (Page 49)
+    //Parson, Annette; Robichaud, Peter R.; Lewis, Sarah A.; Napper, Carolyn;
+    //Clark, Jess T. 2010. Field guide for mapping post-fire soil burn severity.
+    //Gen. Tech. Rep. RMRS-GTR-243. Fort Collins, CO: U.S. Department of
+    //Agriculture, Forest Service, Rocky Mountain Research Station. 49 p
 
+    //01182024LML may need seperate mortality and consumption (the original is
+    //called "charred canopy")
+
+    //LITTER LOSS
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_BACKGROUND][BS_LITTER_LOSS_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_LITTER_LOSS_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_LITTER_LOSS_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_MODERATE][BS_LITTER_LOSS_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_HIGH][BS_LITTER_LOSS_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_INCREASEDGREENESS][BS_LITTER_LOSS_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_NONMAPPING][BS_LITTER_LOSS_F] = 0.0;
+
+    //Soil effect (TODO)
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_BACKGROUND][BS_SOIL_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_SOIL_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_SOIL_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_MODERATE][BS_SOIL_F] = 0.1;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_HIGH][BS_SOIL_F] = 0.2;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_INCREASEDGREENESS][BS_SOIL_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_NONMAPPING][BS_SOIL_F] = 0.0;
+
+    //Overcanopy
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_BACKGROUND][BS_OVERCANPY_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_OVERCANPY_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_OVERCANPY_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_MODERATE][BS_OVERCANPY_F] = 0.5;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_HIGH][BS_OVERCANPY_F] = 1.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_INCREASEDGREENESS][BS_OVERCANPY_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_NONMAPPING][BS_OVERCANPY_F] = 0.0;
+
+    //Undercanopy
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_BACKGROUND][BS_UNDERCANOPY_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_UNDERCANOPY_F] = 0.1;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_UNDERCANOPY_F] = 0.3;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_MODERATE][BS_UNDERCANOPY_F] = 0.7; //shrub
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_HIGH][BS_UNDERCANOPY_F] = 1.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_INCREASEDGREENESS][BS_UNDERCANOPY_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_NONMAPPING][BS_UNDERCANOPY_F] = 0.0;
+
+    //Psread
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_BACKGROUND][BS_PSPREAD_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_PSPREAD_F] = 0.05;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_PSPREAD_F] = 0.1;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_MODERATE][BS_PSPREAD_F] = 0.5;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_HIGH][BS_PSPREAD_F] = 1.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_INCREASEDGREENESS][BS_PSPREAD_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_NONMAPPING][BS_PSPREAD_F] = 0.0;
+    return 0;
+}
 
 
 

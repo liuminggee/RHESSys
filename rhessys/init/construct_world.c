@@ -960,6 +960,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
         world[0].fire_grid_res = command_line[0].fire_grid_res;
 		world[0].patch_fire_grid = construct_patch_fire_grid(world, command_line,*(world[0].defaults[0].fire));
 		world[0].fire_grid = construct_fire_grid(world);
+        create_MTBS_soil_burnt_severity_loolup_table();                         //01092024LML
 	}
 	/* if the beetlespread flag is set */
 

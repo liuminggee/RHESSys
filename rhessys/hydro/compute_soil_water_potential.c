@@ -168,7 +168,7 @@ double	compute_soil_water_potential(
 			if (S > ZERO) 
 				LWP_predawn = -1.0*exp(p3+p4*log(S));
 			else LWP_predawn = LWP_stom_closure;
-            printf("p3:%.3f\tp4:%.3f\tS:%.3f\tlwp:%.3f\n",p3,p4,S,LWP_predawn);
+            //printf("p3:%.3f\tp4:%.3f\tS:%.3f\tlwp:%.3f\n",p3,p4,S,LWP_predawn);
 			break;
 		}
 	}
