@@ -717,13 +717,15 @@ void		patch_daily_F(
 
     //01092024 LML
     int calculated_fire_effect = false;
-    if(world[0].defaults[0].fire[0].calc_fire_effects==1 && command_line[0].burn_on_flag == 1 && !calculated_fire_effect)
-    {
+    if (command_line[0].burn_on_flag == 1) {
+      if(world[0].defaults[0].fire[0].calc_fire_effects == 1)
+      {
         //Run burnt effect at patch level
         //printf("calling WMFire: pspread is %lf \n, burn is %lf \n", pspread, fire_grid[i][j].burn);
         //printf("row:%d col:%d patch_ID:%d\n",i,j,patch->ID);
         compute_fire_effects(patch,1,command_line);
         calculated_fire_effect = true;
+      }
     }
 
 
