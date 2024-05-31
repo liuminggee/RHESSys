@@ -145,12 +145,15 @@ struct patch_object *construct_patch(
     if (command_line[0].firespread_flag == 1) {
         //fscanf(world_file,"%d",&(fire_parm_ID));
         //read_record(world_file, record);//NREn 20190224
-#ifndef LIU_BURN_ALL_AT_ONCE
-        fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",1,1);
-#else
-        fire_parm_ID = 1;
-#endif
+//#ifndef LIU_BURN_ALL_AT_ONCE
+        if (!command_line->user_defined_fire_event_flag) {
+          fire_parm_ID = getIntWorldfile(&paramCnt,&paramPtr,"fire_parm_ID","%d",1,1);
+        } else {
+//#else
+          fire_parm_ID = 1;
+//#endif
         }
+    }
 
 /* read the input from worldfile if the beetlespread_flag is set */
     if (command_line[0].beetlespread_flag == 1) {
@@ -274,9 +277,10 @@ struct patch_object *construct_patch(
 
     patch[0].acc_year.burn = 0.0;
     patch[0].burn = 0.0;
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
     patch[0].fire_effect_processed = 0;
-#endif
+    patch[0].dominant_burnt_severity_type = MTBS_BURNT_SEVERITY_BACKGROUND;
+//#endif
     patch[0].litterc_burned = 0.0; //new NREN
     patch[0].overstory_burn = 0.0; //Add overstory_burn for burn beetle-caused snag pool NREN 20190914
     patch[0].acc_year.pcp = 0.0;

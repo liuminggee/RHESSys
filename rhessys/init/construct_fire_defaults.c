@@ -164,7 +164,8 @@ struct fire_default *construct_fire_defaults(
         if (command_line[0].verbose_flag > 0) printf("include_wui: %d\n",default_object_list[i].include_wui);
         default_object_list[i].calc_above_ground_litter=getIntParam(&paramCnt, &paramPtr, "calc_above_ground_litter", "%d", 0, 1);
         if (command_line[0].verbose_flag > 0) printf("should only consider the above ground litter: %d\n",default_object_list[i].calc_above_ground_litter);
-
+        default_object_list[i].user_defined_fire_event_flag =
+                command_line[0].user_defined_fire_event_flag;                   //01172024LML
 
 
 

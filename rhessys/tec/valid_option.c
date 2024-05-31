@@ -75,6 +75,7 @@ int	 valid_option( char *command_line){
 		(strcmp(command_line,"-gwtoriparian") == 0) ||
 		(strcmp(command_line,"-surfaceenergy") == 0) ||
 		(strcmp(command_line,"-firespread") == 0) ||
+        (strcmp(command_line,"-user_defined_fire_event") == 0) ||
 		(strcmp(command_line,"-snowdistb") == 0) ||
 		(strcmp(command_line,"-whdr") == 0) ||
 		(strcmp(command_line,"-netcdf") == 0) ||
@@ -85,9 +86,9 @@ int	 valid_option( char *command_line){
 
 		(strcmp(command_line,"-template") == 0) ||
 		(strcmp(command_line,"-fs") == 0) ||
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
         (strcmp(command_line,"-firemort") == 0) ||
-#endif
+//#endif
         (strcmp(command_line,"-firespin") == 0) ||
         (strcmp(command_line,"-Ndecayrate") == 0) ||
 		(strcmp(command_line,"-vegspinup") == 0) ||

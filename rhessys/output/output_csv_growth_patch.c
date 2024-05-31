@@ -97,11 +97,11 @@ void	output_csv_growth_patch(
 		}
 	}
 	check = fprintf(outfile,
-#ifndef LIU_BURN_ALL_AT_ONCE
-		"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
-#else
+//#ifndef LIU_BURN_ALL_AT_ONCE
+//		"%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
+//#else
         "%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d \n",
-#endif
+//#endif
 		current_date.day,
 		current_date.month,
 		current_date.year,
@@ -111,11 +111,11 @@ void	output_csv_growth_patch(
 		patch[0].ID,
 		alai,
 		aleafc+afrootc+awoodc,
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
         aleafc,
         afrootc,
         awoodc,
-#endif
+//#endif
 		apsn*1000.0,
 		aresp*1000.0,
 		asoilhr*1000.0,

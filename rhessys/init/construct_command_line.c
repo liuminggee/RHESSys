@@ -95,11 +95,13 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].noredist_flag = 0;
 	command_line[0].surface_energy_flag = 0;
 	command_line[0].firespread_flag = 0;
+    command_line[0].user_defined_fire_event_flag = 0;                           //01172024LML
 	command_line[0].beetlespread_flag =0;
 	command_line[0].vegspinup_flag = 0;
 	command_line[0].vgsen_flag = 0;
 	command_line[0].FillSpill_flag=0;
 	command_line[0].evap_use_longwave_flag = 0;
+    command_line[0].fire_spread_and_effect_mode = FIRE_SPREAD_EFFECT_DEFAULT;   //01162024LML
 	command_line[0].veg_sen1 = 1.0;
 	command_line[0].veg_sen2 = 1.0;
 	command_line[0].veg_sen3 = 1.0;
@@ -134,21 +136,24 @@ struct	command_line_object	*construct_command_line(
 	command_line[0].snow_scale_tol = 999999999;
     command_line[0].start_from_zero_soilpools = 0;
     command_line[0].start_from_zero_vegpools = 0;
-#ifdef LIU_BURN_ALL_AT_ONCE
-        command_line[0].burn_on_flag = 0;
-        command_line[0].fire_mortality_flag = 0;
-        command_line[0].fire_pspread = -9999;
-        command_line[0].fire_overstory_mortality_rate = -9999.0;
-        command_line[0].fire_understory_mortality_rate = -9999.0;
-        command_line[0].fire_pc_ku_mort = -9999.0;                              //Primary canopy
-        command_line[0].fire_pc_kcons = -9999.0;
-        command_line[0].fire_pc_ko_mort1 = -9999.0;
-        command_line[0].fire_pc_ko_mort2 = -9999.0;
-        command_line[0].fire_sc_ku_mort = -9999.0;                              //Secondary canopy
-        command_line[0].fire_sc_kcons = -9999.0;
-        command_line[0].fire_sc_ko_mort1 = -9999.0;
-        command_line[0].fire_sc_ko_mort2 = -9999.0;
-#endif
+//#ifdef LIU_BURN_ALL_AT_ONCE
+    command_line[0].burn_on_flag = 0;
+    command_line[0].burn_on_severity = BURNT_SEVERITY_USE_COMMAND_ARGUMENTS;  //01092024LML
+    memset(command_line[0].burn_on_severity_filename, ' ', sizeof(command_line[0].burn_on_severity_filename));
+    command_line[0].burn_on_severity_filename[TEC_CMD_LEN - 1] = '\0';
+    command_line[0].fire_mortality_flag = 0;
+    command_line[0].fire_pspread = -9999;
+    command_line[0].fire_overstory_mortality_rate = -9999.0;
+    command_line[0].fire_understory_mortality_rate = -9999.0;
+    command_line[0].fire_pc_ku_mort = -9999.0;                              //Primary canopy
+    command_line[0].fire_pc_kcons = -9999.0;
+    command_line[0].fire_pc_ko_mort1 = -9999.0;
+    command_line[0].fire_pc_ko_mort2 = -9999.0;
+    command_line[0].fire_sc_ku_mort = -9999.0;                              //Secondary canopy
+    command_line[0].fire_sc_kcons = -9999.0;
+    command_line[0].fire_sc_ko_mort1 = -9999.0;
+    command_line[0].fire_sc_ko_mort2 = -9999.0;
+//#endif
         command_line[0].fire_spin_flag = 0;
         command_line[0].fire_spin_period = 0;
         command_line[0].fire_spins = 0;
@@ -302,6 +307,13 @@ struct	command_line_object	*construct_command_line(
 				i++;
 
 			}/* end if */
+            /*------------------------------------------*/
+            /*Check if predescribe wildfire or burnt event.           */
+            /*------------------------------------------*/
+            else if ( strcmp(main_argv[i],"-user_defined_fire_event") == 0 ){
+                command_line[0].user_defined_fire_event_flag = 1;
+                i++;
+            }
            /*-------------------------------------------------*/
            /* beetle outbreak options       */
            /*-------------------------------------------------*/
@@ -385,7 +397,7 @@ struct	command_line_object	*construct_command_line(
 				command_line[0].gw_loss_coeff_mult = (double)atof(main_argv[i]);
 				i++;
 			}/* end if */
-#ifdef LIU_BURN_ALL_AT_ONCE
+//#ifdef LIU_BURN_ALL_AT_ONCE
             /*-------------------------------------------------*/
             /*	fire mortality flag and rates	  */
             /*-------------------------------------------------*/
@@ -420,6 +432,9 @@ struct	command_line_object	*construct_command_line(
                     fprintf(stderr,"FATAL ERROR: You should either define pspread or understory mortality, not both, not neither!\n");
                     exit(EXIT_FAILURE);
                 }
+
+                command_line[0].fire_spread_and_effect_mode = FIRE_SPREAD_EFFECT_PREDEFINED_MORTALITY;
+
                 //if (command_line[0].fire_understory_mortality_rate >= 0 && command_line[0].fire_pc_ku_mort >= 0)
                 //{
                 //    fprintf(stderr,"FATAL ERROR: You should either define fire_pc_ku_mort or understory mortality, not both, not neither!\n");
@@ -427,7 +442,7 @@ struct	command_line_object	*construct_command_line(
                 //}
 
             }/* end if */
-#endif
+//#endif
             /*-------------------------------------------------*/
             /*	spin up before fire runs	  */
             /*-------------------------------------------------*/

@@ -145,4 +145,6 @@ double	compute_N_leached_from_soildef(int verbose_flag,
 double	compute_z_final_from_surface(
                         struct soil_default *psoildef,
                         double	delta_water);
+
+int create_MTBS_soil_burnt_severity_loolup_table();
 #endif
