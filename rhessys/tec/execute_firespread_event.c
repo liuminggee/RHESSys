@@ -37,7 +37,6 @@ void execute_firespread_event(
 	/*	Local function definition.									*/
 	/*--------------------------------------------------------------*/
 
-
 	void *alloc(size_t, char *, char *);
 
 
@@ -75,9 +74,15 @@ void execute_firespread_event(
 	/*--------------------------------------------------------------*/
     if(world[0].defaults[0].fire[0].fire_verbose == 3) { //NREN 20190912
 	printf("In WMFire\n");}
+	//printf("In WMFire:num_fire_grid_row:%d num_fire_grid_col:%d calc_fire_effects:%d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col,world[0].defaults[0].fire[0].calc_fire_effects);
+
     #pragma omp parallel for reduction(+ : denom_for_mean,mean_fuel_veg,mean_fuel_litter \
         ,mean_fuel_moist,mean_soil_moist,mean_relative_humidity,mean_wind_direction \
         ,mean_wind,mean_temp,mean_et,mean_pet,mean_understory_et,mean_understory_pet,mean_trans)
+		
+	
+		
+		
     for  (int i=0; i< world[0].num_fire_grid_row; i++) {
       for (int j=0; j < world[0].num_fire_grid_col; j++) {
         struct  fire_object *pfire = &fire_grid[i][j];
