@@ -107,11 +107,15 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 		world[0].num_fire_grid_row = grid_dimY;
 		world[0].num_fire_grid_col = grid_dimX;
 
-//		printf("Rows: %d Cols: %d\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col);
+		printf("Rows: %d Cols: %d firegrid_patch_filename%s\n",world[0].num_fire_grid_row,world[0].num_fire_grid_col,command_line[0].firegrid_patch_filename);
 
 		int tmpPatchID;
 		FILE *patchesIn;
 		patchesIn=fopen(command_line[0].firegrid_patch_filename,"r");
+        if (patchesIn == NULL) {
+          printf("Failed to open file %s\n",command_line[0].firegrid_patch_filename);
+          exit(1); 
+        }
 /*		if(def.include_wui==1) // then readin the wui LUT
 		{
 			FILE *wuiIn;
@@ -129,6 +133,9 @@ struct fire_object **construct_patch_fire_grid (struct world_object *world, stru
 				// now point to the corresponding patch
 				tmpPatchID=-9999;
 				fscanf(patchesIn,"%d\t",&tmpPatchID);
+                
+                //printf("i: %d j: %d tmpPatchID%d\n",i,j,tmpPatchID);
+                
 				// here read in the wuiLUT,
 				/*if(def.include_wui==1)
 				{

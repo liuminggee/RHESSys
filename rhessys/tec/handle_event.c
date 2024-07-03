@@ -303,7 +303,8 @@ bool read_MTBS_burnt_severity(struct world_object *world,struct command_line_obj
               for (int p = 0; p < world[0].basins[basin]->hillslopes[h]->zones[z]->num_patches; p++) {
                   struct patch_object *pt = world[0].basins[basin]->hillslopes[h]->zones[z]->patches[p];
                   pt->dominant_burnt_severity_type = get_dominant_severity(pt->burnt_severity_acount);
-                  printf("b:%d\th:%d\tz:%d\tp:%d\tseverity:%d\n",world[0].basins[basin]->ID
+                  if (world[0].defaults[0].fire[0].fire_verbose == 3)
+                    printf("b:%d\th:%d\tz:%d\tp:%d\tseverity:%d\n",world[0].basins[basin]->ID
                           ,world[0].basins[basin]->hillslopes[h]->ID
                           ,world[0].basins[basin]->hillslopes[h]->zones[z]->ID
                           ,pt->ID,pt->dominant_burnt_severity_type);

@@ -84,7 +84,8 @@ void climate_interpolation(
     // first calcuate the resolution of the grid for both x direction and y direction
 
     if (num_world_base_stations <=1) {
-        printf("\n WARNING only one or no basestation, no need to interpolation \n");
+        if(command_line[0].verbose_flag == -3)
+            printf("\n WARNING only one or no basestation, no need to interpolation \n");
         search_x=0;
         search_y=0;
     }

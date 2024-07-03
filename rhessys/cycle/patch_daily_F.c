@@ -2454,7 +2454,7 @@ void		patch_daily_F(
 
 	if (command_line[0].snow_scale_flag == 1)
 	  patch[0].water_balance = zone[0].rain + zone[0].snow*patch[0].snow_redist_scale
-		+ patch[0].preday_detention_store +
+		+ patch[0].preday_detention_store 
 		+ irrigation
 		+ patch[0].landuse_defaults[0][0].septic_water_load
 		+ zone[0].rain_hourly_total - ( patch[0].gw_drainage
@@ -2468,7 +2468,7 @@ void		patch_daily_F(
 		- patch[0].delta_snow_stored - patch[0].detention_store;
 	else
 	  patch[0].water_balance = zone[0].rain + zone[0].snow
-		+ patch[0].preday_detention_store +
+		+ patch[0].preday_detention_store 
 		+ irrigation
 		+ patch[0].landuse_defaults[0][0].septic_water_load
 		+ zone[0].rain_hourly_total - ( patch[0].gw_drainage
@@ -2484,7 +2484,7 @@ void		patch_daily_F(
     //if (patch[0].ID == 7918 && fabs(patch[0].water_balance) > 0.05) {
       if ((patch[0].water_balance > 0.0001 )||   //0.00000001)||
           (patch[0].water_balance < -0.0001 )){ //-0.00000001)){
-        printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for patch %d of type %d",
+        printf("\n Water Balance(mm) is %12.8f on %ld %ld %ld for patch %d of drainage type %d",
             patch[0].water_balance*1000,
 			current_date.day,
 			current_date.month,
@@ -2493,22 +2493,26 @@ void		patch_daily_F(
 			patch[0].drainage_type);
         printf("\n\tRain:%lf",zone[0].rain*1000);
         printf("\n\tsnow:%lf",zone[0].snow*1000);
+        printf("\n\tpreday_detention_store:%lf",patch[0].preday_detention_store*1000);
+        printf("\n\tirrigation:%lf",irrigation*1000);
+        printf("\n\tseptic_water_load:%lf",patch[0].landuse_defaults[0][0].septic_water_load*1000);
         printf("\n\train_hourly_total:%lf",zone[0].rain_hourly_total*1000);
+        printf("\n\tgw_drainage:%lf",patch[0].gw_drainage*1000);
         printf("\n\ttranspiration_sat_zone:%lf",patch[0].transpiration_sat_zone*1000);
         printf("\n\ttranspiration_unsat_zone:%lf",patch[0].transpiration_unsat_zone*1000);
-        printf("\n\tgw_drainage:%lf",patch[0].gw_drainage*1000);
         printf("\n\tevaporation:%lf",patch[0].evaporation*1000);
         printf("\n\tevaporation_surf:%lf",patch[0].evaporation_surf*1000);
         printf("\n\texfiltration_unsat_zone:%lf",patch[0].exfiltration_unsat_zone*1000);
         printf("\n\texfiltration_sat_zone:%lf",patch[0].exfiltration_sat_zone*1000);
-        printf("\n\tdelta_detention_store:%lf (current:%lf preday:%lf)",(patch[0].detention_store - patch[0].preday_detention_store)*1000,patch[0].detention_store*1000,patch[0].preday_detention_store*1000);
         printf("\n\tdelta_rz_storage:%lf (current:%lf preday:%lf)",(patch[0].rz_storage - patch[0].preday_rz_storage)*1000,patch[0].rz_storage*1000, patch[0].preday_rz_storage*1000);
         printf("\n\tdelta_unsat_storage:%lf (current:%lf preday:%lf)",(patch[0].unsat_storage - patch[0].preday_unsat_storage)*1000,patch[0].unsat_storage*1000, patch[0].preday_unsat_storage*1000);
         printf("\n\tdelta_sat_deficit:%lf (current:%lf preday:%lf)",(patch[0].sat_deficit - patch[0].preday_sat_deficit)*1000,patch[0].sat_deficit*1000,patch[0].preday_sat_deficit*1000);
         printf("\n\tdelta_snowpack:%lf",patch[0].delta_snowpack*1000);
         printf("\n\tdelta_rain_stored:%lf (current:%lf preday:%lf)",patch[0].delta_rain_stored*1000, patch[0].rain_stored*1000, patch[0].preday_rain_stored*1000);
-        printf("\n\tpatch[0].litter.rain_stored:%lf",patch[0].litter.rain_stored*1000);
-        printf("\n\tdelta_snow_stored:%lf\n",patch[0].delta_snow_stored*1000);
+        printf("\n\tdelta_snow_stored:%lf", patch[0].delta_snow_stored*1000);
+        printf("\n\tdetention_store:%lf",patch[0].detention_store*1000);
+        
+        printf("\n\n\tpatch[0].litter.rain_stored:%lf",patch[0].litter.rain_stored*1000);
 
       }
     //}
