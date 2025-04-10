@@ -2089,10 +2089,11 @@ void		patch_daily_F(
         }
 			  if ( (strata[0].defaults[0][0].epc.veg_type != NON_VEG) ){
 
-                if (transpiration_reduction_percent < 0.5) {
+                if (transpiration_reduction_percent < 1.0 /*04092025LML 0.5*/) {
 				  strata->cdf.psn_to_cpool = strata->cdf.psn_to_cpool  * transpiration_reduction_percent;
-                  //12162022LML seeems not right! strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
-                  strata->cs.availc = strata->cdf.psn_to_cpool - strata->cdf.total_mr;
+                  //12162022LML seeems not right!
+                  strata->cs.availc = (strata->cs.availc + strata->cdf.total_mr)  * transpiration_reduction_percent - strata->cdf.total_mr;
+                  //04092025LML strata->cs.availc = strata->cdf.psn_to_cpool - strata->cdf.total_mr;
 
                   //printf("month:%d day:%d t_reduction:%lf\tcs.availc:%lf\tpsn_to_cpool:%lf\ttotal_mr:%lf\t\n"
                   //           ,current_date.month

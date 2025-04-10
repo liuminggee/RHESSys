@@ -138,8 +138,8 @@ int allocate_daily_growth(int nlimit,
 	if (nlimit == 1)
 		if (total_soil_frootc > ZERO)
 			soil_nsupply = min(ndf->potential_N_uptake,
-			(ndf_patch->plant_avail_uptake *
-            max(0.1,min(0.9,cover_fraction * cs->frootc / total_soil_frootc)))); //11012022LML added the cover_fraction
+            (ndf_patch->plant_avail_uptake * cs->frootc / total_soil_frootc));
+            //04092025LML max(0.1,min(0.9,cover_fraction * cs->frootc / total_soil_frootc)))); //11012022LML added the cover_fraction
                                                                                  //and set the limitation for under and over canopy
                                                                                  //in some cases, the undercanopy has so significant N limitation that it can't grow
 		else
@@ -203,7 +203,7 @@ int allocate_daily_growth(int nlimit,
 
 			/* If there is no remaning retranslocation N is available and if plants are N fixers, plants start N fixation at a cost of carbon  */
 
-            plant_calloc = plant_nalloc  *  mean_cn;  //12152022LML Warning: plant_nalloc not being calculated!
+            plant_calloc = plant_nalloc  *  mean_cn;
 			if  (epc.nfix == 1){
                 //sminn_to_npool = soil_nsupply;
 				excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
@@ -244,8 +244,8 @@ int allocate_daily_growth(int nlimit,
 	plant_nalloc = max(plant_nalloc, 0.0);
 	plant_calloc = max(plant_calloc, 0.0);
 	
-    //printf("mon:%d day:%d plant_calloc:%lf height:%lf\n"
-    //       ,current_date.month,current_date.day,plant_calloc*1000,epv->height);
+    printf("plant_calloc: %lf plant_nalloc:%lf CN ratio:%f mean_cn:%f nlimit:%d, ndf->retransn_to_npool:%f sminn_to_npool:%f leafCN:%f\n",
+           plant_calloc,plant_nalloc,plant_calloc/(plant_nalloc+1e-8),mean_cn,ns->nlimit,ndf->retransn_to_npool,sminn_to_npool,cs->leafc/(ns->leafn+1e-12));
 
 	/* pnow is the proportion of this day's growth that is displayed now,
 	the remainder going into storage for display next year through the
@@ -290,7 +290,7 @@ int allocate_daily_growth(int nlimit,
 
 	}
 
-
+    printf("cdf->cpool_to_leafc:%f ndf->npool_to_leafn:%f\n",cdf->cpool_to_leafc,ndf->npool_to_leafn);
 
 	ndf->actual_N_uptake  = 
 		ndf->npool_to_leafn +
@@ -345,8 +345,8 @@ int allocate_daily_growth(int nlimit,
 	/*---------------------------------------------------------------------------	*/
 	/*	create a maximum lai							*/
 	/*---------------------------------------------------------------------------	*/
-    //12162022LML double lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla;
-    double lai = (cs->leafc + cdf->cpool_to_leafc) * epc.proj_sla;
+    double lai = (cs->leafc + cs->leafc_transfer + cs->leafc_store + cdf->cpool_to_leafc) * epc.proj_sla;
+    //04092026LML double lai = (cs->leafc + cdf->cpool_to_leafc) * epc.proj_sla;
 
     //02132024LML
     double max_lai = epc.max_lai;
@@ -397,6 +397,7 @@ int allocate_daily_growth(int nlimit,
 
     //12192022LML in some cases the nitrogen is not balanced according to static
     //CN ratio, here to add deficit N
+    /*04092025LML removed since it caused negative npools
     ndf->npool_to_leafn += max(0,(cs->leafc + cdf->cpool_to_leafc) / cnl - ns->leafn);
     ndf->npool_to_leafn_store += max(0,(cs->leafc_store + cdf->cpool_to_leafc_store) / cnl - ns->leafn_store);
     ndf->npool_to_frootn += max(0,(cs->frootc + cdf->cpool_to_frootc) / cnfr - ns->frootn);
@@ -411,6 +412,7 @@ int allocate_daily_growth(int nlimit,
         ndf->npool_to_deadcrootn += max(0,(cs->dead_crootc + cdf->cpool_to_deadcrootc) / cndw - ns->dead_crootn);
         ndf->npool_to_deadcrootn_store += max(0,(cs->deadcrootc_store + cdf->cpool_to_deadcrootc_store) / cndw - ns->deadcrootn_store);
     }
+    */
 
 
 

@@ -64,6 +64,10 @@ int update_N_stratum_daily(			 struct epconst_struct epc,
 	/* Daily allocation fluxes */
 	/* Daily leaf allocation fluxes */
 	ns->leafn          += ndf->npool_to_leafn;
+
+    printf("ndf->npool_to_leafn:%f\n",ndf->npool_to_leafn);
+
+
 	ns->npool          -= ndf->npool_to_leafn;
 	ns->leafn_store  += ndf->npool_to_leafn_store;
 	ns->npool          -= ndf->npool_to_leafn_store;

@@ -123,9 +123,20 @@ int allocate_annual_growth(				int id,
     double max_lai = epc.max_lai;
     if (epc.veg_type == TREE) max_lai = fmin(epc.max_lai,cs->max_leafc * epc.proj_sla);
     excess_lai = (cs->leafc + cs->leafc_store + cs->leafc_transfer) * epc.proj_sla - max_lai;
+
+    //04092025LML check the CN ratio
+    double tleafc = cs->leafc + cs->leafc_store + cs->leafc_transfer;
+    double tleafn = ns->leafn + ns->leafn_store + ns->leafn_transfer;
+    if (tleafn > 1e-6) {
+        double estimated_leaf_cn = tleafc / tleafn;
+        if (fabs((estimated_leaf_cn - epc.leaf_cn) / epc.leaf_cn) > 0.05)
+            printf("Error: The bias of leaf CN ratio (%f) is higher than 5 percent from parameter (%f)!\n"
+                   ,estimated_leaf_cn,epc.leaf_cn);
+    }
+
  	if ( excess_lai > ZERO) {
 
-                excess_carbon = excess_lai / epc.proj_sla;
+        excess_carbon = excess_lai / epc.proj_sla;
  		rem_excess_carbon = excess_carbon;
  		if (epc.veg_type == TREE) {
  			/* remove excess carbon from storage, transfer and then leaf carbon until gone */
@@ -157,7 +168,10 @@ int allocate_annual_growth(				int id,
  			excess_nitrogen = excess_carbon / epc.leaf_cn -
  			   (1-epc.alloc_livewoodc_woodc)*excess_carbon / epc.deadwood_cn -
  			    epc.alloc_livewoodc_woodc*excess_carbon / epc.livewood_cn;
- 			ns->npool += excess_nitrogen;
+            ns->npool += excess_nitrogen;    //04092025LML note: there is an assumption that leaf, storage, and transfer keep the leaf CN ratio!
+
+            printf("excess_carbon:%f excess_nitrogen:%f\n",excess_carbon,excess_nitrogen);
+
  		}
  		else {
  			/* remove excess carbon from storage, transfer and then leaf carbon until gone */
@@ -198,14 +212,21 @@ int allocate_annual_growth(				int id,
 	/* Changed to just be live C */
 	/*total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->dead_stemc +
 			cs->live_crootc + cs->dead_crootc);*/
+    /*04092025LML
 	if (cs->cpool > ZERO)
 	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc + cs->cpool);
 	else
 	total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc);
+    */
+    if (epc.veg_type == TREE){
+        total_biomass =  (cs->leafc + cs->frootc + cs->live_stemc + cs->live_crootc  + cs->dead_stemc + cs->dead_crootc);}
+    else {
+        total_biomass =  (cs->leafc + cs->frootc + cs->cpool);
+    }
 
 	/* Changed to just be live C */
 	/*total_above_biomass =  cs->leafc+cs->dead_stemc+cs->live_stemc;*/
-	total_above_biomass =  cs->leafc+cs->live_stemc;
+    total_above_biomass =  cs->leafc + cs->live_stemc;
 
 	if (total_biomass > ZERO)
 		ratio = (total_store/total_biomass);
@@ -226,7 +247,7 @@ int allocate_annual_growth(				int id,
 	/*--------------------------------------------------------------*/
 	/* 	carbohydrate starvation mortality 			*/
 	/*--------------------------------------------------------------*/
-
+    //04092025LML check later!!
 	cs->mortality_fract = 0.0;
 	if ((total_store < cpool_mort_fract*total_biomass) && (total_biomass > ZERO) && (cs->age > 1) && (vmort_flag == 1)) {
 		printf("\n drought stress mortality for %d", id);
@@ -477,6 +498,8 @@ int allocate_annual_growth(				int id,
         //11032022LML commented out reinitial C&N pools
         //cs->cpool = 0.0;
         //ns->npool = 0.0;
+        cs->cpool = epc.resprout_leaf_carbon;
+        ns->npool = cs->cpool/epc.leaf_cn;
 		cs->leafc_store = epc.resprout_leaf_carbon;
 		cs->frootc_store = cs->leafc_store * epc.alloc_frootc_leafc;
 		cdf->leafc_store_to_leafc_transfer = cs->leafc_store;
@@ -485,13 +508,18 @@ int allocate_annual_growth(				int id,
 		ns->frootn_store = cs->frootc_store / epc.froot_cn;
 		ndf->leafn_store_to_leafn_transfer = ns->leafn_store;
 		ndf->frootn_store_to_frootn_transfer = ns->frootn_store;
-        //cs->leafc_transfer = 0.0;
-        //cs->leafc = 0.0;
-        //cs->frootc_transfer = 0.0;
-        //ns->leafn_transfer = 0.0;
-        //ns->frootn_transfer = 0.0;
-        //ns->leafn = 0.0;
-        //cdf->gresp_store_to_gresp_transfer = 0.0;
+
+        //04092025LML reenable the following
+        cs->leafc_transfer = 0.0;
+        cs->leafc = 0.0;
+        cs->frootc_transfer = 0.0;
+        cs->frootc = 0.0;
+        ns->leafn_transfer = 0.0;
+        ns->frootn_transfer = 0.0;
+        ns->leafn = 0.0;
+        ns->frootn = 0.0;
+        cdf->gresp_store_to_gresp_transfer = 0.0;
+
 		epv->prev_leafcalloc = epc.resprout_leaf_carbon;
 
 		if (epc.veg_type == TREE) {

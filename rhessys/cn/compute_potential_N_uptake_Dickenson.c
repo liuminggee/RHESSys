@@ -140,12 +140,11 @@ double compute_potential_N_uptake_Dickenson(
 			froot = 0.5*(1-fleaf);
 			fwood = 0.5*(1-fleaf);
 			}
-		}
+    }
 	else {
 		fwood = 0;
-		froot = (1-fleaf);
+        froot = (1-fleaf);
 		}
-	
 	flive = epc.alloc_livewoodc_woodc;
 	fdead = 1-flive;
 
@@ -164,6 +163,8 @@ double compute_potential_N_uptake_Dickenson(
 	cdf->fleaf = fleaf;
 	cdf->froot = froot;
 	cdf->fwood = fwood;	
+    if (fabs(fleaf + froot + fwood - 1.0) > 1e-6)
+        printf("Error: total fraction is not 1!\n");
 
 	/* add in nitrogen for plants and for nitrogen deficit in pool */
 	plant_ndemand = cs->availc / (1.0+epc.gr_perc) / mean_cn; 
