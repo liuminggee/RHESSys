@@ -1919,6 +1919,17 @@ void	canopy_stratum_daily_F(
             //            ,stratum[0].gs_sunlit,stratum[0].gs_shade);
             //}
 
+            //    printf("mon:%d\tday:%d\tID:%d\tpsn_to_cpool(gC/m2/day):%lf\tassim_sunlit_pot:%lf\tassim_sunlit:%lf\tlai_sunlit:%lf\tassim_shade_pot:%lf\tassim_shade:%lf\tlai_shade:%lf\n",
+            //            current_date.month,current_date.day,stratum[0].ID
+            //            ,stratum[0].cdf.psn_to_cpool*1000.0
+            //            ,assim_sunlit_pot
+            //            ,assim_sunlit
+            //            ,stratum[0].epv.proj_lai_sunlit
+            //            ,assim_shade_pot
+            //            ,assim_shade
+            //            ,stratum[0].epv.proj_lai_shade
+            //            );
+
 
 
 			if ((assim_sunlit + assim_shade) > ZERO)

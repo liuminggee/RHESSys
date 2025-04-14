@@ -48,7 +48,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 
-    char out_basic[] = "%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
+    char out_basic[] = "%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 
 #ifdef JMG_TRACKING
     char out_format[1000] = "%d %d %d ";
@@ -94,13 +94,14 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
         stratum[0].ns.leafn_transfer * 1000.,
 		stratum[0].cs.cpool * 1000.0,
 		stratum[0].ns.npool * 1000.0,
+        stratum[0].ns.retransn * 1000.0,
 		stratum[0].cs.dead_leafc * 1000.0,
 		(stratum[0].cs.frootc + stratum[0].cs.frootc_store + stratum[0].cs.frootc_transfer)* 1000.0,
 		(stratum[0].ns.frootn + stratum[0].ns.frootn_store + stratum[0].ns.frootn_transfer)* 1000.0,
 		(stratum[0].cs.live_stemc + stratum[0].cs.livestemc_store + stratum[0].cs.livestemc_transfer)* 1000.0,
 		(stratum[0].ns.live_stemn + stratum[0].ns.livestemn_store + stratum[0].ns.livestemn_transfer)* 1000.0,
-		stratum[0].cs.leafc_store * 1000.0,
-		stratum[0].ns.leafn_store * 1000.0,
+        stratum[0].cs.livestemc_store * 1000.0,
+        stratum[0].ns.livestemn_store * 1000.0,
 		(stratum[0].cs.dead_stemc + stratum[0].cs.deadstemc_store + stratum[0].cs.deadstemc_transfer)* 1000.0,
 		(stratum[0].ns.dead_stemn + stratum[0].ns.deadstemn_store + stratum[0].ns.deadstemn_transfer)* 1000.0,
 		(stratum[0].cs.live_crootc + stratum[0].cs.livecrootc_store + stratum[0].cs.livecrootc_transfer)* 1000.0,
@@ -116,7 +117,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		stratum[0].phen.gwseasonday,
 		stratum[0].phen.lfseasonday,
 		stratum[0].phen.gsi,
-		stratum[0].ns.nlimit,
+        (double) stratum[0].ns.nlimit,
         stratum[0].cdf.fleaf,
         stratum[0].cdf.froot,
         stratum[0].cdf.fwood,

@@ -137,48 +137,116 @@ int allocate_annual_growth(				int id,
  	if ( excess_lai > ZERO) {
 
         excess_carbon = excess_lai / epc.proj_sla;
+
+        //04102025LML LeafCN sometimes is less than the static CN ratio
+        double lai_N_need = (tleafc - excess_carbon) / epc.leaf_cn;
+        double exccess_nitrogen = max(0.,tleafn - lai_N_need);
+        double excess_n_conc = exccess_nitrogen / excess_carbon;
+        /*
+        double leafn_deficit = tleafc / epc.leaf_cn - tleafn;
+        double excess_carbon_with_N = 0; //this excess carbon has enough N to support leaf CN ratio
+        double excess_carbon_wo_N = 0;   //carbon only
+        double extra_nitrogen = 0;
+        if (leafn_deficit > ZERO) { //leafCN < epc.leapCN
+            excess_nitrogen = tleafn - (tleafc - excess_carbon) / epc.leaf_cn;
+            if (excess_nitrogen > ZERO) {
+                //There is extra N avalable for some of this excess_carbon, but not all
+                excess_carbon_with_N = excess_nitrogen * epc.leaf_cn;
+                //excess_carbon_wo_N += excess_carbon - excess_carbon_with_N;
+            } else {
+                //no excess N for any excess_carbon
+                excess_carbon_with_N = 0.0;
+            }
+        } else { //leafCN > epc.leapCN
+            excess_carbon_with_N = excess_carbon;
+
+        }
+        */
+
+        double store_removed_c = 0;
+        double store_removed_n = 0;
+        double transfer_removed_c = 0;
+        double transfer_removed_n = 0;
+        double leaf_removed_c;
+        double leaf_removed_n;
+        //04102025LML note: CN ratio might change after removal
+
  		rem_excess_carbon = excess_carbon;
  		if (epc.veg_type == TREE) {
  			/* remove excess carbon from storage, transfer and then leaf carbon until gone */
  			if (cs->leafc_store > excess_carbon) {
                  		cs->leafc_store -= rem_excess_carbon;
-                 		ns->leafn_store -= rem_excess_carbon / epc.leaf_cn;
+                        store_removed_c += rem_excess_carbon;
+                        //04102025LML ns->leafn_store -= rem_excess_carbon / epc.leaf_cn;
+                        store_removed_n += max(0,ns->leafn_store - cs->leafc_store / epc.leaf_cn);
+                        ns->leafn_store -= store_removed_n;   //04102025LML
  				}
  			else {
  				rem_excess_carbon -= cs->leafc_store;
+                store_removed_c += cs->leafc_store;
  				cs->leafc_store = 0.0;
- 				ns->leafn_store = 0.0;
+                store_removed_n += ns->leafn_store;
+                ns->leafn_store = 0.0;
+
  				if (cs->leafc_transfer > rem_excess_carbon) {
  					cs->leafc_transfer -= rem_excess_carbon;
-                 			ns->leafn_transfer -= rem_excess_carbon / epc.leaf_cn;
+
+                    transfer_removed_c += rem_excess_carbon;
+                    transfer_removed_n += max(0,ns->leafn_transfer - cs->leafc_transfer / epc.leaf_cn);
+                    ns->leafn_transfer -= transfer_removed_n;  //rem_excess_carbon / epc.leaf_cn;
  					}
  				else {
+                    transfer_removed_c += cs->leafc_transfer;
  					rem_excess_carbon -= cs->leafc_transfer;
  					cs->leafc_transfer = 0.0;
+                    transfer_removed_n += ns->leafn_transfer;
  					ns->leafn_transfer = 0.0;
+
+                    leaf_removed_c += rem_excess_carbon;
  					cs->leafc -= rem_excess_carbon;
-                 			ns->leafn -= rem_excess_carbon / epc.leaf_cn;
+                    leaf_removed_n += max(0,ns->leafn - cs->leafc / epc.leaf_cn);
+                    //ns->leafn -= rem_excess_carbon / epc.leaf_cn;
+                    ns->leafn -= leaf_removed_n;
  					}
  			}
 
-                 	cs->deadstemc_store += (1-epc.alloc_livewoodc_woodc)*excess_carbon;
-                 	cs->livestemc_store+= epc.alloc_livewoodc_woodc*excess_carbon;
-                 	ns->deadstemn_store += (1-epc.alloc_livewoodc_woodc)*excess_carbon / epc.deadwood_cn;
-                 	ns->livestemn_store += epc.alloc_livewoodc_woodc*excess_carbon / epc.livewood_cn;
- 			excess_nitrogen = excess_carbon / epc.leaf_cn -
- 			   (1-epc.alloc_livewoodc_woodc)*excess_carbon / epc.deadwood_cn -
- 			    epc.alloc_livewoodc_woodc*excess_carbon / epc.livewood_cn;
-            ns->npool += excess_nitrogen;    //04092025LML note: there is an assumption that leaf, storage, and transfer keep the leaf CN ratio!
+            double removed_c = store_removed_c + transfer_removed_c + leaf_removed_c;
+            double removed_n = store_removed_n + transfer_removed_n + leaf_removed_n;
 
-            printf("excess_carbon:%f excess_nitrogen:%f\n",excess_carbon,excess_nitrogen);
+            double required_n = (1-epc.alloc_livewoodc_woodc)*removed_c / epc.deadwood_cn
+                               + epc.alloc_livewoodc_woodc*removed_c / epc.livewood_cn;
+            double nmeet_fraction = min(1.0,removed_n / required_n);
+            double reallocated_c = removed_c * nmeet_fraction;
+            //double reallocated_n = min(required_n,removed_n);
+
+
+            cs->deadstemc_store += (1-epc.alloc_livewoodc_woodc)*reallocated_c;
+            cs->livestemc_store+= epc.alloc_livewoodc_woodc*reallocated_c;
+            ns->deadstemn_store += (1-epc.alloc_livewoodc_woodc)*reallocated_c / epc.deadwood_cn;
+            ns->livestemn_store += epc.alloc_livewoodc_woodc*reallocated_c / epc.livewood_cn;
+
+            excess_nitrogen = removed_n -
+               (1-epc.alloc_livewoodc_woodc)*reallocated_c / epc.deadwood_cn -
+                epc.alloc_livewoodc_woodc*reallocated_c / epc.livewood_cn;
+            ns->npool += max(0.0,excess_nitrogen);    //04092025LML note: there is an assumption that leaf, storage, and transfer keep the leaf CN ratio!
+            cs->cpool += max(0.,removed_c - reallocated_c);
+
+            //printf("removed_c:%f reallocated_c:%f excess_nitrogen:%f\n",removed_c,reallocated_c,excess_nitrogen);
 
  		}
  		else {
  			/* remove excess carbon from storage, transfer and then leaf carbon until gone */
  			if (cs->leafc_store > excess_carbon) {
-                 		cs->leafc_store -= rem_excess_carbon;
-                 		ns->leafn_store -= rem_excess_carbon / epc.leaf_cn;
+                        //cs->leafc_store -= rem_excess_carbon;
+                        //ns->leafn_store -= rem_excess_carbon / epc.leaf_cn;
+
+                        cs->leafc_store -= rem_excess_carbon;
+                        store_removed_c += rem_excess_carbon;
+                        //04102025LML ns->leafn_store -= rem_excess_carbon / epc.leaf_cn;
+                        store_removed_n += max(0,ns->leafn_store - cs->leafc_store / epc.leaf_cn);
+                        ns->leafn_store -= store_removed_n;   //04102025LML
  				}
+            /*
  			else {
  				rem_excess_carbon -= cs->leafc_store;
  				cs->leafc_store = 0.0;
@@ -194,11 +262,51 @@ int allocate_annual_growth(				int id,
  					cs->leafc -= rem_excess_carbon;
                  			ns->leafn -= rem_excess_carbon / epc.leaf_cn;
  					}
- 			}
-			cs->frootc_store += excess_carbon;
-			ns->frootn_store += excess_carbon / epc.froot_cn;
-			excess_nitrogen = excess_carbon/epc.leaf_cn - excess_carbon/epc.froot_cn;
-			ns->npool += excess_nitrogen;
+            }*/
+
+            else {
+                rem_excess_carbon -= cs->leafc_store;
+                store_removed_c += cs->leafc_store;
+                cs->leafc_store = 0.0;
+                store_removed_n += ns->leafn_store;
+                ns->leafn_store = 0.0;
+
+                if (cs->leafc_transfer > rem_excess_carbon) {
+                    cs->leafc_transfer -= rem_excess_carbon;
+
+                    transfer_removed_c += rem_excess_carbon;
+                    transfer_removed_n += max(0,ns->leafn_transfer - cs->leafc_transfer / epc.leaf_cn);
+                    ns->leafn_transfer -= transfer_removed_n;  //rem_excess_carbon / epc.leaf_cn;
+                    }
+                else {
+                    transfer_removed_c += cs->leafc_transfer;
+                    rem_excess_carbon -= cs->leafc_transfer;
+                    cs->leafc_transfer = 0.0;
+                    transfer_removed_n += ns->leafn_transfer;
+                    ns->leafn_transfer = 0.0;
+
+                    leaf_removed_c += rem_excess_carbon;
+                    cs->leafc -= rem_excess_carbon;
+                    leaf_removed_n += max(0,ns->leafn - cs->leafc / epc.leaf_cn);
+                    //ns->leafn -= rem_excess_carbon / epc.leaf_cn;
+                    ns->leafn -= leaf_removed_n;
+                    }
+            }
+
+
+            double removed_c = store_removed_c + transfer_removed_c + leaf_removed_c;
+            double removed_n = store_removed_n + transfer_removed_n + leaf_removed_n;
+
+            double required_n = removed_c / epc.froot_cn;
+            double nmeet_fraction = max(1.0,removed_n / required_n);
+            double reallocated_c = removed_c * nmeet_fraction;
+            cs->frootc_store += reallocated_c;
+            ns->frootn_store += reallocated_c / epc.froot_cn;
+
+            excess_nitrogen = removed_n -reallocated_c / epc.froot_cn;
+            ns->npool += max(0.0,excess_nitrogen);    //04092025LML note: there is an assumption that leaf, storage, and transfer keep the leaf CN ratio!
+            cs->cpool += max(0.,removed_c - reallocated_c);
+
 
  		}
          }
@@ -407,6 +515,9 @@ int allocate_annual_growth(				int id,
 
 		carbohydrate_transfer = -1.0*excess_carbon;
 
+        //04112025LML cannot make cpool negative
+        carbohydrate_transfer = max(0.0,cs->cpool);
+
 
 		fleaf = exp(-1.0*epc.dickenson_pa * epv->proj_lai);
 		fleaf = min(fleaf, 1.0);
@@ -428,6 +539,16 @@ int allocate_annual_growth(				int id,
 		else{
 	   	mean_cn = 1.0 / (fleaf / cnl + froot / cnfr);
 		}
+
+        //04112025LML cannot make cpool negative
+        double nneed = carbohydrate_transfer/mean_cn;
+        double fraction = 1.0;
+        if (ns->npool > ZERO && nneed > ns->npool)
+            fraction = nneed / ns->npool;
+        else if (ns->npool <= ZERO)
+            fraction = 0;
+        carbohydrate_transfer *= fraction;
+
 
 		carbohydrate_transfer = carbohydrate_transfer/fleaf;
 
@@ -472,6 +593,11 @@ int allocate_annual_growth(				int id,
 		}
 
 		cs->cpool -= carbohydrate_transfer;
+
+        //if (cs->cpool < 0.) {
+        //    printf("%d Negetive cpool:%f (gC/m2)\n",__LINE__,cs->cpool * 1000);
+        //}
+
 		if (mean_cn > ZERO)
 			ns->npool -= carbohydrate_transfer/mean_cn;
 	}

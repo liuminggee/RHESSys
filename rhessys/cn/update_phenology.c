@@ -416,6 +416,7 @@ void update_phenology(struct zone_object  *zone,
     //       ,leaflitfallc*1000
     //       ,frootlitfallc*1000);
 
+    /*04102025LML
     //12/17/2022LML ensure the ecosystem will survive for next year.
     if (leaflitfallc > 0) {
         //double total_live_biomass =  (cs->leafc+cs->frootc+cs->live_stemc+cs->live_crootc); //
@@ -443,7 +444,7 @@ void update_phenology(struct zone_object  *zone,
             //frootlitfallc = 0;
         }
     }
-
+    */
 
 	/*--------------------------------------------------------------*/
 	/*	update growth variables					*/

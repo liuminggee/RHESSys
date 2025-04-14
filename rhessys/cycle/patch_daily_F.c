@@ -2083,6 +2083,13 @@ void		patch_daily_F(
 			strata =
 				patch[0].canopy_strata[(patch[0].layers[layer].strata[stratum])];
 
+
+            //if (strata->cs.cpool * 1000 < ZERO) {
+            //    printf("%d Negetive cpool:%f (gC/m2) \n"
+            //           ,__LINE__,strata->cs.cpool * 1000);
+            //}
+
+
 	    if(command_line[0].vegspinup_flag > 0){
         if (strata->target.met == 0)
           patch[0].target_status = 0;

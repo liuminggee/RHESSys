@@ -232,6 +232,12 @@ int allocate_daily_growth(int nlimit,
 					plant_calloc = plant_nalloc  * mean_cn;
 					excess_c = max(cs->availc - (plant_calloc*(1+epc.gr_perc)),0.0);
 					cdf->psn_to_cpool -= excess_c;
+                    //printf("%d cs->availc:%f plant_calloc:%f excess_c:%f psn_to_cpool:%f\n"
+                    //       ,__LINE__
+                    //       ,cs->availc * 1000
+                    //       ,plant_nalloc * 1000
+                    //       ,excess_c * 100
+                    //       ,cdf->psn_to_cpool * 1000);
 					ns->nlimit = 1;
 				}
 		}
@@ -244,8 +250,8 @@ int allocate_daily_growth(int nlimit,
 	plant_nalloc = max(plant_nalloc, 0.0);
 	plant_calloc = max(plant_calloc, 0.0);
 	
-    printf("plant_calloc: %lf plant_nalloc:%lf CN ratio:%f mean_cn:%f nlimit:%d, ndf->retransn_to_npool:%f sminn_to_npool:%f leafCN:%f\n",
-           plant_calloc,plant_nalloc,plant_calloc/(plant_nalloc+1e-8),mean_cn,ns->nlimit,ndf->retransn_to_npool,sminn_to_npool,cs->leafc/(ns->leafn+1e-12));
+    //printf("plant_calloc: %lf plant_nalloc:%lf CN ratio:%f mean_cn:%f nlimit:%d, ndf->retransn_to_npool:%f sminn_to_npool:%f leafCN:%f\n",
+    //       plant_calloc,plant_nalloc,plant_calloc/(plant_nalloc+1e-8),mean_cn,ns->nlimit,ndf->retransn_to_npool,sminn_to_npool,cs->leafc/(ns->leafn+1e-12));
 
 	/* pnow is the proportion of this day's growth that is displayed now,
 	the remainder going into storage for display next year through the
@@ -290,7 +296,7 @@ int allocate_daily_growth(int nlimit,
 
 	}
 
-    printf("cdf->cpool_to_leafc:%f ndf->npool_to_leafn:%f\n",cdf->cpool_to_leafc,ndf->npool_to_leafn);
+    //printf("cdf->cpool_to_leafc:%f ndf->npool_to_leafn:%f cnl:%f\n",cdf->cpool_to_leafc*1000,ndf->npool_to_leafn*1000,cnl);
 
 	ndf->actual_N_uptake  = 
 		ndf->npool_to_leafn +

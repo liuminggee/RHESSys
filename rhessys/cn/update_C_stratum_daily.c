@@ -134,6 +134,50 @@ int update_C_stratum_daily(struct epconst_struct epc,
 	}
 
 
+
+    //04122025LML check
+    double to_mr = 0;
+    double to_gr = 0;
+    double to_store = 0;
+    double to_growth = 0;
+
+    to_mr += cdf->leaf_day_mr + cdf->leaf_night_mr + cdf->froot_mr;
+    to_gr += cdf->cpool_leaf_gr + cdf->cpool_froot_gr;
+    to_store += cdf->cpool_to_leafc_store + cdf->cpool_to_frootc_store
+                + cdf->cpool_to_gresp_store;
+    to_growth += cdf->cpool_to_leafc + cdf->cpool_to_frootc;
+    if (epc.veg_type == TREE) {
+        to_mr += cdf->livestem_mr + cdf->livecroot_mr;
+        to_gr += cdf->cpool_livestem_gr + cdf->cpool_deadstem_gr
+                 + cdf->cpool_livecroot_gr + cdf->cpool_deadcroot_gr;
+        to_store += cdf->cpool_to_livestemc_store + cdf->cpool_to_deadstemc_store
+                    + cdf->cpool_to_livecrootc_store + cdf->cpool_to_deadcrootc_store;
+        to_growth += cdf->cpool_to_livestemc + cdf->cpool_to_deadstemc
+                     + cdf->cpool_to_livecrootc + cdf->cpool_to_deadcrootc;
+    }
+
+    double balance = cs->cpool - init_cpool
+                     - (cdf->psn_to_cpool - to_mr - to_gr - to_store - to_growth);
+
+    //if (close_enough(init_cpool,0) && cs->cpool * 1000 < -2) {
+    //if (close_enough(init_cpool,0) && close_enough(cs->cpool,0) && cdf->psn_to_cpool * 1000 > 20) {
+    //if (cs->cpool * 1000 > ZERO && cdf->psn_to_cpool * 1000 > 20) {
+    //if (cdf->psn_to_cpool * 1000 > 3 && close_enough(init_cpool,0) && cs->cpool * 1000 < -2) {
+        //printf("%d Negetive final cpool:%f (gC/m2) init_cpool:%f psn_to_cpool:%f leaf_day_mr:%f to_mr:%f to_gr:%f to_store:%f to_growth:%f change:%f balance:%f\n"
+        //       ,__LINE__,cs->cpool * 1000
+        //       ,init_cpool * 1000
+        //       ,cdf->psn_to_cpool * 1000
+        //       ,cdf->leaf_day_mr * 1000
+        //       ,to_mr * 1000
+        //       ,to_gr * 1000
+        //       ,to_store * 1000
+        //       ,to_growth * 1000
+        //       ,(cs->cpool - init_cpool) * 1000
+        //       ,balance * 1000);
+    //}
+
+
+
 //
 //    if (epc.veg_type == TREE && (cs->cpool < init_cpool)) {
 //        fprintf(stderr,"init_cpool:%f end_cpool:%f psn:%f mr:%f gr:%f alloc_all:%f alloc_biome:%f alloc_store:%f\n",

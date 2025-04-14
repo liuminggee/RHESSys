@@ -196,7 +196,7 @@ int update_decomp(
 	/* recalcitrant SOM pool (rf = 1.0, always mineralizing) */
 	if (cs_soil->soil4c > ZERO){
 		cdf->soil4c_hr = cdf->psoil4c_loss;
-		ndf->soil4n_to_sminn = cdf->psoil4c_loss / cn_s4;
+        ndf->soil4n_to_sminn = cdf->psoil4c_loss / cn_s4;
 		daily_net_nmin += ndf->soil4n_to_sminn;
 	}
 	/* update soild and litter stores */
@@ -298,6 +298,14 @@ int update_decomp(
 	ns_soil->soil3n       -= ndf->soil3n_to_soil4n;
 	ns_soil->soil4n	      += ndf->sminn_to_soil4n_s3;
 	ns_soil->soil4n	      -= ndf->soil4n_to_sminn;
+
+    //printf("soil4n:%f soil4n_to_sminn:%f (gN) soil4c_losss:%f (gC) new_soil4N:%f removed_soil4N:%f ndf->sminn_to_soil4n_s3:%f\n"
+    //       ,ns_soil->soil4n,ndf->soil4n_to_sminn * 1000, cdf->psoil4c_loss * 1000
+    //       ,(ndf->soil3n_to_soil4n + ndf->sminn_to_soil4n_s3) * 1000
+    //       ,(ndf->soil4n_to_sminn * 1000)
+    //       ,ndf->sminn_to_soil4n_s3*1000);
+
+
 	/* Fluxes into mineralized N pool */
 	/* Fluxes output of mineralized N pool for net microbial immobilization */
 	if (daily_net_nmin > ZERO)
@@ -362,6 +370,17 @@ int update_decomp(
     cdf->litterc_to_soilc += cdf->litr2c_to_soil2c;
     cdf->litterc_to_soilc += cdf->litr4c_to_soil3c;
 
+
+    //04102025LML sometimes N is accumulating and cn ratio is higher than cn_s4
+    if (ns_soil->soil4n > (cs_soil->soil4c / cn_s4)) {
+        //printf("extra soil4N:%f cn:%f\n",1000 * (ns_soil->soil4n - cs_soil->soil4c / cn_s4)
+        //       ,cs_soil->soil4c/ns_soil->soil4n);
+        double extraN = ns_soil->soil4n - cs_soil->soil4c / cn_s4;
+        ndf->soil4n_to_sminn  += extraN;
+        ns_soil->soil4n	      -= extraN;
+        ndf->net_mineralized  += extraN;
+        ns_soil->sminn += extraN;
+    }
 
 
 	return (!ok);

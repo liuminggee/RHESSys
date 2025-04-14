@@ -60,9 +60,13 @@ int resolve_sminn_competition(
 
     //if (sum_ndemand > sum_avail) {
     //    printf("DEBUG! N limitation h!\n");
-    //    double nreq = sum_ndemand - sum_avail;
-    //    ns_soil->nitrate += nreq;
-    //    sum_avail = max(ns_soil->sminn + ns_soil->nitrate + ndf->mineralized, 0.0);
+    //    //printf("sum_ndemand:%f sum_avail:%f plant_dem:%f immob:%f\n"
+    //    //       ,sum_ndemand * 1000, sum_avail * 1000
+    //    //       ,ndf->plant_potential_ndemand * 1000
+    //    //       ,ndf->potential_immob * 1000);
+    //    //double nreq = sum_ndemand - sum_avail;
+    //    //ns_soil->nitrate += nreq;
+    //    //sum_avail = max(ns_soil->sminn + ns_soil->nitrate + ndf->mineralized, 0.0);
     //}
 
 
