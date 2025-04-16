@@ -135,6 +135,13 @@ double	compute_z_final_from_soildef(
                         struct soil_default *psoildef,
                         double	z_initial,
                         double	delta_water);
+double	compute_delta_water(
+                            int	verbose_flag,
+                            double	n_0,
+                            double	p,
+                            double	soil_depth,
+                            double	z_initial,
+                            double	z_final);
 double	compute_delta_water_from_soildef(
                             int	verbose_flag,
                             struct soil_default *psoildef,
