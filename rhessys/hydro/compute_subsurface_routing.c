@@ -60,7 +60,7 @@ void compute_subsurface_routing(struct command_line_object *command_line,
 //			double, double, double, double, double, double, double,double *);
 
 	double compute_layer_field_capacity(int, int, double, double, double,
-			double, double, double, double, double, double);
+            double, double, double, double, double, double, double);
 
 	double compute_unsat_zone_drainage(int, int, double, double, double, double,
 			double, double);

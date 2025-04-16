@@ -448,6 +448,7 @@ double	top_model(
                     psoil_def[0].p4,
                     psoil_def[0].porosity_0,
                     psoil_def[0].porosity_decay,
+                    -9999,
 					patch[0].sat_deficit_z,
 					patch[0].sat_deficit_z, 0.0);				
 					
@@ -463,6 +464,7 @@ double	top_model(
                     psoil_def[0].p4,
                     psoil_def[0].porosity_0,
                     psoil_def[0].porosity_decay,
+                    -9999,
 					patch[0].sat_deficit_z,
 					patch[0].sat_deficit_z, 0);
 					
@@ -475,6 +477,7 @@ double	top_model(
                     psoil_def[0].p4,
                     psoil_def[0].porosity_0,
                     psoil_def[0].porosity_decay,
+                    -9999,
 					patch[0].sat_deficit_z,
 					patch[0].rootzone.depth, 0.0);	
 			}
