@@ -76,6 +76,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rhessys.h"
+#include "functions.h"
 
 double	compute_z_final(
 						int	verbose_flag,

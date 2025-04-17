@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rhessys.h"
+#include "functions.h"
 #include "phys_constants.h"
 #define ONE 1.0
 #include "params.h"

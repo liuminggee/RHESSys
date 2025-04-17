@@ -28,7 +28,7 @@
 #include "rhessys.h"
 #include "params.h"
 
-struct spinup_default *construct_beetle_defaults(
+struct beetle_default *construct_beetle_defaults(
         int     num_default_files,
         char    **default_files,
         struct command_line_object *command_line)

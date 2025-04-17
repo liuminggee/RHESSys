@@ -167,4 +167,16 @@ double	compute_z_final_from_surface(
                         double	delta_water);
 
 int create_MTBS_soil_burnt_severity_loolup_table();
+struct patch_fire_object **construct_patch_fire_grid (struct world_object *world, struct command_line_object *command_line,struct fire_default def);
+void output_growth_basin(
+		struct	basin_object *,
+		struct	date,
+        FILE	*
+#ifdef JMG_TRACKING
+        ,struct simtime *
+#endif
+                );
+                
+int key_compare(const void * e1,const  void *e2 );
+
 #endif

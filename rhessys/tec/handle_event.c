@@ -43,11 +43,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "rhessys.h"
 bool isNumeric(const char *array);
 bool isArrayBlank(const char *array);
 bool read_MTBS_burnt_severity(struct world_object *world,struct command_line_object *command_line);
 int set_dominant_severity(int *data);
+//get dominant type
+int get_dominant_severity(int *data){
+  int maximum_acount = 0;
+  int dominant_type = MTBS_BURNT_SEVERITY_BACKGROUND;
+  for (int i = 0; i < MTBS_BURNT_SEVERITY_NUMCLASSES; i++) {
+      if (data[i] >= maximum_acount && i != MTBS_BURNT_SEVERITY_NONMAPPING) {
+          maximum_acount = data[i];
+          dominant_type = i;
+      }
+  }
+  if (maximum_acount == 0) dominant_type = MTBS_BURNT_SEVERITY_BACKGROUND;
+  return dominant_type;
+};
+
 void	handle_event(
 					 struct	tec_entry	*event,
 					 struct command_line_object *command_line,
@@ -317,16 +332,4 @@ bool read_MTBS_burnt_severity(struct world_object *world,struct command_line_obj
     }
     return -1;
 }
-//get dominant type
-int get_dominant_severity(int *data){
-  int maximum_acount = 0;
-  int dominant_type = MTBS_BURNT_SEVERITY_BACKGROUND;
-  for (int i = 0; i < MTBS_BURNT_SEVERITY_NUMCLASSES; i++) {
-      if (data[i] >= maximum_acount && i != MTBS_BURNT_SEVERITY_NONMAPPING) {
-          maximum_acount = data[i];
-          dominant_type = i;
-      }
-  }
-  if (maximum_acount == 0) dominant_type = MTBS_BURNT_SEVERITY_BACKGROUND;
-  return dominant_type;
-}
+

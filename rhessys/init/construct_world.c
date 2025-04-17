@@ -343,6 +343,7 @@
 #include <errno.h>
 
 #include "rhessys.h"
+#include "functions.h"
 #ifdef LIU_OMP_PATCH_LOCK
 #include <omp.h>
 #include "params.h"
@@ -370,10 +371,10 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		struct base_station_object **, struct default_object *,
         struct base_station_ncheader_object *,
         struct world_object *);
-	struct fire_patch_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default def);
+	struct patch_fire_object **construct_patch_fire_grid(struct world_object *, struct command_line_object *,struct fire_default def);
 	struct fire_object **construct_fire_grid(struct world_object *);
 	/* construct the beetle grid, following the example of fire patch object */
-    struct beetle_patch_object **construct_patch_beetle_grid(struct world_object *, struct command_line_object *,struct beetle_default def);
+    struct patch_beetle_object **construct_patch_beetle_grid(struct world_object *, struct command_line_object *,struct beetle_default def);
 	struct beetle_object **construct_beetle_grid(struct world_object *);
 
 

@@ -36,7 +36,7 @@
 double calc_beetle_patch_area_in_grid(double curMinX,double curMinY,double curMaxX,double curMaxY,double cellMaxX,
 							double cellMaxY,double cellMinX,double cellMinY,double cell_res);
 
-struct beetle_object **construct_patch_beetle_grid (struct world_object *world, struct command_line_object *command_line,struct beetle_default def)
+struct patch_beetle_object **construct_patch_beetle_grid (struct world_object *world, struct command_line_object *command_line,struct beetle_default def)
 
 {
 	/*--------------------------------------------------------------*/

@@ -13,8 +13,8 @@
 CC            = gcc -std=c99
 CXX           = g++
 DEFINES       = -DNO_UPDATE_160419 -DLIU_NETCDF_READER -DCHECK_NCCLIM_DATA -DFIND_STATION_BASED_ON_ID -DLIU_EXTEND_CLIM_VAR -DLIU_EXTEND_CLIM_VAR_AND_USE_SWRAD -DRUN_WITH_SPINUP_PERIOD_USING_RANDOM_CLIMATE_YEAR_DATA -DFIND_STATION_BASED_ON_ID -DLIU_EXTEND_CLIM_VAR -DLIU_BURN_ALL_AT_ONCE -DLIU_TRACKING_BASIN_LITTERC -DLIU_WMFIRE_OUTPUT -DLIU_DISPLY_RUN_INFO -DLIU_GAMMA_TRANSMISSIVITY_NEW -DxJMG_MORE_YEARLY_OUTPUT -DLITTER_CONSUMED_BASED_ON_PSPREAD
-CFLAGS        = -pipe -fopenmp -g -Wall -W $(DEFINES)
-CXXFLAGS      = -pipe -fpermissive -fopenmp -g -Wall -W $(DEFINES)
+CFLAGS        = -pipe -fopenmp -g -Wall -W $(DEFINES) -fPIC
+CXXFLAGS      = -pipe -fpermissive -fopenmp -g -Wall -W $(DEFINES) -fPIC
 INCPATH       = -I../../../../rhessys/include -I../../../../../boost_1_66_0 -I../../../..
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -30,7 +30,7 @@ TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = RHESSys1.0.0
 LINK          = g++
-LFLAGS        = -fopenmp
+LFLAGS        = -fopenmp -pie
 LIBS          = $(SUBLIBS) -lnetcdf -lgomp -fopenmp 
 AR            = ar cqs
 RANLIB        = 
