@@ -95,7 +95,12 @@ double	compute_z_final(
 		double,
 		double,
 		double);
-	
+    //double	compute_delta_water_from_soildef(
+    //                            int,
+    //                            struct soil_default *,
+    //                            double,
+    //                            double);
+
 	/*--------------------------------------------------------------*/
 	/*	Local variable definition.									*/
 	/*--------------------------------------------------------------*/

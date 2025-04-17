@@ -142,11 +142,11 @@ double	compute_delta_water(
                             double	soil_depth,
                             double	z_initial,
                             double	z_final);
-double	compute_delta_water_from_soildef(
-                            int	verbose_flag,
-                            struct soil_default *psoildef,
-                            double	z_initial,
-                            double	z_final);
+//double	compute_delta_water_from_soildef(
+//                            int	verbose_flag,
+//                            struct soil_default *psoildef,
+//                            double	z_initial,
+//                            double	z_final);
 double	compute_unsat_zone_drainage_patch(
                                     int	verbose_flag,
                                     struct patch_object *patch,
