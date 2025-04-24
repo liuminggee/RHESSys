@@ -42,6 +42,9 @@
 #include "rhessys.h"
 #include <stdio.h>
 #include <math.h>
+#ifndef PARTICLE_DENSITY
+#define  PARTICLE_DENSITY	2.65	/* soil particle density g/cm3 (Dingman) */
+#endif
 
 int update_denitrif(
 					struct  soil_c_object   *cs_soil,
@@ -50,7 +53,9 @@ int update_denitrif(
 					struct ndayflux_patch_struct *ndf,
 					struct  soil_class   soil_type,
 					double  theta,
-					double std)
+                    double std,
+                    double porosity,                                            //04242025LML
+                    double organic_soil_depth)                                  //04242025LML
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -104,8 +109,16 @@ int update_denitrif(
         //nitrate_ratio = (ns_soil->nitrate)
         //	/ (cs_soil->totalc + ns_soil->totaln) * 1e6;   //(ugN/gC) 09072022LML note: seems not right!
 
-        nitrate_ratio = (ns_soil->nitrate)
-            / (cs_soil->totalc) * 1e6;   //(ugN/gC) 09072022LML
+        double bulk_density = PARTICLE_DENSITY * (1.0 - porosity) * 1000;
+        double kg_soil = bulk_density * organic_soil_depth;
+        /*--------------------------------------------------------------*/
+        /* compute ammonium conc. in ppm				*/
+        /*--------------------------------------------------------------*/
+        nitrate_ratio = ns_soil->nitrate / kg_soil * 1000000.0;                 //(ugN/g) 04242025
+
+        //04242025LML seemd original NO3 level is wrong!!!
+        //nitrate_ratio = (ns_soil->nitrate)
+        //    / (cs_soil->totalc) * 1e6;   //(ugN/gC) 09072022LML
 
 		/*--------------------------------------------------------------*/
 		/*	maximum denitrfication (kg/ha) based on available	*/
@@ -135,7 +148,7 @@ int update_denitrif(
 		denitrify = min(fCO2, fnitrate) * water_scalar;
 
 
-        //printf("\nDEBUG DENITRIFICATION! denitrify(gN):%lf w_scalar:%lf theta:%lf fCO2:%lf fnitrate(gN):%lf nitrate_ratio(ugN-NO3/gC):%lf NO3:%lf SoilC:%lf hr:%lf",
+        //printf("\nDEBUG DENITRIFICATION! denitrify(gN):%lf w_scalar:%lf theta:%lf fCO2:%lf fnitrate(gN):%lf nitrate_ratio(ugN-NO3/g):%lf NO3:%lf SoilC:%lf hr:%lf",
         //        denitrify*1000., water_scalar,theta,fCO2*1000.,fnitrate*1000.,nitrate_ratio,
         //        ns_soil->nitrate*1000.,cs_soil->totalc*1000., hr*1000.);
         //fprintf(stderr,"Testing!\n");

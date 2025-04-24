@@ -160,7 +160,9 @@ void		patch_hourly(
     if (!command_line[0].start_from_zero_soilpools)
       patch_hourly[0].NO3_throughfall = zone[0].ndep_NO3/24;
     else
-      patch_hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;
+      patch_hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;             //04242025LML Note: when modeling from zero soil pools, N limit plant growth
+                                                                                //so this way to accumulate some high N in the soil.
+                                                                                //In real run from certain state, the soil N will get to new equilibrium under real N dep condition
 #else
     patch_hourly[0].NO3_throughfall = 100. * zone[0].ndep_NO3/24;            //1.0/365./24.;     //06072022LML 1kgN/year JUST AVOID N LIMITATION
 #endif

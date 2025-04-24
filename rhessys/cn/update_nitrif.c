@@ -46,7 +46,9 @@
 #include <stdio.h>
 #include <math.h>
 
+#ifndef PARTICLE_DENSITY
 #define  PARTICLE_DENSITY	2.65	/* soil particle density g/cm3 (Dingman) */
+#endif
 #define	 MAX_PERC		0.1	/* fraction of amonium that goes to nitrate */
 #define  MAX_RATE		120	/* mg/N/kg/day twice groffman values for ag soils */
 #define NUM_NORMAL  10 	/* resolution of normal distribution */
