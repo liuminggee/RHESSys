@@ -138,8 +138,7 @@ int allocate_daily_growth(int nlimit,
 	if (nlimit == 1)
 		if (total_soil_frootc > ZERO)
 			soil_nsupply = min(ndf->potential_N_uptake,
-            (ndf_patch->plant_avail_uptake * cs->frootc / total_soil_frootc));
-            //04092025LML max(0.1,min(0.9,cover_fraction * cs->frootc / total_soil_frootc)))); //11012022LML added the cover_fraction
+            (ndf_patch->plant_avail_uptake * max(0.1,min(0.9,cover_fraction * cs->frootc / total_soil_frootc)))); //11012022LML added the cover_fraction
                                                                                  //and set the limitation for under and over canopy
                                                                                  //in some cases, the undercanopy has so significant N limitation that it can't grow
 		else
