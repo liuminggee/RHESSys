@@ -613,8 +613,10 @@ int allocate_annual_growth(				int id,
     //       id,cover_fraction,cdf->leafc_store_to_leafc_transfer,cs->leafc);
 
 //#ifdef LIU_BURN_ALL_AT_ONCE  //11072022LML enabled for all situation
-     epc.min_leaf_carbon = 0.05;
-     epc.resprout_leaf_carbon = 0.05;
+    //05012025LML seems tto high. Use the default or from the default file.
+    //epc.min_leaf_carbon = 0.05;
+
+    epc.resprout_leaf_carbon = epc.min_leaf_carbon; //05012025LML 0.05;
 //#endif
 
 	if ((cdf->leafc_store_to_leafc_transfer + cs->leafc) < epc.min_leaf_carbon) {
