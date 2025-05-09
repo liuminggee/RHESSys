@@ -961,7 +961,7 @@ void	canopy_stratum_daily_F(
 	m_tmin_sunlit = stratum[0].mult_conductance.tmin;
 	m_vpd_sunlit = stratum[0].mult_conductance.vpd;
 
-	/*
+    /*
 	stratum[0].potential_gs_sunlit = compute_vascular_stratum_conductance(
 		command_line[0].verbose_flag,
 		stratum[0].defaults[0][0].epc.psi_curve,
@@ -1029,7 +1029,12 @@ void	canopy_stratum_daily_F(
 	m_tmin_shade = stratum[0].mult_conductance.tmin;
 	m_vpd_shade = stratum[0].mult_conductance.vpd;
 
-
+    //printf("veg_parm_ID:%d m_APAR_sunlit:%lf m_tavg_sunlit:%lf m_LWP_sunlit:%lf m_CO2_sunlit:%lf  m_tmin_sunlit:%lf m_vpd_sunlit%lf\n"
+    //       ,stratum[0].veg_parm_ID,m_APAR_sunlit,m_tavg_sunlit,m_LWP_sunlit,m_CO2_sunlit
+    //       ,m_tmin_sunlit,m_vpd_sunlit);
+    //printf("veg_parm_ID:%d m_APAR_shade:%lf m_tavg_shade:%lf m_LWP_shade:%lf m_CO2_shade:%lf m_tmin_shade:%lf m_vpd_shade%lf\n"
+    //       ,stratum[0].veg_parm_ID,m_APAR_shade,m_tavg_shade,m_LWP_shade,m_CO2_shade
+    //       ,m_tmin_shade,m_vpd_shade);
 
 	/*
 	stratum[0].potential_gs_shade = compute_vascular_stratum_conductance(
@@ -1067,30 +1072,47 @@ void	canopy_stratum_daily_F(
 
 
 	/* keep track of conductance multipliers actually used an indication of stress */
-	stratum[0].mult_conductance.APAR = (m_APAR_shade*stratum[0].epv.proj_lai_shade +
-		m_APAR_sunlit * stratum[0].epv.proj_lai_sunlit)
-		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
+    //05022025LML add case in zero LAI
+    if (!close_enough(stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit, 0.0)) {
+        stratum[0].mult_conductance.APAR = (m_APAR_shade*stratum[0].epv.proj_lai_shade +
+            m_APAR_sunlit * stratum[0].epv.proj_lai_sunlit)
+            / (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.tavg = (m_tavg_shade*stratum[0].epv.proj_lai_shade +
-		m_tavg_sunlit * stratum[0].epv.proj_lai_sunlit)
-		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
+        stratum[0].mult_conductance.tavg = (m_tavg_shade*stratum[0].epv.proj_lai_shade +
+            m_tavg_sunlit * stratum[0].epv.proj_lai_sunlit)
+            / (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.LWP = (m_LWP_shade*stratum[0].epv.proj_lai_shade +
-		m_LWP_sunlit * stratum[0].epv.proj_lai_sunlit)
-		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
+        stratum[0].mult_conductance.LWP = (m_LWP_shade*stratum[0].epv.proj_lai_shade +
+            m_LWP_sunlit * stratum[0].epv.proj_lai_sunlit)
+            / (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.CO2 = (m_CO2_shade*stratum[0].epv.proj_lai_shade +
-		m_CO2_sunlit * stratum[0].epv.proj_lai_sunlit)
-		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
+        stratum[0].mult_conductance.CO2 = (m_CO2_shade*stratum[0].epv.proj_lai_shade +
+            m_CO2_sunlit * stratum[0].epv.proj_lai_sunlit)
+            / (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.tmin = (m_tmin_shade*stratum[0].epv.proj_lai_shade +
-		m_tmin_sunlit * stratum[0].epv.proj_lai_sunlit)
-		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
+        stratum[0].mult_conductance.tmin = (m_tmin_shade*stratum[0].epv.proj_lai_shade +
+            m_tmin_sunlit * stratum[0].epv.proj_lai_sunlit)
+            / (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
 
-	stratum[0].mult_conductance.vpd = (m_vpd_shade*stratum[0].epv.proj_lai_shade +
-		m_vpd_sunlit * stratum[0].epv.proj_lai_sunlit)
-		/ (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
+        stratum[0].mult_conductance.vpd = (m_vpd_shade*stratum[0].epv.proj_lai_shade +
+            m_vpd_sunlit * stratum[0].epv.proj_lai_sunlit)
+            / (stratum[0].epv.proj_lai_shade+stratum[0].epv.proj_lai_sunlit);
+    } else {
+            stratum[0].mult_conductance.APAR = 0.0;
+            stratum[0].mult_conductance.tavg = 0.0;
+            stratum[0].mult_conductance.LWP = 0.0;
+            stratum[0].mult_conductance.CO2 = 0.0;
+            stratum[0].mult_conductance.tmin = 0.0;
+            stratum[0].mult_conductance.vpd = 0.0;
+    }
 
+    //printf("veg_parm_ID:%d m_APAR:%lf m_tavg:%lf m_LWP:%lf m_CO2:%lf m_tmin:%lf m_vpd%lf\n"
+    //       ,stratum[0].veg_parm_ID,stratum[0].mult_conductance.APAR
+    //        ,stratum[0].mult_conductance.tavg
+    //        ,stratum[0].mult_conductance.LWP
+    //        ,stratum[0].mult_conductance.CO2
+    //       ,stratum[0].mult_conductance.tmin
+    //        ,stratum[0].mult_conductance.vpd);
 
 	}
 	else {
@@ -1549,11 +1571,48 @@ void	canopy_stratum_daily_F(
 	/*	gsurf (for bryophytes) is not well calibrated.		*/
 	/*--------------------------------------------------------------*/
 	if ( stratum[0].rootzone.depth > ZERO ){
-		stratum[0].transpiration_sat_zone = transpiration
-			* max(0, 1 - ( patch[0].sat_deficit_z
-			/ stratum[0].rootzone.depth ) );
-		stratum[0].transpiration_unsat_zone = transpiration
-			- stratum[0].transpiration_sat_zone;
+        //05072025LMLstratum[0].transpiration_sat_zone = transpiration
+        //05072025LML	* max(0, 1 - ( patch[0].sat_deficit_z
+        //05072025LML	/ stratum[0].rootzone.depth ) );
+        //05072025LMLstratum[0].transpiration_unsat_zone = transpiration
+        //05072025LML	- stratum[0].transpiration_sat_zone;
+
+        //05072025LML use root and moisture weighted. Assume root is evently distributed
+        double r_sat = max(0.,stratum[0].rootzone.depth - patch[0].sat_deficit_z);
+        double r_unsat = stratum[0].rootzone.depth - r_sat;
+        double w_sat_available = max(0.,compute_delta_water_from_soildef(
+                    0,
+                    patch[0].soil_defaults[0],
+                    patch[0].rootzone.depth,
+                    patch[0].sat_deficit_z));
+        double w_unsat_available = 0.;
+        if (patch[0].sat_deficit > ZERO) {
+          double wp = exp(-1.0*log(-1.0*100.0*patch[0].psi_max_veg/patch[0].soil_defaults[0][0].psi_air_entry)
+                                     * patch[0].soil_defaults[0][0].pore_size_index);
+          wp *= (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
+          w_unsat_available = max(patch[0].rz_storage-patch[0].wilting_point, 0.);
+        }
+        double wsum = r_sat * w_sat_available + r_unsat*w_unsat_available;
+        double f_sat = 0;
+        if (wsum > ZERO) {
+          f_sat = r_sat*w_sat_available/wsum;
+        } else {
+          f_sat = 0.5; //05072025LML let water deficit process handle this condition
+        }
+        stratum[0].transpiration_sat_zone = transpiration * f_sat;
+        stratum[0].transpiration_unsat_zone = transpiration * (1. - f_sat);
+
+        //printf("water_table:%lf (m) root_depth: %lf (m) r_sat:%lf (m) r_unsat:%lf (m) f_sat:%lf wsum:%lf w_sat_available:%lf w_unsat_available:%lf\n"
+        //      ,patch[0].sat_deficit
+        //      ,stratum[0].rootzone.depth
+        //      ,r_sat
+        //      ,r_unsat
+        //      ,f_sat
+        //      ,wsum
+        //      ,w_sat_available
+        //      ,w_unsat_available);
+
+
 	}
 	else{
 		if ( patch[0].sat_deficit_z > ZERO ){

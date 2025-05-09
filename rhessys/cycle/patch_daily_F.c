@@ -2008,12 +2008,13 @@ void		patch_daily_F(
 	patch[0].trans_reduc_perc = 1.0;
 	transpiration_reduction_percent = 1.0;
 
-	if (patch[0].rootzone.depth > ZERO ) {
-	if (( unsat_zone_patch_demand_initial + sat_zone_patch_demand_initial) > ZERO)
-		transpiration_reduction_percent = (1.0-(unsat_zone_patch_demand + sat_zone_patch_demand)/(unsat_zone_patch_demand_initial + sat_zone_patch_demand_initial));
-	else
-		transpiration_reduction_percent = 1.0;
-	}
+    //05062025LML TESTING!!! commented out
+    if (patch[0].rootzone.depth > ZERO ) {
+    if (( unsat_zone_patch_demand_initial + sat_zone_patch_demand_initial) > ZERO)
+        transpiration_reduction_percent = (1.0-(unsat_zone_patch_demand + sat_zone_patch_demand)/(unsat_zone_patch_demand_initial + sat_zone_patch_demand_initial));
+    else
+        transpiration_reduction_percent = 1.0;
+    }
 
     //if (transpiration_reduction_percent < 0.5) {
     //     printf("month=%d day=%d t_red=%lf rz.dep=%lf rz_sto=%lf wtpoint:%lf ex_unsat=%lf ex_sat=%lf unsat_ini=%lf unsatdem=%lf satdem_ini=%lf satdem=%lf sat_def_z=%lf f_c=%lf rz.fc=%lf\n",
