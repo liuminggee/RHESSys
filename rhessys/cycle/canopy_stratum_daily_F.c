@@ -1578,8 +1578,9 @@ void	canopy_stratum_daily_F(
         //05072025LML	- stratum[0].transpiration_sat_zone;
 
         //05072025LML use root and moisture weighted. Assume root is evently distributed
-        double r_sat = max(0.,stratum[0].rootzone.depth - patch[0].sat_deficit_z);
-        double r_unsat = stratum[0].rootzone.depth - r_sat;
+        //The w_sat_available & w_unsat_available already considered the root depth (distribution)
+        //double r_sat = max(0.,stratum[0].rootzone.depth - patch[0].sat_deficit_z);
+        //double r_unsat = stratum[0].rootzone.depth - r_sat;
         double w_sat_available = max(0.,compute_delta_water_from_soildef(
                     0,
                     patch[0].soil_defaults[0],
@@ -1592,10 +1593,12 @@ void	canopy_stratum_daily_F(
           wp *= (min(patch[0].sat_deficit, patch[0].rootzone.potential_sat));
           w_unsat_available = max(patch[0].rz_storage-patch[0].wilting_point, 0.);
         }
-        double wsum = r_sat * w_sat_available + r_unsat*w_unsat_available;
+        //double wsum = r_sat * w_sat_available + r_unsat*w_unsat_available;
+        double wsum = w_sat_available + w_unsat_available;
         double f_sat = 0;
         if (wsum > ZERO) {
-          f_sat = r_sat*w_sat_available/wsum;
+          //f_sat = r_sat*w_sat_available/wsum;
+          f_sat = w_sat_available/wsum;
         } else {
           f_sat = 0.5; //05072025LML let water deficit process handle this condition
         }
