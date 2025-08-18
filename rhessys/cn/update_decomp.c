@@ -95,7 +95,7 @@ int update_decomp(
     rfl4s3 = 0.29;
     rfs1s2 = 0.28; //12142022LML may need calibration
     rfs2s3 = 0.46; //12142022LML may need calibration
-    rfs3s4 = 0.99;//0.55; 12142022LML 0.55 seems too low (i.e. too much SOM being converted into humus)
+    rfs3s4 = 0.55; //08182025LML replaced 0.99 with original number;//0.55; 12142022LML 0.55 seems too low (i.e. too much SOM being converted into humus)
 	daily_net_nmin = 0.0;
 	/* labile litter fluxes */
 	if (cs_litr->litr1c > ZERO) {
