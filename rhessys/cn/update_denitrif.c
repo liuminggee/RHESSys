@@ -124,13 +124,14 @@ int update_denitrif(
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*		N03							*/
 		/*--------------------------------------------------------------*/
+        double dncoef = 1.0;  //08202025LML User may need adjust this value
         fnitrate = atan(PI*0.002*(nitrate_ratio - 180)) * 0.004 / PI + 0.0011; //(kgN/m2/day)
-
+        fnitrate *= dncoef;
         //09072022LML set max Ndep under low soil NO3 condition according Fig. 6 of Parton et al., 1996
         //This equation will give a high max denitrificatiion rate (~0.02gN/m2/day)
         //even under zero soil NO3. Although final denitrification will not higher than the total soil NO3,
         //this high denitrification rate will still move large amount of NO3. So I added the following line:
-        if (nitrate_ratio <= 10.) fnitrate = 5e-6;
+        //08252025LML nitrate_ratio is less than 10 in many cases, so I removed this line. //if (nitrate_ratio <= 10.) fnitrate = 5e-6;
 
 		/*--------------------------------------------------------------*/
 		/*	maximum denitrfication (kg/ha) based on available	*/
