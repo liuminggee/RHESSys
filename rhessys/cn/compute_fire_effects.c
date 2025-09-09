@@ -53,9 +53,6 @@ void compute_fire_effects(
 		struct litter_c_object *,
 		struct litter_n_object *,
         struct fire_litter_soil_loss_struct *
-#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
-        ,double
-#endif
                 );
 
 	void	update_mortality(
@@ -93,6 +90,7 @@ void compute_fire_effects(
     int fe_option;                                                              //0: RHESSys default to calculate mortality and consumptions
                                                                                 //1: Use predefined mortality rate and consumption rates from command line
                                                                                 //
+    struct fire_litter_soil_loss_struct temp_fire_loss = fire_loss;
 
     //Option for handling fire event
     if (command_line[0].user_defined_fire_event_flag &&
@@ -124,59 +122,53 @@ void compute_fire_effects(
         fe_litter_loss = pspread;
     }
 
+    //09082025 LML update fire_loss. Multiple maximum loss (default value) with the SBS lookup table
+    //May need update
+    temp_fire_loss.loss_litr1c *= fe_litter_loss;
+    temp_fire_loss.loss_litr2c *= fe_litter_loss;
+    temp_fire_loss.loss_litr3c *= fe_litter_loss;
+    temp_fire_loss.loss_litr4c *= fe_litter_loss;
+    temp_fire_loss.loss_litr1n *= fe_litter_loss;
+    temp_fire_loss.loss_litr2n *= fe_litter_loss;
+    temp_fire_loss.loss_litr3n *= fe_litter_loss;
+    temp_fire_loss.loss_litr4n *= fe_litter_loss;
 
+    temp_fire_loss.loss_soil1c *= fe_soil;
+    temp_fire_loss.loss_soil2c *= fe_soil;
+    temp_fire_loss.loss_soil3c *= fe_soil;
+    temp_fire_loss.loss_soil4c *= fe_soil;
+    temp_fire_loss.loss_soil1n *= fe_soil;
+    temp_fire_loss.loss_soil2n *= fe_soil;
+    temp_fire_loss.loss_soil3n *= fe_soil;
+    temp_fire_loss.loss_soil4n *= fe_soil;
 
 	/*--------------------------------------------------------------*/
 	/*	Compute litter and soil removed.			*/
 	/*--------------------------------------------------------------*/
 
     if (fe_psread > 0){
+        /* Litter consumption is approximated based CONSUME model outputs */
+        /* Consumption 1hr-fuel = 1 * 1hr-fuel */
+        /* Consumption 10hr-fuel = 0.8469 * 10hr-fuel */
+        /* Consumption 100hr-fuel = 0.7127 * 100hr-fuel */
 
-	/* Litter consumption is approximated based CONSUME model outputs */
-	/* Consumption 1hr-fuel = 1 * 1hr-fuel */
-	/* Consumption 10hr-fuel = 0.8469 * 10hr-fuel */
-	/* Consumption 100hr-fuel = 0.7127 * 100hr-fuel */
+        /* Calculate litter consumed for use later in canopy effects */
+        litter_c_consumed = patch[0].litter_cs.litr1c * temp_fire_loss.loss_litr1c +
+                patch[0].litter_cs.litr2c * temp_fire_loss.loss_litr2c +
+                patch[0].litter_cs.litr3c * temp_fire_loss.loss_litr3c +
+                patch[0].litter_cs.litr4c * temp_fire_loss.loss_litr4c;
 
-    //fire_loss.loss_litr1c = 1;
-    //fire_loss.loss_litr2c = 1;
-    //fire_loss.loss_litr3c = 0.85;
-    //fire_loss.loss_litr4c = 0.71;
-    //fire_loss.loss_soil1c = 0.71;
-    //fire_loss.loss_soil2c = 0;
-    //fire_loss.loss_soil3c = 0;
-    //fire_loss.loss_soil4c = 0;
-    //fire_loss.loss_litr1n = 1;
-    //fire_loss.loss_litr2n = 1;
-    //fire_loss.loss_litr3n = 0.85;
-    //fire_loss.loss_litr4n = 0.71;
-    //fire_loss.loss_soil1n = 0.71;
-    //fire_loss.loss_soil2n = 0;
-    //fire_loss.loss_soil3n = 0;
-    //fire_loss.loss_soil4n = 0;
+        patch[0].litterc_burned = litter_c_consumed;//new NREN
 
-	/* Calculate litter consumed for use later in canopy effects */
-	litter_c_consumed = patch[0].litter_cs.litr1c * fire_loss.loss_litr1c +
-			patch[0].litter_cs.litr2c * fire_loss.loss_litr2c +
-			patch[0].litter_cs.litr3c * fire_loss.loss_litr3c +
-			patch[0].litter_cs.litr4c * fire_loss.loss_litr4c;
-
-#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
-    litter_c_consumed *= fe_litter_loss; //pspread;
-#endif
-    patch[0].litterc_burned = litter_c_consumed;//new NREN
-
-	update_litter_soil_mortality(
-		 &(patch[0].cdf),
-		 &(patch[0].ndf),
-		 &(patch[0].soil_cs),
-		 &(patch[0].soil_ns),
-		 &(patch[0].litter_cs),
-		 &(patch[0].litter_ns),
-         &fire_loss
-#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
-         ,fe_psread
-#endif
-            );
+        update_litter_soil_mortality(
+             &(patch[0].cdf),
+             &(patch[0].ndf),
+             &(patch[0].soil_cs),
+             &(patch[0].soil_ns),
+             &(patch[0].litter_cs),
+             &(patch[0].litter_ns),
+             &temp_fire_loss
+                );
     }
 	/*--------------------------------------------------------------*/
 	/*		Compute vegetation effects.			*/
@@ -296,10 +288,10 @@ void compute_fire_effects(
 			/* Litter consumption is approximated based CONSUME model outputs */
 			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
 			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
-                double scale = 1.;
-#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
-                scale = fe_psread;
-#endif
+                //double scale = 1.;
+//#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
+                double scale = fe_litter_loss; //09082025LML fe_psread;
+//#endif
                 canopy_target[0].fe.m_cwdc_to_atmos = canopy_target[0].cs.cwdc * .339 * scale;
                 canopy_target[0].fe.m_cwdn_to_atmos = canopy_target[0].ns.cwdn * .339 * scale;
                 canopy_target[0].cs.cwdc -= canopy_target[0].fe.m_cwdc_to_atmos;
@@ -838,16 +830,20 @@ int create_MTBS_soil_burnt_severity_loolup_table() {
     //01182024LML may need seperate mortality and consumption (the original is
     //called "charred canopy")
 
-    //LITTER LOSS
+    //LITTER LOSS Updated 09082025 LML
+    //They adjust the fraction loss from default fire_loss value from CONSUM model
+    //Need check. Original fire_loss (on litter) is not controlled by fire severity
     MTBS_sbs_table[MTBS_BURNT_SEVERITY_BACKGROUND][BS_LITTER_LOSS_F] = 0.0;
-    MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_LITTER_LOSS_F] = 0.0;
-    MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_LITTER_LOSS_F] = 0.0;
-    MTBS_sbs_table[MTBS_BURNT_SEVERITY_MODERATE][BS_LITTER_LOSS_F] = 0.0;
-    MTBS_sbs_table[MTBS_BURNT_SEVERITY_HIGH][BS_LITTER_LOSS_F] = 0.0;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_LITTER_LOSS_F] = 0.125;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_LITTER_LOSS_F] = 0.25;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_MODERATE][BS_LITTER_LOSS_F] = 0.65;
+    MTBS_sbs_table[MTBS_BURNT_SEVERITY_HIGH][BS_LITTER_LOSS_F] = 0.9;
     MTBS_sbs_table[MTBS_BURNT_SEVERITY_INCREASEDGREENESS][BS_LITTER_LOSS_F] = 0.0;
     MTBS_sbs_table[MTBS_BURNT_SEVERITY_NONMAPPING][BS_LITTER_LOSS_F] = 0.0;
 
-    //Soil effect (TODO)
+    //Soil effect
+    //09092025LML Need double-check. will affecy SOM loss
+    //They adjust the fraction loss from default fire_loss value from CONSUM model
     MTBS_sbs_table[MTBS_BURNT_SEVERITY_BACKGROUND][BS_SOIL_F] = 0.0;
     MTBS_sbs_table[MTBS_BURNT_SEVERITY_UNBURNTOLOW][BS_SOIL_F] = 0.0;
     MTBS_sbs_table[MTBS_BURNT_SEVERITY_LOW][BS_SOIL_F] = 0.0;
