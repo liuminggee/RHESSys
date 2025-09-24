@@ -71,6 +71,9 @@ int update_decomp(
 		+ ns_soil->soil4n + ns_soil->sminn + ns_soil->nitrate;
 	nlimit = ns_soil->nlimit;
 	fpi = ns_soil->fract_potential_immob;
+
+    //printf("fpi:%f\n",fpi);
+
 	/* now use the N limitation information fpi to assess the final decomposition
 	fluxes. Mineralizing fluxes (pmnf* < 0.0) occur at the potential rate
 	regardless of the competing N demands between microbial processes and
@@ -97,6 +100,19 @@ int update_decomp(
     rfs2s3 = 0.46; //12142022LML may need calibration
     rfs3s4 = 0.55; //08182025LML replaced 0.99 with original number;//0.55; 12142022LML 0.55 seems too low (i.e. too much SOM being converted into humus)
 	daily_net_nmin = 0.0;
+
+    //09192025LML in case very low N avail for litter decomposition, set baseline decomposition for carbon
+    double esti_plitr1c_loss = cdf->plitr1c_loss;
+    double esti_plitr2c_loss = cdf->plitr2c_loss;
+    double esti_plitr3c_loss = cdf->plitr3c_loss;
+    double esti_plitr4c_loss = cdf->plitr4c_loss;
+    double base_rate = 0.5;   //litter will be decomposed at least this fraction of its original rate
+                              //The concept comming from the following two papers. The rate should be calibrated.
+                              //Assume that the nitrogen limitation may not larger than 50% of potential decomposition rate
+                              // from the tmperature and moisture factors
+                              //Manzoni & Porporato (2009) – Soil carbon and nitrogen mineralization Theory and models across scales
+                              //Moorhead, D.L. and Sinsabaugh, R.L. (2006), A THEORETICAL MODEL OF LITTER DECAY AND MICROBIAL INTERACTION. Ecological Monographs, 76: 151-174. https://doi.org/10.1890/0012-9615(2006)076[0151:ATMOLD]2.0.CO;2
+
 	/* labile litter fluxes */
 	if (cs_litr->litr1c > ZERO) {
 		if (nlimit && ndf->pmnf_l1s1 > 0.0){
@@ -199,6 +215,23 @@ int update_decomp(
         ndf->soil4n_to_sminn = cdf->psoil4c_loss / cn_s4;
 		daily_net_nmin += ndf->soil4n_to_sminn;
 	}
+
+
+    //09192025 LML in case of N limitation for imobolization
+    if (fpi < base_rate) {
+        double extra_plitr1c_loss = esti_plitr1c_loss * (base_rate - fpi);
+        double extra_plitr2c_loss = esti_plitr2c_loss * (base_rate - fpi);
+        double extra_plitr3c_loss = esti_plitr3c_loss * (base_rate - fpi);
+        double extra_plitr4c_loss = esti_plitr4c_loss * (base_rate - fpi);
+        cdf->litr1c_hr += min(extra_plitr1c_loss,max(0.,cs_litr->litr1c - cdf->litr1c_hr));
+        cdf->litr2c_hr += min(extra_plitr1c_loss,max(0.,cs_litr->litr2c - cdf->litr2c_hr));
+        cdf->litr3c_hr += min(extra_plitr1c_loss,max(0.,cs_litr->litr3c - cdf->litr3c_hr));
+        cdf->litr4c_hr += min(extra_plitr1c_loss,max(0.,cs_litr->litr4c - cdf->litr4c_hr));
+        //printf("fpi:%f extra_plitr4c_loss:%f esti_plitr4c_loss:%f litr4c:%f litr4c_hr:%f\n",
+        //       fpi,extra_plitr4c_loss,esti_plitr4c_loss,cs_litr->litr4c,cdf->litr4c_hr);
+    }
+
+
 	/* update soild and litter stores */
 	/* Fluxes out of labile litter pool */
 	cs_litr->litr1c_hr_snk += cdf->litr1c_hr;

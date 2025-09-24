@@ -243,6 +243,10 @@ void  update_drainage_land(
 
         DOC_leached_to_patch = leached[LDOC] * patch[0].area;
         patch[0].soil_cs.DOC_Qout += leached[LDOC];
+
+        if (pQout > 0.001)
+        printf("pQout(mm):%f NO3_Qout:%f NH4_Qout:%f\n"
+               ,pQout*1000,patch[0].soil_ns.NO3_Qout*1000,patch[0].soil_ns.NH4_Qout*1000);
         //free(Nout);
 
 	}

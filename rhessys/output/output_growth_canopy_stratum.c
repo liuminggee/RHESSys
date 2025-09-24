@@ -48,7 +48,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 	/*	Local Variable Definition. 							*/
 	/*------------------------------------------------------*/
 
-    char out_basic[] = "%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
+    char out_basic[] = "%d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n";
 
 #ifdef JMG_TRACKING
     char out_format[1000] = "%d %d %d ";
@@ -109,6 +109,7 @@ void	output_growth_canopy_stratum( int basinID, int hillID, int zoneID,
 		(stratum[0].cs.dead_crootc + stratum[0].cs.deadcrootc_store + stratum[0].cs.deadcrootc_transfer)* 1000.0,
 		(stratum[0].ns.dead_crootn + stratum[0].ns.deadcrootn_store + stratum[0].ns.deadcrootn_transfer)* 1000.0,
 		stratum[0].cs.cwdc * 1000.0,
+        stratum[0].ns.cwdn * 1000.0,
 		stratum[0].cdf.total_mr*1000.0,
 		stratum[0].cdf.total_gr*1000.0,
 		stratum[0].cdf.psn_to_cpool * 1000.0,

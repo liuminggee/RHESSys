@@ -161,6 +161,13 @@ struct stratum_default *construct_stratum_defaults(
 		default_object_list[i].epc.max_daily_mortality = getDoubleParam(&paramCnt, &paramPtr, "epc.max_daily_mortality", "%lf", 0.005, 1) / 365;
 		default_object_list[i].epc.min_daily_mortality = getDoubleParam(&paramCnt, &paramPtr, "epc.min_daily_mortality", "%lf", 0.005, 1) / 365;
 		default_object_list[i].epc.daily_mortality_threshold = getDoubleParam(&paramCnt, &paramPtr, "epc.daily_mortality_threshold", "%lf",0.0,1);
+
+        //09182025LML
+        default_object_list[i].epc.Mort_annual_max = getDoubleParam(&paramCnt, &paramPtr, "epc.Mort_annual_max", "%lf", 0.1, 1);
+        default_object_list[i].epc.k_mort = getDoubleParam(&paramCnt, &paramPtr, "epc.k_mort", "%lf", 0.3, 1);
+        default_object_list[i].epc.Mid_mort_stemc = getDoubleParam(&paramCnt, &paramPtr, "epc.Mid_mort_stemc", "%lf", 20.0, 1);
+
+
 		default_object_list[i].epc.froot_cn = 			getDoubleParam(&paramCnt, &paramPtr, "epc.froot_cn", "%lf", 139.7, 1);
 		default_object_list[i].epc.livewood_cn = getDoubleParam(&paramCnt, &paramPtr, "epc.livewood_cn", "%lf", 200.0, 1);
 		default_object_list[i].epc.leaflitr_flab = getDoubleParam(&paramCnt, &paramPtr, "epc.leaflitr_flab", "%lf", 0.31, 1);

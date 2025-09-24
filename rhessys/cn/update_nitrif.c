@@ -101,7 +101,7 @@ int update_nitrif(
 		/*--------------------------------------------------------------*/
 		bulk_density = PARTICLE_DENSITY * (1.0 - porosity) * 1000;
 		kg_soil = bulk_density * organic_soil_depth;	
-		max_nit_rate = kg_soil * MAX_RATE * 0.000001;
+        max_nit_rate = kg_soil * MAX_RATE * 0.000001;  //kgN/m2
 		/*--------------------------------------------------------------*/
 		/* compute ammonium conc. in ppm				*/
 		/*--------------------------------------------------------------*/
@@ -154,7 +154,10 @@ int update_nitrif(
 		/* 	by scaling a maximum rate suggested by Parton et al.		*/
 		/*--------------------------------------------------------------*/
 		
-		nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0; 
+        //09222025LML update the following equation
+        //nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * MAX_RATE * ns_soil->sminn * 1000.0;
+
+        nitrify = water_scalar * T_scalar * N_scalar * pH_scalar * max_nit_rate * 1000. * 0.015; //(gN) 09222025LML original max nitrification rate is too high and the original equation seems not correct!
 
 	} /* end mineralized N available */
 	else
@@ -169,6 +172,12 @@ int update_nitrif(
 	ndf->sminn_to_nitrate = nitrify;
 	ns_soil->sminn -= (nitrify);
 	ns_soil->nitrate += (nitrify);
+    //printf("sminn:%f NO3:%f nitrification:%f water_scalar:%f T_scalar:%f N_scalar:%f pH_scalar:%f nh4_conc:%f(ppm) max_nit_rate:%f\n"
+    //       ,ns_soil->sminn*1000,ns_soil->nitrate*1000,ndf->sminn_to_nitrate*1000
+    //       ,water_scalar, T_scalar, N_scalar, pH_scalar, nh4_conc, max_nit_rate * 1000);
+
+    //09222025LML The simulated nitrification is too high! May need check the parameter and model!
+
 	ok = 0;
 	return(ok);
 } /* end update_nitrif */

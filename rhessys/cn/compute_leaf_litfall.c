@@ -110,6 +110,7 @@ int	compute_leaf_litfall(
 			nloss = litfallc/avg_cn;
         nloss = min(nloss,ns->leafn);
 		ns->retransn += nretrans;
+        //printf("nretrans:%f %d\n",nretrans*1000,__LINE__);
 		ns->leafn -= nloss;
 		if ((epc.allocation_flag == STATIC) || (grow_flag == 0) )
 			ns->leafn_store += nloss;
@@ -145,6 +146,7 @@ int	compute_leaf_litfall(
 			nloss = litfallc/avg_cn;
         nloss = min(nloss,ns->leafn);
 		ns->retransn += nretrans;
+        //printf("nretrans:%f %d\n",nretrans*1000,__LINE__);
 		ns->leafn -= nloss;
 		if ((epc.allocation_flag == STATIC) || (grow_flag == 0) )
 			ns->leafn_store += nloss;

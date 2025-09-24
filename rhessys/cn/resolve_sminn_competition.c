@@ -84,10 +84,18 @@ int resolve_sminn_competition(
 
 	sum_avail = perc_inroot * sum_avail;
 
-	if (sum_ndemand <= sum_avail){
+    //09182025LML limite immobilization.
+
+    double N_min = 0.1; //gN/m2
+    double f_cap_daily = 0.5; //0.02; //fraction of N available to microbes per day
+    double k_max = 3.35; //10.31 mgN/kg/day -> 3.35 gN/m2/day (25 cm depth, 1.4 g/cm3 soil) Ren et al., 2021, Soil gross nitrogen transformations in forestland and cropland of Regosols
+    double Navail = max(0,sum_avail * 1000. - N_min); //gN/m2
+    double max_imb = min(Navail,min(f_cap_daily * sum_avail * 1000.,k_max)) * 0.001; //kgN/m2/day the maximum imobolization rate based on N availability and microb's activities
+
+    if (ndf->potential_immob < max_imb && sum_ndemand <= sum_avail){
 	/* N availability is not limiting immobilization or plant
 		uptake, and both can proceed at their potential rates */
-		actual_immob = ndf->potential_immob;
+        actual_immob = ndf->potential_immob; //min(ndf->potential_immob,max_imb);
 		ns_soil->nlimit = 0;
 		ns_soil->fract_potential_immob = 1.0;
 		ns_soil->fract_potential_uptake = 1.0;
@@ -98,7 +106,7 @@ int resolve_sminn_competition(
 	plant growth demands, so these two demands compete for available
 		soil mineral N */
 		ns_soil->nlimit = 1;
-		actual_immob = (sum_avail) * (ndf->potential_immob/sum_ndemand);
+        actual_immob = min((sum_avail) * (ndf->potential_immob/sum_ndemand),max_imb);
 		actual_uptake = sum_avail - actual_immob;
         if (close_enough(ndf->potential_immob, 0))
 			ns_soil->fract_potential_immob = 0.0;
@@ -113,6 +121,8 @@ int resolve_sminn_competition(
 				/ ndf->plant_potential_ndemand;
 			ndf->plant_avail_uptake = actual_uptake;
 		}
+
+        //printf("act_imb:%f pot_imb:%f max_imb:%f\n",actual_immob*1000,ndf->potential_immob*1000,max_imb*1000);
 	}
 
 	return(0);

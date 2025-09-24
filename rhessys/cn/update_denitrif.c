@@ -55,7 +55,8 @@ int update_denitrif(
 					double  theta,
                     double std,
                     double porosity,                                            //04242025LML
-                    double organic_soil_depth)                                  //04242025LML
+                    double organic_soil_depth,
+                    double denitrification_maxrate_adj)                         //09092025 LML
 {
 	/*------------------------------------------------------*/
 	/*	Local Function Declarations.						*/
@@ -124,7 +125,7 @@ int update_denitrif(
 		/*	maximum denitrfication (kg/ha) based on available	*/
 		/*		N03							*/
 		/*--------------------------------------------------------------*/
-        double dncoef = 1.0;  //08202025LML User may need adjust this value
+        double dncoef = denitrification_maxrate_adj; //09092025LML 1.0;  //08202025LML User may need adjust this value
         fnitrate = atan(PI*0.002*(nitrate_ratio - 180)) * 0.004 / PI + 0.0011; //(kgN/m2/day)
         fnitrate *= dncoef;
         //09072022LML set max Ndep under low soil NO3 condition according Fig. 6 of Parton et al., 1996

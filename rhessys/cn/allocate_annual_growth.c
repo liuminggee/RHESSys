@@ -122,6 +122,10 @@ int allocate_annual_growth(				int id,
 
     double max_lai = epc.max_lai;
     if (epc.veg_type == TREE) max_lai = fmin(epc.max_lai,cs->max_leafc * epc.proj_sla);
+
+    //09182025LML Set a limitation
+    if (max_lai < 0.2 * epc.max_lai) max_lai = 0.2 * epc.max_lai;
+
     excess_lai = (cs->leafc + cs->leafc_store + cs->leafc_transfer) * epc.proj_sla - max_lai;
 
     //04092025LML check the CN ratio
@@ -135,7 +139,7 @@ int allocate_annual_growth(				int id,
     }
 
  	if ( excess_lai > ZERO) {
-
+        //printf("excess_lai:%f max_lai:%f\n",excess_lai,max_lai);
         excess_carbon = excess_lai / epc.proj_sla;
 
         //04102025LML LeafCN sometimes is less than the static CN ratio
@@ -574,7 +578,7 @@ int allocate_annual_growth(				int id,
 			else {
 			ndf->retransn_to_npool += unmetn;
 			}
-
+        //printf("retransn_to_npool:%f %d\n",ndf->retransn_to_npool * 1000,__LINE__);
 
 		cdf->leafc_store_to_leafc_transfer += carbohydrate_transfer * fleaf;
 		cdf->frootc_store_to_frootc_transfer += carbohydrate_transfer * froot;

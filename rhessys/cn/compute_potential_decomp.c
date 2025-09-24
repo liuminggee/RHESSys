@@ -78,6 +78,9 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 	int nlimit, i;
 	double et, w_scalar2, p_l1, p_l2, rate_scalar2, litr_decomp;
 
+    //09192025LML for calculating T scalar
+    double q10 = 2.0;
+
 	p_lignin = 0.0, rate_landclim = 0.0, rate_landclim_daily = 0.0, psi = 0.0, psi_max = 0.0, psi_min = 0.0, w_scalar_bgc = 0.0;
 	t_scalar = 0.0, w_scalar = 0.0; p_l1=0.0; p_l2=0.0, rate_scalar2 = 0.0;
 	#define NUM_NORMAL  10 	/* resolution of normal distribution */
@@ -110,8 +113,13 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 		t_scalar = 0.0;
 	}
 	else{
-		tk = tsoil + 273.15;
-		t_scalar = exp(308.56*((1.0/71.02)-(1.0/(tk-227.13))));
+        //09192025LML tk = tsoil + 273.15;
+        //09192025LML t_scalar = exp(308.56*((1.0/71.02)-(1.0/(tk-227.13))));
+
+        //09192025LML use traditional Q10 estimation
+        double beta = log(q10)/10.0;
+        t_scalar = exp(beta * (tsoil - 10.));
+
 	}
 	cs_litr->t_scalar = t_scalar;
 	/* calculate the rate constant scalar for soil water content.
@@ -149,6 +157,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
 		w_scalar = ZERO;
 
 	rate_scalar = w_scalar * t_scalar;
+    //printf("rate_scalar:%f w_scalar:%f t_scalar:%f\n",rate_scalar,w_scalar,t_scalar);
+
 	/* assign output variables */
 	//cs_litr->t_scalar = t_scalar;
 	cs_litr->w_scalar = w_scalar;
@@ -316,6 +326,8 @@ int compute_potential_decomp(double tsoil, double maxpsi,
       //cs_litr->litr_decomp = kl1*p_l1*0.01 + kl2*p_l2*0.01 + kl4*p_lignin*0.01; // this is for output the same same as R code, p unit is 0-100 not 0-1
     //cs_litr->litr_decomp = kl1+ kl2 + kl4;
     }
+
+    //printf("kl4:%f kl4_base:%f\n",kl4,kl4_base);
 
 	/* initialize the potential loss and mineral N flux variables */
 	plitr1c_loss = plitr2c_loss = plitr3c_loss = plitr4c_loss = 0.0;

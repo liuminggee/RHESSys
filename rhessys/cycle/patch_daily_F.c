@@ -287,6 +287,7 @@ void		patch_daily_F(
 		double,
         double,
         double,
+        double,
         double);
 
 
@@ -2364,7 +2365,8 @@ void		patch_daily_F(
 			patch[0].soil_defaults[0][0].soil_type,
             patch[0].rootzone.S, patch[0].theta_std,
             patch[0].soil_defaults[0][0].porosity_0,                            //04242025LML
-            0.25                                                                //04242025LML
+            0.25,                                                                //04242025LML
+            patch[0].soil_defaults[0][0].denitrification_maxrate_adj            //09092025LML
             ) != 0){
 			fprintf(stderr,"fATAL ERROR: in update_denitrif() ... Exiting\n");
 			exit(EXIT_FAILURE);

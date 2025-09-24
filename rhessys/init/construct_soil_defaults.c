@@ -143,8 +143,10 @@ struct soil_default *construct_soil_defaults(
         defobj[0].max_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "max_heat_capacity", "%lf", 0.0, 1);
         defobj[0].min_heat_capacity = 	getDoubleParam(&paramCnt, &paramPtr, "min_heat_capacity", "%lf", 0.0, 1);
         defobj[0].albedo = 		getDoubleParam(&paramCnt, &paramPtr, "albedo", "%lf", 0.28, 1);
-        defobj[0].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.0, 1);
+        defobj[0].NO3_adsorption_rate =	getDoubleParam(&paramCnt, &paramPtr, "NO3_adsorption_rate", "%lf", 0.000001, 1); //09222025LML increased to 20% of NH4 rate
         defobj[0].N_decay_rate = 	getDoubleParam(&paramCnt, &paramPtr, "N_decay", "%lf", 0.12, 1);
+
+        defobj[0].denitrification_maxrate_adj = 	getDoubleParam(&paramCnt, &paramPtr, "denitrification_maxrate_adj", "%lf", 1.0, 1);   //09092025LML the original denitrification rate the very high. May need adjust
 
         if (command_line[0].N_decayrate > 0)
             defobj[0].N_decay_rate = command_line[0].N_decayrate; //11042022LML original soil parameter of 0.12 is too low

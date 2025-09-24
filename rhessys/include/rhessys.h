@@ -1448,6 +1448,7 @@ struct	soil_default
     double  NO3_adsorption_rate;				/* kg /kg soil */
     double  NH4_adsorption_rate;				/* kg /kg soil */
     double  denitrif_proportion;				/* (DIM) 0-1 */
+    double  denitrification_maxrate_adj;        //09092025 LML adjust for denitrification rate. It's a multification.
 
     double  decay_rate[LEACH_ELEMENT_counts];      //10122022LML LNO3,LNH4,LDON,LDOC
     double  adsorption_rate[LEACH_ELEMENT_counts]; //10122022LML LNO3,LNH4,LDON,LDOC
@@ -1553,7 +1554,7 @@ struct  ndayflux_patch_struct
     double snagn_to_cwdn;
     /* daily N immobilization & mineralization fluxes */
     double plant_potential_ndemand; /* (kgN/m2/d) potential N demand from plants              */
-    double plant_avail_uptake; /* (kgN/m2/d) available N uptake from plants           */
+    double plant_avail_uptake; /* (kgN/m2/d) available N uptake from plants LML note: total soil available N for plant uptake. */
     double sminn_to_soil1n_l1; /* (kgN/m2/d) N immob. between litr1 and soil1 */
     double sminn_to_soil2n_l2; /* (kgN/m2/d) N immob. between litr2 and soil2 */
     double sminn_to_soil2n_l3; /* (kgN/m2/d) N immob. between litr3 and soil2 */
@@ -2840,7 +2841,7 @@ struct epvar_struct
 
 
     /* daily growth fluxes */
-        double potential_N_uptake; /* (kgN/m2) potential uptake from soil */
+        double potential_N_uptake; /* (kgN/m2) potential uptake from soil. LML note: N demand for allocating new growth*/
         double actual_N_uptake; /* (kgN/m2) potential uptake from soil */
         double retransn_to_npool;             /* (kgN/m2/d) */
         double npool_to_leafn;                /* (kgN/m2/d) */
@@ -2976,6 +2977,12 @@ struct epconst_struct
     double min_daily_mortality; /* (1/day) daily mortality turnover */
     double max_daily_mortality; /* (1/day) daily mortality turnover */
     double daily_mortality_threshold; /* years, age at which mortality starts to decline */
+
+    //09182025LML the mortality rate will use logistic curve, i.e. Pm = Lmax * 1 / (1 + exp(-k(x-x0)))
+    double Mort_annual_max;    /*(1/year) maximum annual mortality rate*/
+    double k_mort;             /*(1/(kgC/m2)) control the change of mortality rate with stem biomass*/
+    double Mid_mort_stemc;     /*(kgC/m2) the stem carbon on which the mortality rate is in the middle*/
+
     double daily_fire_turnover; /* (1/day) daily fire loss */
     double froot_cn;     /* (kgC/kgN) C:N for fine roots */
     double leaf_cn;      /* (kgC/kgN) C:N for leaves */

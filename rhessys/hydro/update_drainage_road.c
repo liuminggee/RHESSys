@@ -403,6 +403,10 @@ void  update_drainage_road(
         patch[0].surface_DOC += tot_leached[LDOC];
         patch[0].soil_cs.DOC_Qout += tot_leached[LDOC];
 
+        if (return_flow > 0.001)
+        printf("return_flow(mm):%f: NO3_Qout:%f NH4_Qout:%f\n"
+               ,return_flow*1000,patch[0].soil_ns.NO3_Qout*1000,patch[0].soil_ns.NH4_Qout*1000);
+
         //free(Nout);
 		}
 	

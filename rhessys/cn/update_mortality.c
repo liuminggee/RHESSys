@@ -459,6 +459,7 @@ printf("\n at line 298  update mortality: litter 1=%lf, litter2 =%lf, litter3=%l
 	ns->leafn_store       -= m_leafn_store_to_litr1n;
 	ns->leafn_transfer      -= m_leafn_transfer_to_litr1n;
 	ns->retransn            -= m_retransn_to_litr1n;
+    //printf("m_retransn_to_litr1n:%f %d\n",m_retransn_to_litr1n*1000,__LINE__);
 	if (epc.veg_type == TREE){
 		/*    Stem wood mortality */
 		ns->live_stemn  -= m_livestemn_to_litr1n;

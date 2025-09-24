@@ -481,7 +481,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
     /*	Daily 							*/
     /*--------------------------------------------------------------*/
 
-    char out_basic_stratum_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s  %s %s %s %s %s %s\n";
+    char out_basic_stratum_daily[] = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s  %s %s %s %s %s %s\n";
 
 #ifdef JMG_TRACKING
     char out_format_stratum_daily[1000] = "%s %s %s ";
@@ -543,6 +543,7 @@ void add_growth_headers(struct world_output_file_object *world_output_files,
         "dead_crootc",
         "dead_crootn",
         "cwdc",
+        "cwdn",
         "mresp",
         "gresp",
         "psn_to_cpool",

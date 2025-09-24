@@ -129,7 +129,7 @@ void	canopy_stratum_daily_I(
 	struct nstate_struct *ns;
 	double wilting_point;
 	struct mortality_struct mort;
-	double leafcloss_perc, daily_mortality;
+    double leafcloss_perc, daily_mortality = 0.;
 
 
 	/*--------------------------------------------------------------*/
@@ -226,15 +226,26 @@ void	canopy_stratum_daily_I(
 			+ cs->dead_crootc + cs->deadcrootc_store + cs->deadcrootc_transfer);
 
 
-		daily_mortality = stratum[0].defaults[0][0].epc.max_daily_mortality;
+        //09182025LML  daily_mortality = stratum[0].defaults[0][0].epc.max_daily_mortality;
 
-        /*06032022LML seems not right!
-        if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold)
-            daily_mortality = daily_mortality - daily_mortality*min(1.0,
-                (cs->age-stratum[0].defaults[0][0].epc.daily_mortality_threshold)/100.0);
-        */
+        //06032022LML seems not right!
+        //if (cs->age > stratum[0].defaults[0][0].epc.daily_mortality_threshold)
+        //    daily_mortality = daily_mortality - daily_mortality*min(1.0,
+        //        (cs->age-stratum[0].defaults[0][0].epc.daily_mortality_threshold)/100.0);
+        //
 
-		daily_mortality = max(daily_mortality, stratum[0].defaults[0][0].epc.min_daily_mortality);
+        //09182025LML daily_mortality = max(daily_mortality, stratum[0].defaults[0][0].epc.min_daily_mortality);
+
+        //09182025LML use logistic curve
+        double total_stemc_kgC = cs->live_stemc + cs->livestemc_store + cs->livestemc_transfer
+                                + cs->dead_stemc + cs->deadstemc_store + cs->deadstemc_transfer;
+        if (total_stemc_kgC > 1e-12) {
+            double annual_mortality = 0.;
+            annual_mortality = stratum[0].defaults[0][0].epc.Mort_annual_max
+                               / (1.0 + exp(-stratum[0].defaults[0][0].epc.k_mort * (total_stemc_kgC - stratum[0].defaults[0][0].epc.Mid_mort_stemc)));
+            daily_mortality = 1.0 - pow(1. - annual_mortality, 1./365.0);
+            //printf("annual_mortality:%f leafC:%f\n",annual_mortality,(cs->leafc + cs->leafc_store + cs->leafc_transfer));
+        }
 
 		mort.mort_cpool = daily_mortality;
 		mort.mort_leafc = daily_mortality;
