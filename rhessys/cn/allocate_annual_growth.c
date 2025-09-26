@@ -171,8 +171,8 @@ int allocate_annual_growth(				int id,
         double store_removed_n = 0;
         double transfer_removed_c = 0;
         double transfer_removed_n = 0;
-        double leaf_removed_c;
-        double leaf_removed_n;
+        double leaf_removed_c = 0;
+        double leaf_removed_n = 0;
         //04102025LML note: CN ratio might change after removal
 
  		rem_excess_carbon = excess_carbon;
