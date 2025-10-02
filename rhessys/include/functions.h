@@ -178,5 +178,10 @@ void output_growth_basin(
                 );
                 
 int key_compare(const void * e1,const  void *e2 );
-
+double get_total_plant_C(struct cstate_struct *cs, bool isTREE);
+double get_total_plant_N(struct nstate_struct *ns, bool isTREE);
+double get_total_litter_C(struct litter_c_object *clitr);
+double get_total_litter_N(struct litter_n_object *nlitr);
+double get_total_SOM_C(struct soil_c_object *somc);
+double get_total_SOM_N(struct soil_n_object *somn);
 #endif

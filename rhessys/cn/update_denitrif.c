@@ -1,39 +1,39 @@
 /*--------------------------------------------------------------*/
 /*                                                              */
-/*		update_denitrif				*/
+/*        update_denitrif                */
 /*                                                              */
 /*  NAME                                                        */
-/*		update_denitrif				*/
+/*        update_denitrif                */
 /*                                                              */
 /*                                                              */
 /*  SYNOPSIS                                                    */
-/*  void update_denitrif(				*/
+/*  void update_denitrif(                */
 /*                                                              */
-/*			struct  soil_c_object   *               */
+/*            struct  soil_c_object   *               */
 /*                      struct  soil_n_object   *               */
 /*                      struct  cdayflux_patch_object *         */
 /*                      struct  ndayflux_patch_object *         */
-/*			struct	soil_class 			*/
-/*			double					*/
-/*			double					*/
-/*			double					*/
+/*            struct    soil_class             */
+/*            double                    */
+/*            double                    */
+/*            double                    */
 /*                              )                               */
 /*  OPTIONS                                                     */
 /*                                                              */
 /*                                                              */
 /*  DESCRIPTION                                                 */
-/*	compute nitrification and denitrification 		*/
-/*	based on soil temperature, moisture, heter. resp,	*/
-/*	soil texture, and C substrate, N avaiilability		*/
-/*	based on relationships derived in			*/ 
-/*	effect of PH currently and excess NH4			*/
-/*      currently ignored					*/
-/*								*/
-/*	Parton et al. 1996. Generalized model of N2 and N20 	*/
-/*	production, Global Biogeochemical cycles, 10:3		*/
-/*	401-412							*/
+/*    compute nitrification and denitrification         */
+/*    based on soil temperature, moisture, heter. resp,    */
+/*    soil texture, and C substrate, N avaiilability        */
+/*    based on relationships derived in            */
+/*    effect of PH currently and excess NH4            */
+/*      currently ignored                    */
+/*                                */
+/*    Parton et al. 1996. Generalized model of N2 and N20     */
+/*    production, Global Biogeochemical cycles, 10:3        */
+/*    401-412                            */
 /*                                                              */
-/*								*/
+/*                                */
 /*  PROGRAMMER NOTES                                            */
 /*                                                              */
 /*                                                              */
@@ -43,77 +43,75 @@
 #include <stdio.h>
 #include <math.h>
 #ifndef PARTICLE_DENSITY
-#define  PARTICLE_DENSITY	2.65	/* soil particle density g/cm3 (Dingman) */
+#define  PARTICLE_DENSITY    2.65    /* soil particle density g/cm3 (Dingman) */
 #endif
 
 int update_denitrif(
-					struct  soil_c_object   *cs_soil,
-					struct  soil_n_object   *ns_soil,
-					struct cdayflux_patch_struct *cdf,
-					struct ndayflux_patch_struct *ndf,
-					struct  soil_class   soil_type,
-					double  theta,
+                    struct  soil_c_object   *cs_soil,
+                    struct  soil_n_object   *ns_soil,
+                    struct cdayflux_patch_struct *cdf,
+                    struct ndayflux_patch_struct *ndf,
+                    struct  soil_class   soil_type,
+                    double  theta,
                     double std,
                     double porosity,                                            //04242025LML
                     double organic_soil_depth,
                     double denitrification_maxrate_adj)                         //09092025 LML
 {
-	/*------------------------------------------------------*/
-	/*	Local Function Declarations.						*/
-	/*------------------------------------------------------*/
-	
-	/*------------------------------------------------------*/
-	/*	Local Variable Definition. 							*/
-	/*------------------------------------------------------*/
-	int ok,i;
-	double denitrify;
-	double a, b, c, d;
-	double water_scalar, thetai, water_scalari;
-	double fnitrate, fCO2;
-	double hr, nitrate_ratio;
+    /*------------------------------------------------------*/
+    /*    Local Function Declarations.                        */
+    /*------------------------------------------------------*/
 
-	#define NUM_NORMAL  10 	/* resolution of normal distribution */
-	double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
-	
-	ok = 1;
-	if ((theta <= ZERO) || (theta > 1.0)) theta = 1.0;
-	if ((ns_soil->nitrate > ZERO)) {
-		/*--------------------------------------------------------------*/
-		/*	compute denitrification rate				*/
-		/*	- assuming a constant nitrification rate		*/
-		/*--------------------------------------------------------------*/
-		if (soil_type.sand > 0.5) {
-			a = 1.56; b=12.0; c=16.0; d=2.01;
-		}
-		else if (soil_type.clay > 0.5) {
-			a = 60.0; b=18.0; c=22.0; d=1.06;
-		}
-		else {
-			a=4.82; b=14.0; c=16.0; d=1.39;
-		}
+    /*------------------------------------------------------*/
+    /*    Local Variable Definition.                             */
+    /*------------------------------------------------------*/
+    int ok,i;
+    double denitrify;
+    double a, b, c, d;
+    double water_scalar, thetai, water_scalari;
+    double fnitrate, fCO2;
+    double hr, nitrate_ratio;
 
-		water_scalar = 0.0;
-		if (std > 0) {
-			for (i =1; i< NUM_NORMAL; i++) {
-				thetai = theta + std*NORMAL[i];
-				thetai = min(1.0, thetai);
-				thetai = max(0.0, thetai);
-				if (thetai > ZERO)
-				water_scalari = min(1.0,a / pow(b,  (c / pow(b, (d*thetai) )) ));
-				water_scalar += 1.0/NUM_NORMAL * water_scalari;
-				}
-			}
-		else
-				water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
+    #define NUM_NORMAL  10     /* resolution of normal distribution */
+    double NORMAL[10]= {0,0,0.253,0.524,0.842,1.283,-0.253,-0.524,-0.842,-1.283};
 
+    ok = 1;
+    if ((theta <= ZERO) || (theta > 1.0)) theta = 1.0;
+    if ((ns_soil->nitrate > ZERO)) {
+        /*--------------------------------------------------------------*/
+        /*    compute denitrification rate                */
+        /*    - assuming a constant nitrification rate        */
+        /*--------------------------------------------------------------*/
+        if (soil_type.sand > 0.5) {
+            a = 1.56; b=12.0; c=16.0; d=2.01;
+        }
+        else if (soil_type.clay > 0.5) {
+            a = 60.0; b=18.0; c=22.0; d=1.06;
+        }
+        else {
+            a=4.82; b=14.0; c=16.0; d=1.39;
+        }
+
+        water_scalar = 0.0;
+        if (std > 0) {
+            for (i =1; i< NUM_NORMAL; i++) {
+                thetai = theta + std*NORMAL[i];
+                thetai = min(1.0, thetai);
+                thetai = max(0.0, thetai);
+                if (thetai > ZERO)
+                    water_scalari = min(1.0,a / pow(b,  (c / pow(b, (d*thetai) )) ));
+                    water_scalar += 1.0/NUM_NORMAL * water_scalari;
+            }
+        } else {
+            water_scalar = min(1.0,a / pow(b,  (c / pow(b, (d*theta) )) ));
+        }
 
         //nitrate_ratio = (ns_soil->nitrate)
-        //	/ (cs_soil->totalc + ns_soil->totaln) * 1e6;   //(ugN/gC) 09072022LML note: seems not right!
-
+        //    / (cs_soil->totalc + ns_soil->totaln) * 1e6;   //(ugN/gC) 09072022LML note: seems not right!
         double bulk_density = PARTICLE_DENSITY * (1.0 - porosity) * 1000;
         double kg_soil = bulk_density * organic_soil_depth;
         /*--------------------------------------------------------------*/
-        /* compute ammonium conc. in ppm				*/
+        /* compute ammonium conc. in ppm                */
         /*--------------------------------------------------------------*/
         nitrate_ratio = ns_soil->nitrate / kg_soil * 1000000.0;                 //(ugN/g) 04242025
 
@@ -121,10 +119,10 @@ int update_denitrif(
         //nitrate_ratio = (ns_soil->nitrate)
         //    / (cs_soil->totalc) * 1e6;   //(ugN/gC) 09072022LML
 
-		/*--------------------------------------------------------------*/
-		/*	maximum denitrfication (kg/ha) based on available	*/
-		/*		N03							*/
-		/*--------------------------------------------------------------*/
+        /*--------------------------------------------------------------*/
+        /*    maximum denitrfication (kg/ha) based on available    */
+        /*        N03                            */
+        /*--------------------------------------------------------------*/
         double dncoef = denitrification_maxrate_adj; //09092025LML 1.0;  //08202025LML User may need adjust this value
         fnitrate = atan(PI*0.002*(nitrate_ratio - 180)) * 0.004 / PI + 0.0011; //(kgN/m2/day)
         fnitrate *= dncoef;
@@ -134,41 +132,32 @@ int update_denitrif(
         //this high denitrification rate will still move large amount of NO3. So I added the following line:
         //08252025LML nitrate_ratio is less than 10 in many cases, so I removed this line. //if (nitrate_ratio <= 10.) fnitrate = 5e-6;
 
-		/*--------------------------------------------------------------*/
-		/*	maximum denitrfication (kg/ha) based on available	*/
-		/*	carbon substrate - estimated from heter. respiration    */
-		/*--------------------------------------------------------------*/
-		hr = (cdf->soil1c_hr + cdf->soil2c_hr + cdf->soil3c_hr + cdf->soil4c_hr);
-		if (hr > ZERO) 
+        /*--------------------------------------------------------------*/
+        /*    maximum denitrfication (kg/ha) based on available    */
+        /*    carbon substrate - estimated from heter. respiration    */
+        /*--------------------------------------------------------------*/
+        hr = (cdf->soil1c_hr + cdf->soil2c_hr + cdf->soil3c_hr + cdf->soil4c_hr);
+        if (hr > ZERO)
             fCO2 = 0.0024 / (1+ 200.0/exp(0.35*hr*10000.0)) - 0.00001;  //09072022LML note: kgN/m2/day
-			
-		else
-			fCO2 = 0.0;
-		/*--------------------------------------------------------------*/
-		/*	estimate denitrification				*/
-		/*--------------------------------------------------------------*/
-		denitrify = min(fCO2, fnitrate) * water_scalar;
-
-
-        //printf("\nDEBUG DENITRIFICATION! denitrify(gN):%lf w_scalar:%lf theta:%lf fCO2:%lf fnitrate(gN):%lf nitrate_ratio(ugN-NO3/g):%lf NO3:%lf SoilC:%lf hr:%lf",
-        //        denitrify*1000., water_scalar,theta,fCO2*1000.,fnitrate*1000.,nitrate_ratio,
-        //        ns_soil->nitrate*1000.,cs_soil->totalc*1000., hr*1000.);
-        //fprintf(stderr,"Testing!\n");
-
-
-
-	} /* end mineralized N available */
-	else
-		denitrify = 0.0;
-	/*--------------------------------------------------------------*/
-	/*	update state and flux variables				*/
-	/*--------------------------------------------------------------*/
-	denitrify = min(denitrify, ns_soil->nitrate);
-	denitrify = max(0.0, denitrify);
-	ns_soil->nvolatilized_snk += denitrify;
-	ndf->sminn_to_nvol = denitrify;
-	ns_soil->nitrate -= denitrify;
-	ndf->denitrif = denitrify;
-	ok = 0;
-	return(ok);
+        else
+            fCO2 = 0.0;
+        /*--------------------------------------------------------------*/
+        /*    estimate denitrification                */
+        /*--------------------------------------------------------------*/
+        denitrify = min(fCO2, fnitrate) * water_scalar;
+    } /* end mineralized N available */
+    else {
+        denitrify = 0.0;
+    }
+    /*--------------------------------------------------------------*/
+    /*    update state and flux variables                */
+    /*--------------------------------------------------------------*/
+    denitrify = min(denitrify, ns_soil->nitrate);
+    denitrify = max(0.0, denitrify);
+    ns_soil->nvolatilized_snk += denitrify;
+    ndf->sminn_to_nvol = denitrify;
+    ns_soil->nitrate -= denitrify;
+    ndf->denitrif = denitrify;
+    ok = 0;
+    return(ok);
 } /* end update_denitrif */

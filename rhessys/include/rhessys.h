@@ -736,7 +736,7 @@ struct	snowpack_object
     double  APAR_direct;                   	/* umol/(m2*day)*/
     double  APAR_diffuse;                   /* umol(m2*day) */
     double	energy_deficit;			/* degree days	*/
-    double  evaporation;		        /* m water	*/
+    double  evaporation;              /* m water	*/
     double	ga;				/* m/s          */
     double	gap_fraction;			/* unitless 	*/
     double	height;				/* meters   	*/
@@ -748,7 +748,7 @@ struct	snowpack_object
     double	PAR_absorptance;		/* unitless 0-1 */
     double	surface_age;			/* days		*/
     double	sublimation;			/* m water	*/
-    double  T; 		                /*  degrees C  	*/
+    double  T;                       /*  degrees C  	*/
     double	water_depth;			/* m water	*/
     double  water_equivalent_depth;		/* m water   	*/
     double	overstory_fraction;		/* percent	*/
@@ -769,7 +769,7 @@ struct basin_object
         int             ID;
         int             num_base_stations;
         int             num_hillslopes;
-          int		  basin_parm_ID;
+          int        basin_parm_ID;
         double  area;                   /*  m2          */
           double  area_withsnow;			/*  m2 		*/
         double  x;                      /*  meters      */
@@ -957,7 +957,7 @@ struct  dated_input_object
         struct clim_event_sequence  irrigation;                                 /* m/day        */
         struct clim_event_sequence  snow_melt_input;                                 /* m/day        */
         struct clim_event_sequence  biomass_removal_percent;                           /* 0-1        */
-        struct clim_event_sequence  pspread;   	 	   	                    /* 0-1        */
+        struct clim_event_sequence  pspread;                                    /* 0-1        */
         struct clim_event_sequence  beetle_attack;  /*0-1*/
         struct clim_event_sequence  PH;                                 /* DIM  */
         struct clim_event_sequence  grazing_Closs;                                      /* kg/m2/day    */
@@ -1191,8 +1191,8 @@ struct metvar_struct
         double tnight_max;     /* (deg C) nighttime max average air temperature */
         double vpd;            /* (Pa)    vapor pressure deficit */
         double vpd_ravg;       /* (Pa) 21 day running average of vpd */
-        double vpd_day;		   /* (Pa)    vapor pressure deficit during day time hours */
-        double vpd_night;		   /* (Pa)    vapor pressure deficit during night time hours */
+        double vpd_day;         /* (Pa)    vapor pressure deficit during day time hours */
+        double vpd_night;         /* (Pa)    vapor pressure deficit during night time hours */
 };
 
 /*----------------------------------------------------------*/
@@ -1449,6 +1449,7 @@ struct	soil_default
     double  NH4_adsorption_rate;				/* kg /kg soil */
     double  denitrif_proportion;				/* (DIM) 0-1 */
     double  denitrification_maxrate_adj;        //09092025 LML adjust for denitrification rate. It's a multification.
+    double  nitrification_maxrate_adj;          //10012025 LML adjust for nitrification rate. It's a multification.
 
     double  decay_rate[LEACH_ELEMENT_counts];      //10122022LML LNO3,LNH4,LDON,LDOC
     double  adsorption_rate[LEACH_ELEMENT_counts]; //10122022LML LNO3,LNH4,LDON,LDOC
@@ -1597,8 +1598,8 @@ struct  ndayflux_patch_struct
 
 
     /* denitrification  (volatilization) */
-        double sminn_to_nvol;                /* (kgN/ms/d) */
-        double denitrif;                        /* (kgN/m2/day) */
+    double sminn_to_nvol;                /* (kgN/ms/d) */
+    double denitrif;                     /* (kgN/m2/day) */
 
 
     /* daily N sources and sinks */
@@ -1642,29 +1643,29 @@ struct  litter_object
 
 struct  litter_c_object
         {
-    double litr1c;         /* (kgC/m2) litter labile C */
-    double litr2c;         /* (kgC/m2) litter unshielded cellulose C */
-    double litr3c;         /* (kgC/m2) litter shielded cellulose C */
-    double litr4c;         /* (kgC/m2) litter lignin C */
-    double litr1c_hr_snk;     /* (kgC/m2) SUM of labile litr microbial resp */
-    double litr2c_hr_snk;     /* (kgC/m2) SUM of cellulose litr microbial resp */
-    double litr4c_hr_snk;     /* (kgC/m2) SUM of lignin litr microbial resp */
-    double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
-    double t_scalar;    /* (DIM) tempertaure scalar for decomposition */
-    double w_scalar;    /* (DIM) tempertaure scalar for decomposition */
-    double rate_scalar;
-    double litr_decomp;
-    double rate_landclim_year;
-    double rate_landclim_daily;
+            double litr1c;         /* (kgC/m2) litter labile C */
+            double litr2c;         /* (kgC/m2) litter unshielded cellulose C */
+            double litr3c;         /* (kgC/m2) litter shielded cellulose C */
+            double litr4c;         /* (kgC/m2) litter lignin C */
+            double litr1c_hr_snk;     /* (kgC/m2) SUM of labile litr microbial resp */
+            double litr2c_hr_snk;     /* (kgC/m2) SUM of cellulose litr microbial resp */
+            double litr4c_hr_snk;     /* (kgC/m2) SUM of lignin litr microbial resp */
+            double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
+            double t_scalar;    /* (DIM) tempertaure scalar for decomposition */
+            double w_scalar;    /* (DIM) tempertaure scalar for decomposition */
+            double rate_scalar;
+            double litr_decomp;
+            double rate_landclim_year;
+            double rate_landclim_daily;
         };
 
 struct  litter_n_object
         {
-    double litr1n;          /* (kgN/m2) litter labile N */
-    double litr2n;          /* (kgN/m2) litter unshielded cellulose N */
-    double litr3n;          /* (kgN/m2) litter shielded cellulose N */
-    double litr4n;          /* (kgN/m2) litter lignin N */
-    double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
+            double litr1n;          /* (kgN/m2) litter labile N */
+            double litr2n;          /* (kgN/m2) litter unshielded cellulose N */
+            double litr3n;          /* (kgN/m2) litter shielded cellulose N */
+            double litr4n;          /* (kgN/m2) litter lignin N */
+            double fire_snk;          /* (kgC/m2) SUM of losses due to fire */
         };
 
 /*----------------------------------------------------------*/
@@ -1672,56 +1673,55 @@ struct  litter_n_object
 /*----------------------------------------------------------*/
 struct  soil_c_object
         {
-
-    double frootc;         /* (kgC/m2) total soil fine root C           */
-    double DOC;            /* (kgC/m2) DOC */
-    double DOC_Qin;     /* (kgC/m2/day) DON */
-    double DOC_Qout;    /* (kgC/m2/day) DON */
-    double DOC_Qin_total;       /* (kgC/m2/day) DON */
-    double DOC_Qout_total;      /* (kgC/m2/day) DON */
-    double totalc;         /* (kgC/m2) total soil  C    */
-    double soil_cpool;     /* (kgC/m2) temporary soil carbon pool       */
-    double soil1c;         /* (kgC/m2) microbial recycling pool C (fast) */
-    double soil2c;         /* (kgC/m2) microbial recycling pool C (medium) */
-    double soil3c;         /* (kgC/m2) microbial recycling pool C (slow) */
-    double soil4c;         /* (kgC/m2) recalcitrant SOM C (humus, slowest) */
-    double soil1c_hr_snk;     /* (kgC/m2) SUM of fast microbial respiration */
-    double soil2c_hr_snk;     /* (kgC/m2) SUM of medium microbial respiration */
-    double soil3c_hr_snk;     /* (kgC/m2) SUM of slow microbial respiration */
-    double soil4c_hr_snk;     /* (kgC/m2) SUM of recalcitrant SOM respiration */
+            double frootc;         /* (kgC/m2) total soil fine root C           */
+            double DOC;            /* (kgC/m2) DOC */
+            double DOC_Qin;     /* (kgC/m2/day) DON */
+            double DOC_Qout;    /* (kgC/m2/day) DON */
+            double DOC_Qin_total;       /* (kgC/m2/day) DON */
+            double DOC_Qout_total;      /* (kgC/m2/day) DON */
+            double totalc;         /* (kgC/m2) total soil  C    */
+            double soil_cpool;     /* (kgC/m2) temporary soil carbon pool       */
+            double soil1c;         /* (kgC/m2) microbial recycling pool C (fast) */
+            double soil2c;         /* (kgC/m2) microbial recycling pool C (medium) */
+            double soil3c;         /* (kgC/m2) microbial recycling pool C (slow) */
+            double soil4c;         /* (kgC/m2) recalcitrant SOM C (humus, slowest) */
+            double soil1c_hr_snk;     /* (kgC/m2) SUM of fast microbial respiration */
+            double soil2c_hr_snk;     /* (kgC/m2) SUM of medium microbial respiration */
+            double soil3c_hr_snk;     /* (kgC/m2) SUM of slow microbial respiration */
+            double soil4c_hr_snk;     /* (kgC/m2) SUM of recalcitrant SOM respiration */
         };
 
 struct  soil_n_object
         {
-    int nlimit;                         /* DIM (0 or 1) */
-    double  fract_potential_immob;                              /* DIM (0-1) */
-    double fract_potential_uptake;                              /* DIM (0-1) */
-    double totaln;         /* (kgN/m2) total soil  N    */
-    double soil_npool;      /* (kgN/m2) temporary soil nitrogen pool    */
-    double DON;            /* (kgN/m2) DON */
-    double DON_Qin;     /* (kgM/m2/day) DON */
-    double DON_Qout;    /* (kgN/m2/day) DON */
-    double DON_Qin_total;       /* (kgN/m2/day) DON */
-    double DON_Qout_total;      /* (kgN/m2/day) DON */
-    double soil1n;          /* (kgN/m2) microbial recycling pool N (fast) */
-    double soil2n;          /* (kgN/m2) microbial recycling pool N (medium) */
-    double soil3n;          /* (kgN/m2) microbial recycling pool N (slow) */
-    double soil4n;          /* (kgN/m2) recalcitrant SOM N (humus, slowest) */
-    double sminn;           /* (kgN/m2) soil mineral N */
-    double nitrate;          /* (kgN/m2) soil mineral N in nitrate form */
-    double NO3_Qin_total;             /* (kgN/m2/day) soil mineral N output */
-    double NO3_Qout_total;            /* (kgN/m2/day) soil mineral N input */
-    double NO3_Qin;             /* (kgN/m2/day) soil mineral N output */
-    double NO3_Qout;            /* (kgN/m2/day) soil mineral N input */
-    double NH4_Qin;             /* (kgN/m2/day) soil mineral N output */
-    double NH4_Qout;            /* (kgN/m2/day) soil mineral N input */
-    double NH4_Qin_total;             /* (kgN/m2/day) soil mineral N output */
-    double NH4_Qout_total;            /* (kgN/m2/day) soil mineral N input */
-    double leach;            /* (kgN/m2) soil mineral N input */
-    double nfix_src;        /* (kgN/m2) SUM of biological N fixation */
-    double ndep_src;        /* (kgN/m2) SUM of N deposition inputs */
-    double nleached_snk;    /* (kgN/m2) SUM of N leached */
-    double nvolatilized_snk; /* (kgN/m2) SUM of N lost to volatilization */
+            int nlimit;                         /* DIM (0 or 1) */
+            double  fract_potential_immob;                              /* DIM (0-1) */
+            double fract_potential_uptake;                              /* DIM (0-1) */
+            double totaln;         /* (kgN/m2) total soil  N    */
+            double soil_npool;      /* (kgN/m2) temporary soil nitrogen pool    */
+            double DON;            /* (kgN/m2) DON */
+            double DON_Qin;     /* (kgM/m2/day) DON */
+            double DON_Qout;    /* (kgN/m2/day) DON */
+            double DON_Qin_total;       /* (kgN/m2/day) DON */
+            double DON_Qout_total;      /* (kgN/m2/day) DON */
+            double soil1n;          /* (kgN/m2) microbial recycling pool N (fast) */
+            double soil2n;          /* (kgN/m2) microbial recycling pool N (medium) */
+            double soil3n;          /* (kgN/m2) microbial recycling pool N (slow) */
+            double soil4n;          /* (kgN/m2) recalcitrant SOM N (humus, slowest) */
+            double sminn;           /* (kgN/m2) soil mineral N */
+            double nitrate;          /* (kgN/m2) soil mineral N in nitrate form */
+            double NO3_Qin_total;             /* (kgN/m2/day) soil mineral N output */
+            double NO3_Qout_total;            /* (kgN/m2/day) soil mineral N input */
+            double NO3_Qin;             /* (kgN/m2/day) soil mineral N output */
+            double NO3_Qout;            /* (kgN/m2/day) soil mineral N input */
+            double NH4_Qin;             /* (kgN/m2/day) soil mineral N output */
+            double NH4_Qout;            /* (kgN/m2/day) soil mineral N input */
+            double NH4_Qin_total;             /* (kgN/m2/day) soil mineral N output */
+            double NH4_Qout_total;            /* (kgN/m2/day) soil mineral N input */
+            double leach;            /* (kgN/m2) soil mineral N input */
+            double nfix_src;        /* (kgN/m2) SUM of biological N fixation */
+            double ndep_src;        /* (kgN/m2) SUM of N deposition inputs */
+            double nleached_snk;    /* (kgN/m2) SUM of N leached */
+            double nvolatilized_snk; /* (kgN/m2) SUM of N lost to volatilization */
         };
 
 /*----------------------------------------------------------*/
@@ -2952,7 +2952,7 @@ struct epconst_struct
     double gsi_thresh;	/* (0 to 1) gsi threshold for initiating phenological change */
         int gs_npp_on;          /* (1 or 2) determines whether dynamic drought senescence is turned on */
         double gs_npp_slp;          /* slope of nppcum/litfall start curve */
-        double gs_npp_intercpt;	   /* intercept of nppcum/litfall start curve */
+        double gs_npp_intercpt;      /* intercept of nppcum/litfall start curve */
         double coef_CO2;        /* DIM 0-1  conductance sensitivity to CO2 */
         int day_leafon;        /* (DIM) yearday leaves on */
         int day_leafoff;       /* (DIM) yearday leaves off - set to 0 for no leaf drop cond.  */

@@ -1,24 +1,24 @@
 /*--------------------------------------------------------------*/
-/* 													*/
-/*			compute_fire_effects								*/
-/*													*/
-/*	NAME												*/
-/*	compute_fire_effects.c 										*/
-/*													*/
-/*	SYNOPSIS											*/
-/*													*/
-/* 													*/
-/*													*/
-/*	OPTIONS												*/
-/*													*/
-/*													*/
-/*	DESCRIPTION											*/
-/*	Determines vegetation loss following fire							*/
-/*													*/
-/*													*/
-/*													*/
-/*	PROGRAMMER NOTES										*/
-/*													*/
+/*                                                     */
+/*            compute_fire_effects                                */
+/*                                                    */
+/*    NAME                                                */
+/*    compute_fire_effects.c                                         */
+/*                                                    */
+/*    SYNOPSIS                                            */
+/*                                                    */
+/*                                                     */
+/*                                                    */
+/*    OPTIONS                                                */
+/*                                                    */
+/*                                                    */
+/*    DESCRIPTION                                            */
+/*    Determines vegetation loss following fire                            */
+/*                                                    */
+/*                                                    */
+/*                                                    */
+/*    PROGRAMMER NOTES                                        */
+/*                                                    */
 /*--------------------------------------------------------------*/
 #include <string.h>
 #include <stdio.h>
@@ -35,49 +35,50 @@ double MTBS_sbs_table[MTBS_BURNT_SEVERITY_NUMCLASSES][BS_NUMCLASSES];
 
 void compute_fire_effects(
 
-						struct patch_object *patch,
-						double pspread,
-						struct command_line_object *command_line)
+                        struct patch_object *patch,
+                        double pspread,
+                        struct command_line_object *command_line)
 
 {
 
-	/*--------------------------------------------------------------*/
-	/*	Local function definition.									*/
-	/*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*    Local function definition.                                    */
+    /*--------------------------------------------------------------*/
 
-	void	update_litter_soil_mortality(
-		struct cdayflux_patch_struct *,
-		struct ndayflux_patch_struct *,
-		struct soil_c_object *,
-		struct soil_n_object *,
-		struct litter_c_object *,
-		struct litter_n_object *,
+    void    update_litter_soil_mortality(
+        struct cdayflux_patch_struct *,
+        struct ndayflux_patch_struct *,
+        struct soil_c_object *,
+        struct soil_n_object *,
+        struct litter_c_object *,
+        struct litter_n_object *,
         struct fire_litter_soil_loss_struct *
                 );
 
-	void	update_mortality(
-		struct epconst_struct,
-		struct cstate_struct *,
-		struct cdayflux_struct *,
-		struct cdayflux_patch_struct *,
-		struct nstate_struct *,
-		struct ndayflux_struct *,
-		struct ndayflux_patch_struct *,
-		struct litter_c_object *,
-		struct litter_n_object *,
-		int,
-		struct mortality_struct);
+    void    update_mortality(
+        double cover_fraction,
+        struct epconst_struct,
+        struct cstate_struct *,
+        struct cdayflux_struct *,
+        struct cdayflux_patch_struct *,
+        struct nstate_struct *,
+        struct ndayflux_struct *,
+        struct ndayflux_patch_struct *,
+        struct litter_c_object *,
+        struct litter_n_object *,
+        int,
+        struct mortality_struct);
 
-	/*--------------------------------------------------------------*/
-	/*	Local variable definition.									*/
-	/*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*    Local variable definition.                                    */
+    /*--------------------------------------------------------------*/
 
-	struct canopy_strata_object *canopy_target;
-	struct canopy_strata_object *canopy_subtarget;
-	struct mortality_struct mort;
+    struct canopy_strata_object *canopy_target;
+    struct canopy_strata_object *canopy_subtarget;
+    struct mortality_struct mort;
     //struct fire_litter_soil_loss_struct fire_loss;
-	int c, layer;
-	int thin_type;
+    int c, layer;
+    int thin_type;
     double litter_c_consumed = 0;
 
     //01112024LML options for handling mortality
@@ -142,9 +143,9 @@ void compute_fire_effects(
     temp_fire_loss.loss_soil3n *= fe_soil;
     temp_fire_loss.loss_soil4n *= fe_soil;
 
-	/*--------------------------------------------------------------*/
-	/*	Compute litter and soil removed.			*/
-	/*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*    Compute litter and soil removed.            */
+    /*--------------------------------------------------------------*/
 
     if (fe_psread > 0){
         /* Litter consumption is approximated based CONSUME model outputs */
@@ -170,47 +171,47 @@ void compute_fire_effects(
              &temp_fire_loss
                 );
     }
-	/*--------------------------------------------------------------*/
-	/*		Compute vegetation effects.			*/
-	/*--------------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
+    /*        Compute vegetation effects.            */
+    /*--------------------------------------------------------------*/
 
-	/* For each patch that burns (pspread > 0), fire effects is computed
-	for each canopy starting with the tallest and proceeding down
-	though the canopies. The canopy being evaluated for fire effects for
-	any given iteration is referred to as the target canopy. Fire effects
-	in the target canopy depend on the height of the target canopy. For
-	short target canopies (height < understory_height_thresh), mortality
-	is a function of pspread. For tall target canopies (height >
-	overstory_height_thresh), fire effects are a function of the litter
-	and understory biomass consumed by the fire. In this situation, it
-	is necessary to additionally compute mortality and consumption for
-	canopies below the target canopy. While in theory the fire effects
-	code should account for all understory canopies below target
-	canopy, the current code only computes mortality/consumption for next
-	lowest canopy. Hence, code may need to be revised if working with more
-	than two canopies. */
+    /* For each patch that burns (pspread > 0), fire effects is computed
+    for each canopy starting with the tallest and proceeding down
+    though the canopies. The canopy being evaluated for fire effects for
+    any given iteration is referred to as the target canopy. Fire effects
+    in the target canopy depend on the height of the target canopy. For
+    short target canopies (height < understory_height_thresh), mortality
+    is a function of pspread. For tall target canopies (height >
+    overstory_height_thresh), fire effects are a function of the litter
+    and understory biomass consumed by the fire. In this situation, it
+    is necessary to additionally compute mortality and consumption for
+    canopies below the target canopy. While in theory the fire effects
+    code should account for all understory canopies below target
+    canopy, the current code only computes mortality/consumption for next
+    lowest canopy. Hence, code may need to be revised if working with more
+    than two canopies. */
 
 
-	for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
-		for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
+    for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
+        for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 
-			/* Calculates metrics for targer canopy */
-			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
-			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
+            /* Calculates metrics for targer canopy */
+            canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+            canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
-			/* Calculates metrics for next lowest canopy (subtarget canopy) */
-			if (patch[0].num_layers > (layer+1)){
-				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
-				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+            /* Calculates metrics for next lowest canopy (subtarget canopy) */
+            if (patch[0].num_layers > (layer+1)){
+                canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
+                canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
 
-				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc + // for output
-						canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
-						canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
-						canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
+                canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc + // for output
+                        canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
+                        canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
+                        canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
 
-  				canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc + // for calculating the overstory pburn
-						canopy_subtarget[0].cs.live_stemc +
-						canopy_subtarget[0].cs.dead_stemc;
+                  canopy_target[0].fe.canopy_subtarget_c = canopy_subtarget[0].cs.leafc + // for calculating the overstory pburn
+                        canopy_subtarget[0].cs.live_stemc +
+                        canopy_subtarget[0].cs.dead_stemc;
 
                 canopy_target[0].fe.canopy_subtarget_leafc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc;
                 canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
@@ -229,13 +230,13 @@ void compute_fire_effects(
                 //canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
 
 
-			} else {
-				canopy_target[0].fe.canopy_subtarget_height = 0.0;
-				canopy_target[0].fe.canopy_subtarget_c = 0.0;
-				canopy_target[0].fe.canopy_subtarget_biomassc = 0.0;
-				canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
-				canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
-				canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
+            } else {
+                canopy_target[0].fe.canopy_subtarget_height = 0.0;
+                canopy_target[0].fe.canopy_subtarget_c = 0.0;
+                canopy_target[0].fe.canopy_subtarget_biomassc = 0.0;
+                canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
+                canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
+                canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
 
             // add the over story NREN why do i need overstory why not put it in previous section too
             //    canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
@@ -249,7 +250,7 @@ void compute_fire_effects(
             //    canopy_target[0].fe.canopy_target_rootc = canopy_target[0].cs.live_crootc + canopy_target[0].cs.dead_crootc + canopy_target[0].cs.frootc;
 
 
-			}
+            }
 
             //12012022LML moved out
             // add the over story NREN why do i need overstory
@@ -281,13 +282,13 @@ void compute_fire_effects(
                 //   ,understory_mort_f
                 //   ,target_u_fraction);
 
-			/*--------------------------------------------------------------*/
-			/* Calculate coarse woody debris removed			*/
-			/*--------------------------------------------------------------*/
+            /*--------------------------------------------------------------*/
+            /* Calculate coarse woody debris removed            */
+            /*--------------------------------------------------------------*/
 
-			/* Litter consumption is approximated based CONSUME model outputs */
-			/* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
-			/* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
+            /* Litter consumption is approximated based CONSUME model outputs */
+            /* Consumption 1000hr-fuel (Mg/ha) = 2.735 + 0.3285 * 1000hr-fuel (Mg/ha) - 0.0457 * Fuel Moisture (e.g 80%) (Original CONSUME eqn) */
+            /* Consumption 1000hr-fuel (Mg/ha) = 0.33919 * 1000hr-fuel (Mg/ha) (Modified CONSUME eqn to exclude moisture and have intercept through zero) */
                 //double scale = 1.;
 //#ifdef LITTER_CONSUMED_BASED_ON_PSPREAD
                 double scale = fe_litter_loss; //09082025LML fe_psread;
@@ -298,26 +299,26 @@ void compute_fire_effects(
                 canopy_target[0].ns.cwdn -= canopy_target[0].fe.m_cwdn_to_atmos;
 
 
-			/*--------------------------------------------------------------*/
-			/* Calculate fire effects when target canopy is tall			*/
-			/*--------------------------------------------------------------*/
+            /*--------------------------------------------------------------*/
+            /* Calculate fire effects when target canopy is tall            */
+            /*--------------------------------------------------------------*/
 
                 if (canopy_target[0].fe.canopy_target_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
 
-				/* Determine the amount of understory carbon consumed, which is used to */
-				/* compute how well fire is propogated to overstory */
+                /* Determine the amount of understory carbon consumed, which is used to */
+                /* compute how well fire is propogated to overstory */
 
-				/* Is subtarget canopy tall? */
+                /* Is subtarget canopy tall? */
                     if (canopy_target[0].fe.canopy_subtarget_height > patch[0].soil_defaults[0][0].overstory_height_thresh){
                         canopy_target[0].fe.understory_c_consumed = litter_c_consumed; // If every canopy > overstory_height_thresh means no understory or understory is litter
 
-				/* Is subtarget canopy of intermediate or short height? Then calculate mortality/consumption of understory */
+                /* Is subtarget canopy of intermediate or short height? Then calculate mortality/consumption of understory */
                     } else {
-					/* Determine the proportion of carbon mortality in the subtarget canopy */
+                    /* Determine the proportion of carbon mortality in the subtarget canopy */
                         canopy_target[0].fe.canopy_subtarget_prop_mort = understory_mort_f;
-					/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
+                    /* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
                         if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
-						/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
+                        /* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
                             canopy_target[0].fe.canopy_subtarget_height_u_prop = calc_contribution_to_undercanopy(canopy_target[0].fe.canopy_subtarget_height, patch[0].soil_defaults[0]);
                             canopy_target[0].fe.canopy_subtarget_prop_mort *= canopy_target[0].fe.canopy_subtarget_height_u_prop;
                         }
@@ -330,23 +331,23 @@ void compute_fire_effects(
 //#endif
 
 
-					/* Determine the proportion of subtarget canopy mortality consumed */
+                    /* Determine the proportion of subtarget canopy mortality consumed */
                         canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
                             calc_consumption_from_motality(default_fire_consumption_coef,canopy_target[0].fe.canopy_subtarget_prop_mort);
 
-					/* Determine the proportion of subtarget canopy carbon consumed */
+                    /* Determine the proportion of subtarget canopy carbon consumed */
                         canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
-					/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
+                    /* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
                         canopy_target[0].fe.understory_biomassc_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
                         canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
-					//new outputs
+                    //new outputs
                         canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
                         canopy_target[0].fe.understory_stemc_consumed = canopy_target[0].fe.canopy_subtarget_stemc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
                         canopy_target[0].fe.understory_rootc_consumed = canopy_target[0].fe.canopy_subtarget_rootc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 
-					// accumulate understory here?
-                        if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+                    // accumulate understory here?
+                        if(command_line[0].f != 0 && command_line[0].output_flags.yearly ==1 ){
 
                             canopy_target[0].fe.acc_year.m_cwdc_to_atmos += canopy_target[0].fe.m_cwdc_to_atmos;
                             canopy_target[0].fe.acc_year.m_cwdn_to_atmos += canopy_target[0].fe.m_cwdn_to_atmos;
@@ -363,7 +364,7 @@ void compute_fire_effects(
                         }
                     }
 
-				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
+                /* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) */
                     //canopy_target[0].fe.canopy_target_prop_mort =
                     //        calc_mortality_from_under_consumption(canopy_target[0].defaults[0][0].overstory_mort_k1
                     //            ,canopy_target[0].defaults[0][0].overstory_mort_k2
@@ -382,23 +383,23 @@ void compute_fire_effects(
                             ,canopy_target[0].fe.understory_c_consumed);
                     }
 //#endif
-				/* Determine the proportion of target canopy mortality consumed */
+                /* Determine the proportion of target canopy mortality consumed */
                     canopy_target[0].fe.canopy_target_prop_mort_consumed =
                         calc_consumption_from_motality(default_fire_consumption_coef,canopy_target[0].fe.canopy_target_prop_mort);
 
 
 
-			/*--------------------------------------------------------------*/
-			/* Calculate fire effects when target canopy is an intermediate height	*/
-			/*--------------------------------------------------------------*/
+            /*--------------------------------------------------------------*/
+            /* Calculate fire effects when target canopy is an intermediate height    */
+            /*--------------------------------------------------------------*/
 
                 } else if (canopy_target[0].fe.canopy_target_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
-				/* Determine the proportion of target canopy attributed to understory. Proportion overstory is 1 - canopy_target_height_u_prop */
+                /* Determine the proportion of target canopy attributed to understory. Proportion overstory is 1 - canopy_target_height_u_prop */
                     canopy_target[0].fe.canopy_target_height_u_prop = target_u_fraction;
-				/* ------- Determine mortality/consumption for understory component of target canopy ------- */
-				/* This involves computing the mortality/consumption of the target canopy based on pspread. */
-				/* Determine the proportion of carbon mortality in the target canopy */
+                /* ------- Determine mortality/consumption for understory component of target canopy ------- */
+                /* This involves computing the mortality/consumption of the target canopy based on pspread. */
+                /* Determine the proportion of carbon mortality in the target canopy */
                     canopy_target[0].fe.canopy_target_prop_mort = understory_mort_f;
 //#ifdef LIU_BURN_ALL_AT_ONCE
                 if (command_line->user_defined_fire_event_flag) {
@@ -406,19 +407,19 @@ void compute_fire_effects(
                     canopy_target[0].fe.canopy_target_prop_mort = command_line[0].fire_overstory_mortality_rate;
                 }
 //#endif
-				/* Adjust canopy_target_prop_mort to only account for understory component */
+                /* Adjust canopy_target_prop_mort to only account for understory component */
                     canopy_target[0].fe.canopy_target_prop_mort_u_component = canopy_target[0].fe.canopy_target_prop_mort * canopy_target[0].fe.canopy_target_height_u_prop;
-				/* ------- Determine mortality/consumption for overstory component of target canopy ------- */
-				/* This involves computing the consumption of the subtarget canopy, which is used to determine target
-				canopy mortality/consumption. */
-				/* Determine the proportion of carbon mortality in the subtarget canopy */
+                /* ------- Determine mortality/consumption for overstory component of target canopy ------- */
+                /* This involves computing the consumption of the subtarget canopy, which is used to determine target
+                canopy mortality/consumption. */
+                /* Determine the proportion of carbon mortality in the subtarget canopy */
                     canopy_target[0].fe.canopy_subtarget_prop_mort = understory_mort_f;
 
 
-				/* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
+                /* For intermediate height subtarget canopy, adjust canopy_subtarget_prop_mort to only account for understory component */
                     if (canopy_target[0].fe.canopy_subtarget_height <= patch[0].soil_defaults[0][0].overstory_height_thresh && canopy_target[0].fe.canopy_subtarget_height >= patch[0].soil_defaults[0][0].understory_height_thresh){
 
-					/* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
+                    /* Determine the proportion of subtarget canopy attributed to understory. Proportion overstory is 1 - canopy_subtarget_height_u_prop */
                         canopy_target[0].fe.canopy_subtarget_height_u_prop = calc_contribution_to_undercanopy(canopy_target[0].fe.canopy_subtarget_height,patch[0].soil_defaults[0]);
 
                         canopy_target[0].fe.canopy_subtarget_prop_mort *= canopy_target[0].fe.canopy_subtarget_height_u_prop;
@@ -429,26 +430,26 @@ void compute_fire_effects(
                         canopy_target[0].fe.canopy_subtarget_prop_mort = command_line[0].fire_understory_mortality_rate;
                     }
 //#endif
-				/* Determine the proportion of subtarget canopy mortality consumed */
+                /* Determine the proportion of subtarget canopy mortality consumed */
                     canopy_target[0].fe.canopy_subtarget_prop_mort_consumed =
                         calc_consumption_from_motality(default_fire_consumption_coef,canopy_target[0].fe.canopy_subtarget_prop_mort);
 
-				/* Determine the proportion of subtarget canopy carbon consumed */
+                /* Determine the proportion of subtarget canopy carbon consumed */
                     canopy_target[0].fe.canopy_subtarget_prop_c_consumed = canopy_target[0].fe.canopy_subtarget_prop_mort * canopy_target[0].fe.canopy_subtarget_prop_mort_consumed;
 
-				/* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
-				//canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+                /* Determine the amount of carbon consumed in the understory (subtarget canopy and litter) */
+                //canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_c * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
                 /* Determine the amount of carbon consumed in the understory subtarget canopy */
-					canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
+                    canopy_target[0].fe.understory_c_consumed = (canopy_target[0].fe.canopy_subtarget_biomassc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed) + litter_c_consumed;
 
-					//new outputs
-					canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
-					canopy_target[0].fe.understory_stemc_consumed = canopy_target[0].fe.canopy_subtarget_stemc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
-					canopy_target[0].fe.understory_rootc_consumed = canopy_target[0].fe.canopy_subtarget_rootc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+                    //new outputs
+                    canopy_target[0].fe.understory_leafc_consumed = canopy_target[0].fe.canopy_subtarget_leafc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+                    canopy_target[0].fe.understory_stemc_consumed = canopy_target[0].fe.canopy_subtarget_stemc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
+                    canopy_target[0].fe.understory_rootc_consumed = canopy_target[0].fe.canopy_subtarget_rootc * canopy_target[0].fe.canopy_subtarget_prop_c_consumed;
 
-					// accumulate understory here?
-					if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+                    // accumulate understory here?
+                    if(command_line[0].f != 0 && command_line[0].output_flags.yearly ==1 ){
 
                         canopy_target[0].fe.acc_year.m_cwdc_to_atmos += canopy_target[0].fe.m_cwdc_to_atmos;
                         canopy_target[0].fe.acc_year.m_cwdn_to_atmos += canopy_target[0].fe.m_cwdn_to_atmos;
@@ -462,16 +463,16 @@ void compute_fire_effects(
                         canopy_target[0].fe.acc_year.understory_rootc_consumed += canopy_target[0].fe.understory_rootc_consumed;
                         canopy_target[0].fe.acc_year.length_understory +=1;
 
-					}
-				/* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) and then account for target canopy height allocation */
+                    }
+                /* Determine the proportion of target canopy mortality based on the amount of understory consumed (sigmoidal relationship) and then account for target canopy height allocation */
                     canopy_target[0].fe.canopy_target_prop_mort_o_component =
                             calc_mortality_from_under_consumption(canopy_target[0].defaults[0][0].overstory_mort_k1
                                 ,canopy_target[0].defaults[0][0].overstory_mort_k2
                                 ,canopy_target[0].fe.understory_c_consumed);
 
 
-				/* ------------------------------------------------------------------------ */
-				/* Combine target canopy mortality from overstory and understory components */
+                /* ------------------------------------------------------------------------ */
+                /* Combine target canopy mortality from overstory and understory components */
                     canopy_target[0].fe.canopy_target_prop_mort = max(min(canopy_target[0].fe.canopy_target_prop_mort_u_component + canopy_target[0].fe.canopy_target_prop_mort_o_component,1.0),0);
 
 //#ifdef LIU_BURN_ALL_AT_ONCE
@@ -481,16 +482,16 @@ void compute_fire_effects(
                     }
 //#endif
 
-				/* Determine the proportion of target canopy mortality consumed */
+                /* Determine the proportion of target canopy mortality consumed */
                     canopy_target[0].fe.canopy_target_prop_mort_consumed =
                         calc_consumption_from_motality(default_fire_consumption_coef,canopy_target[0].fe.canopy_target_prop_mort);
 
-			/*--------------------------------------------------------------*/
-			/* Calculate fire effects when target canopy is short			*/
-			/*--------------------------------------------------------------*/
+            /*--------------------------------------------------------------*/
+            /* Calculate fire effects when target canopy is short            */
+            /*--------------------------------------------------------------*/
                 } else { //when target canopy is short
 
-				/* Determine the proportion of carbon mortality in the target canopy */
+                /* Determine the proportion of carbon mortality in the target canopy */
                 //12022022LML should consider the litter and cwd consumptions
                     //canopy_target[0].fe.understory_c_consumed = litter_c_consumed;
                     //double mort_from_litter_consumption = calc_mortality_from_under_consumption(
@@ -517,21 +518,21 @@ void compute_fire_effects(
                     }
 //#endif
 
-				/* Determine the proportion of target canopy mortality consumed */
+                /* Determine the proportion of target canopy mortality consumed */
                     canopy_target[0].fe.canopy_target_prop_mort_consumed =
                         calc_consumption_from_motality(default_fire_consumption_coef,canopy_target[0].fe.canopy_target_prop_mort);
                 }
 
 
-			/*--------------------------------------------------------------*/
-			/* Compute effects						*/
-			/*--------------------------------------------------------------*/
+            /*--------------------------------------------------------------*/
+            /* Compute effects                        */
+            /*--------------------------------------------------------------*/
 
             //printf("DEBUGINGG!");
             //canopy_target[0].fe.canopy_target_prop_mort = 0.9;
 
 
-			/* Determine the proportion of total target canopy carbon that is consumed by fire */
+            /* Determine the proportion of total target canopy carbon that is consumed by fire */
                 canopy_target[0].fe.canopy_target_prop_c_consumed = canopy_target[0].fe.canopy_target_prop_mort  * canopy_target[0].fe.canopy_target_prop_mort_consumed;
 
 
@@ -556,8 +557,8 @@ void compute_fire_effects(
                //   printf("\n the fire consuption is %lf",mort.mort_cpool);
                                                                     }
 
-                thin_type =2;	/* Harvest option */
-                update_mortality(
+                thin_type = 2;    /* Harvest option */
+                update_mortality(canopy_target[0].cover_fraction,
                     canopy_target[0].defaults[0][0].epc,
                     &(canopy_target[0].cs),
                     &(canopy_target[0].cdf),
@@ -571,12 +572,12 @@ void compute_fire_effects(
                     mort);
 
 
-			/* Compute proportion of total target canopy carbon that is killed but remains as litter/cwd */
+            /* Compute proportion of total target canopy carbon that is killed but remains as litter/cwd */
                 canopy_target[0].fe.canopy_target_prop_c_remain = canopy_target[0].fe.canopy_target_prop_mort - canopy_target[0].fe.canopy_target_prop_c_consumed;
 
-			/* Adjust canopy_target_prop_c_remain since update mortality is run twice. Vegetation carbon */
-			/* stores on the second call to update_mortality have already been altered during the first call. */
-			/* The following adjustment accounts for this change. */
+            /* Adjust canopy_target_prop_c_remain since update mortality is run twice. Vegetation carbon */
+            /* stores on the second call to update_mortality have already been altered during the first call. */
+            /* The following adjustment accounts for this change. */
                 if (close_enough(canopy_target[0].fe.canopy_target_prop_c_consumed,1.0)) {
                     canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = 0;
                 } else {
@@ -589,9 +590,9 @@ void compute_fire_effects(
                 //canopy_target[0].fe.canopy_target_prop_c_remain_adjusted = canopy_target[0].fe.canopy_target_prop_c_remain;
 //#endif
 
-			/* For understory vegetation, complete mortality of leaves was assumed if a patch was burned, regardless of pspread */
-			/* Following code adjusts canopy_target_prop_c_remain_adjusted to be 1 when canopy is understory */
-			/* Also note that leafc_transfer and leafc_storage pools are not killed by fire */
+            /* For understory vegetation, complete mortality of leaves was assumed if a patch was burned, regardless of pspread */
+            /* Following code adjusts canopy_target_prop_c_remain_adjusted to be 1 when canopy is understory */
+            /* Also note that leafc_transfer and leafc_storage pools are not killed by fire */
                 canopy_target[0].fe.canopy_target_height_u_prop = target_u_fraction;
                 canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc =
                         (canopy_target[0].fe.canopy_target_prop_c_remain_adjusted * (1 - canopy_target[0].fe.canopy_target_height_u_prop))
@@ -603,7 +604,7 @@ void compute_fire_effects(
                 //               ,canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc
                 //               ,canopy_target[0].fe.understory_c_consumed);
 
-			/* Determine the portion of mortality that remains on landscape */
+            /* Determine the portion of mortality that remains on landscape */
                 mort.mort_cpool = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
                 mort.mort_leafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
                 mort.mort_deadstemc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
@@ -613,14 +614,14 @@ void compute_fire_effects(
                 mort.mort_livecrootc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted;
                 mort.mort_deadleafc = canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
 
-			// track the overstory c consumed
+            // track the overstory c consumed
                 if (canopy_target[0].fe.canopy_target_height > patch[0].soil_defaults[0][0].overstory_height_thresh) {
                     canopy_target[0].fe.overstory_c_consumed = canopy_target[0].fe.canopy_target_biomassc * canopy_target[0].fe.canopy_target_prop_c_consumed;
                     canopy_target[0].fe.overstory_leafc_consumed = canopy_target[0].fe.canopy_target_leafc * canopy_target[0].fe.canopy_target_prop_c_consumed;
                     canopy_target[0].fe.overstory_stemc_consumed = canopy_target[0].fe.canopy_target_stemc * canopy_target[0].fe.canopy_target_prop_c_consumed;
                     canopy_target[0].fe.overstory_rootc_consumed = canopy_target[0].fe.canopy_target_rootc * canopy_target[0].fe.canopy_target_prop_c_consumed;
 
-			// track overstory c mortality
+            // track overstory c mortality
 
             //new outputs
                     canopy_target[0].fe.overstory_leafc_mortality = canopy_target[0].fe.canopy_target_leafc * canopy_target[0].fe.canopy_target_prop_c_remain_adjusted_leafc;
@@ -629,7 +630,7 @@ void compute_fire_effects(
 
                     canopy_target[0].fe.overstory_c_mortality = canopy_target[0].fe.overstory_leafc_mortality + canopy_target[0].fe.overstory_stemc_mortality + canopy_target[0].fe.overstory_rootc_mortality;
 
-                    if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+                    if(command_line[0].f != 0 && command_line[0].output_flags.yearly ==1 ){
 
                     //overstory
                         canopy_target[0].fe.acc_year.overstory_c_consumed +=  canopy_target[0].fe.overstory_c_consumed;
@@ -646,8 +647,8 @@ void compute_fire_effects(
                     }
                 }
 
-                thin_type =1;
-                update_mortality(
+                thin_type = 1;
+                update_mortality(canopy_target[0].cover_fraction,
                     canopy_target[0].defaults[0][0].epc,
                     &(canopy_target[0].cs),
                     &(canopy_target[0].cdf),
@@ -669,7 +670,7 @@ void compute_fire_effects(
             /* accumulate the monthly fire effects output to yearly by for yearly fire output         */
             /*----------------------------------------------------------------------------------------*/
 
-            if(command_line[0].f !=NULL && command_line[0].output_flags.yearly ==1 ){
+            if(command_line[0].f != 0 && command_line[0].output_flags.yearly ==1 ){
 
                 //canopy_target.fe.acc_year.canopy_target_height +=
                 canopy_target[0].fe.acc_year.canopy_target_height_u_prop += canopy_target[0].fe.canopy_target_height_u_prop;
@@ -702,19 +703,19 @@ void compute_fire_effects(
             for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
             for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 
-			// Calculates metrics for targer canopy
-			canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
-			canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
+            // Calculates metrics for targer canopy
+            canopy_target = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
+            canopy_target[0].fe.canopy_target_height = canopy_target[0].epv.height;
 
-			// Calculates metrics for next lowest canopy (subtarget canopy)
-			if (patch[0].num_layers > (layer+1)){
-				canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
-				canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
+            // Calculates metrics for next lowest canopy (subtarget canopy)
+            if (patch[0].num_layers > (layer+1)){
+                canopy_subtarget = patch[0].canopy_strata[(patch[0].layers[layer+1].strata[c])];
+                canopy_target[0].fe.canopy_subtarget_height = canopy_subtarget[0].epv.height;
 
-				canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc +
-						canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
-						canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
-						canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
+                canopy_target[0].fe.canopy_subtarget_biomassc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc +
+                        canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc +
+                        canopy_subtarget[0].cs.live_crootc + canopy_subtarget[0].cs.dead_crootc +
+                        canopy_subtarget[0].cs.frootc + canopy_subtarget[0].cs.cpool;
 
                 canopy_target[0].fe.canopy_subtarget_leafc = canopy_subtarget[0].cs.leafc + canopy_subtarget[0].cs.dead_leafc;
                 canopy_target[0].fe.canopy_subtarget_stemc = canopy_subtarget[0].cs.live_stemc + canopy_subtarget[0].cs.dead_stemc;
@@ -735,11 +736,11 @@ void compute_fire_effects(
 
 
                 } else {
-				canopy_target[0].fe.canopy_subtarget_height = 0;
-				canopy_target[0].fe.canopy_subtarget_biomassc = 0;
-				canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
-				canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
-				canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
+                canopy_target[0].fe.canopy_subtarget_height = 0;
+                canopy_target[0].fe.canopy_subtarget_biomassc = 0;
+                canopy_target[0].fe.canopy_subtarget_leafc = 0.0;
+                canopy_target[0].fe.canopy_subtarget_stemc = 0.0;
+                canopy_target[0].fe.canopy_subtarget_rootc = 0.0;
 
             // add the over story NREN
             //canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
@@ -754,7 +755,7 @@ void compute_fire_effects(
 
 
 
-			}
+            }
             // add the over story NREN
             canopy_target[0].fe.canopy_target_biomassc = canopy_target[0].cs.leafc + canopy_target[0].cs.dead_leafc +
                 canopy_target[0].cs.live_stemc + canopy_target[0].cs.dead_stemc +
@@ -774,7 +775,7 @@ void compute_fire_effects(
      */
 
 
-	return;
+    return;
 } /*end compute_fire_effects.c*/
 
 double calc_mortality_from_pspread(double kmort_coef, double pspread)

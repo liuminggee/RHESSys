@@ -121,9 +121,8 @@ int resolve_sminn_competition(
 				/ ndf->plant_potential_ndemand;
 			ndf->plant_avail_uptake = actual_uptake;
 		}
-
-        //printf("act_imb:%f pot_imb:%f max_imb:%f\n",actual_immob*1000,ndf->potential_immob*1000,max_imb*1000);
 	}
+    //printf("act_imb:%f pot_imb:%f max_imb:%f\n",actual_immob*1000,ndf->potential_immob*1000,max_imb*1000);
 
 	return(0);
 } /* end resolve_sminn_competition.c */

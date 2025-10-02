@@ -123,7 +123,7 @@ void compute_beetle_effects(
 			//snag_sequence = &(patch[0].snag_sequence); // it is full structure have all the time series, that is why we need index
 			//redneedle_sequence= &(patch[0].redneedle_sequence);
             if (loss >0) {
-            thin_type =5; //create a new thintype for beetle attack
+            thin_type = 5; //create a new thintype for beetle attack
 			//for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
 				//	for ( c=0 ; c<patch[0].layers[layer].count; c++ ){
 					//canopy_strata = patch[0].canopy_strata[(patch[0].layers[layer].strata[c])];
