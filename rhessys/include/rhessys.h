@@ -186,7 +186,8 @@
 #define CONSTANT 1
 #define DICKENSON 3
 #define COMBINED 4
-#define ZERO 0.000000001
+#define ZERO 1.e-12
+//0.000000001
 #define URBANID         100
 #define M 0
 #define K 1
@@ -1712,12 +1713,12 @@ struct  soil_n_object
             double NO3_Qin_total;             /* (kgN/m2/day) soil mineral N output */
             double NO3_Qout_total;            /* (kgN/m2/day) soil mineral N input */
             double NO3_Qin;             /* (kgN/m2/day) soil mineral N output */
-            double NO3_Qout;            /* (kgN/m2/day) soil mineral N input */
+            double NO3_Qout;            /* (kgN/m2/day) soil mineral N input LML: it is out from soil, partially flow to the surface, so not all goes to neiboring patch*/
             double NH4_Qin;             /* (kgN/m2/day) soil mineral N output */
             double NH4_Qout;            /* (kgN/m2/day) soil mineral N input */
             double NH4_Qin_total;             /* (kgN/m2/day) soil mineral N output */
             double NH4_Qout_total;            /* (kgN/m2/day) soil mineral N input */
-            double leach;            /* (kgN/m2) soil mineral N input */
+            double leach;            /* (kgN/m2) soil mineral N input LML note: it's net leach from this patch, i.e. out - in*/
             double nfix_src;        /* (kgN/m2) SUM of biological N fixation */
             double ndep_src;        /* (kgN/m2) SUM of N deposition inputs */
             double nleached_snk;    /* (kgN/m2) SUM of N leached */
@@ -1982,7 +1983,7 @@ struct patch_object
         double  surface_NH4_Qout;       /* kg/m2 day    */
         double  surface_NO3_Qin;                /* kg/m2 day    */
         double  surface_NO3_Qout;       /* kg/m2 day    */
-        double  surface_ns_leach;       /* kg/m2 day    */
+        double  surface_ns_leach;       /* kg/m2 day    LML: NO3?*/
         double  surface_Qin;            /* m day        */ //LML note: flow in from upstream surface land patch; output varaiable only
         double  surface_Qout;           /* m day        */ //LML note: flow out of surface land patch; output varaiable only
         double  surface_DON;            /* kgN/m2       */
@@ -2011,7 +2012,7 @@ struct patch_object
         double  wilting_point;          /* mm */
         double overstory_fraction; /* 0-1 */
         double trans_reduc_perc; /*0-1*/
-        double overland_flow; /* m/s */ //LML note: m/day land patch flowout detention store higher than capacity
+        double overland_flow; /* m/s */ //LML note: m/day land patch flowout detention store higher than capacity. Seems not included in streamflow
         double  T_canopy;  /* deg C */
         double  T_canopy_final;  /* deg C */
         double pcp;             //(m/day) 06202023LML
@@ -2044,7 +2045,7 @@ struct patch_object
 /*----------------------------------------------------------*/
 /*      Surface Hydrology  stuff                        */
 /*----------------------------------------------------------*/
-        bool     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */
+        int     drainage_type;                          /* unitless 1 stream, 0 land, 2, road */
         bool     IsWaterBody;                           /* 06212023LML 1: is 0: is not */
         double  water_balance;                          /* meters water         */
         double  delta_snowpack;                         /* meters               */

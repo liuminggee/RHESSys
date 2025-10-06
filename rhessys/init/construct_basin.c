@@ -405,7 +405,6 @@ struct basin_object *construct_basin(
         if ( command_line->surface_routing_flag == 1 ) {
           printf("\tReading surface routing table\n");
           hillslope->surface_route_list = construct_routing_topology( surface_routing_file, hillslope, command_line, true);
-
           if ( hillslope->surface_route_list->num_patches != hillslope->route_list->num_patches ) {
             fprintf(
                 stderr,

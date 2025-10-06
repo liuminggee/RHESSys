@@ -97,75 +97,57 @@ void climate_interpolation(
 
 
     for (i=0; i< num_world_base_stations; i++) {
+        station_search = world_base_stations[i];
 
-    station_search = world_base_stations[i];
-
-    if ( fabs(station_search[0].proj_x -zone[0].x_utm) <= search_x && fabs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
+        if ( fabs(station_search[0].proj_x -zone[0].x_utm) <= search_x && fabs(station_search[0].proj_y -zone[0].y_utm) <= search_y)
         {
-
             rain_found[count] = station_search[0].daily_clim[0].rain[day];
             tmax_found[count] = station_search[0].daily_clim[0].tmax[day];
             tmin_found[count] = station_search[0].daily_clim[0].tmin[day];
             ID_found[count] = station_search[0].ID;
-
             // due to the inverse distance method going to use square of distance so here no need to do square root
             res_square = zone[0].defaults[0][0].res_patch * zone[0].defaults[0][0].res_patch;
             distance[count]= ((zone[0].x_utm - station_search[0].proj_x) * (zone[0].x_utm - station_search[0].proj_x)/res_square + (zone[0].y_utm - station_search[0].proj_y) * (zone[0].y_utm - station_search[0].proj_y)/res_square);
             if (distance[count] > 0) {
-            weight[count] = 1/distance[count];
+                weight[count] = 1/distance[count];
             }
             diff_elevation[count] = zone[0].z_utm - station_search[0].z;
-
             if (command_line[0].verbose_flag == -3) {
-            printf("\n there are %d neibourge stations, ID is %d, distance is %lf, weight is %lf\n", count, ID_found[count], distance[count], weight[count]);
-
+                printf("\n there are %d neibourge stations, ID is %d, distance is %lf, weight is %lf\n", count, ID_found[count], distance[count], weight[count]);
             }
             count++;
-
         }
-
     }
 
     // after find these stations, caluate the sum of weight and final weight for each stations
-
     if (count > 0) {
         sum_weight = 0;
-
         for (j=0; j <  count; j++) {
             if (distance[j] > 2.0 ) { // when calculate distance I using res to normalize the distance
             sum_weight = sum_weight + weight[j]; //simple inverse distance method, not considering the direction and slope effect
                 }
         }
-
         // if one patch is very close the centre of basestation
-
         for (j=0; j < count; j++) {
             if (distance[j] <= 2.0 ) {
             sum_weight = 0; //simple inverse distance method, not considering the direction and slope effect
                 }
         }
-
         // now interpolation climate data only interploate the precipitation, m
         // if the station not close to the center of basestation
-
        if (sum_weight > 1e-6) {
            // printf("\n started interpolation climate data \n");
           // printf("\n the ratio for zone ID %d is %lf \n", zone[0].ID, weight[1]/sum_weight);
-
                     rain_temp=0;
                     tmax_temp=0;
                     tmin_temp=0;
                     tmax_old = 0;
                     tmin_old = 0;
-
                     for (j =0; j< count; j++) {
                     //precip, check crazy values too.
                     //isohyet_adjustment = zone[0].defaults[0][0].lapse_rate_precip_default * diff_elevation[j] +1.0;
                    // isohyet_adjustment = max(0, isohyet_adjustment)
-
-
                     rain_temp = rain_temp + rain_found[j] * weight[j]/sum_weight;
-
                     if (command_line[0].verbose_flag == -3) {
                     printf("\n the ratio for station %d is %lf \n", j, weight[j]/sum_weight);
                     }
@@ -222,36 +204,29 @@ void climate_interpolation(
                     zone[0].tmin_interpolate = tmin_temp;
 
                     if (tmax_temp < tmin_temp || tmax_old < tmin_old) {
-                    printf("\n WARNING: tmax is smaller than tmin after interpolation, tmax_inter %lf, tmin_inter is %lf, tmax_old %lf, tmin_old %lf, ID %d, num_neiboughors %d for day %d",
-                    tmax_temp, tmin_temp, tmax_old, tmin_old, zone[0].ID, count, day);
-
+                        printf("\n WARNING: tmax is smaller than tmin after interpolation, tmax_inter %lf, tmin_inter is %lf, tmax_old %lf, tmin_old %lf, ID %d, num_neiboughors %d for day %d",
+                                tmax_temp, tmin_temp, tmax_old, tmin_old, zone[0].ID, count, day);
                     }
 
 
         } //end sum_weight>0
         else {
-                zone[0].rain_interpolate = zone[0].base_stations[0][0].daily_clim[0].rain[day];
-                zone[0].tmax_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
-                zone[0].tmin_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
-
-                //if (day == 1)
-                //    printf("\n WARNING: patch %d, is close the climate station, no need to interpoaltion \n", zone[0].ID);
+            zone[0].rain_interpolate = zone[0].base_stations[0][0].daily_clim[0].rain[day];
+            zone[0].tmax_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
+            zone[0].tmin_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
+            //if (day == 1)
+            //    printf("\n WARNING: patch %d, is close the climate station, no need to interpoaltion \n", zone[0].ID);
         } //end else
     }//end if count>1
-
     else {
-                zone[0].rain_interpolate = zone[0].base_stations[0][0].daily_clim[0].rain[day];
-                zone[0].tmax_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
-                zone[0].tmin_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
+        zone[0].rain_interpolate = zone[0].base_stations[0][0].daily_clim[0].rain[day];
+        zone[0].tmax_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmax[day];
+        zone[0].tmin_interpolate = zone[0].base_stations[0][0].daily_clim[0].tmin[day];
         if (day==1)
-        printf("\n WARNING: patch %d no neigbour station found, using the climate grid data where the patch is located \n", zone[0].ID);
+            printf("\n WARNING: patch %d no neigbour station found, using the climate grid data where the patch is located \n", zone[0].ID);
     }
-
     //free the memory
     // no need to free station found still point to the same memory
-
-
-
 	 //return(base_station);
 	 return;
 
