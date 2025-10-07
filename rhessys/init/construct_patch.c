@@ -837,7 +837,7 @@ if (command_line[0].beetlespread_flag == 1) {
     patch[0].layers = (struct layer_object *) alloc( patch[0].num_canopy_strata *
         sizeof( struct layer_object ),"layers","construct_patch");
     patch[0].num_layers = 0;
-    sort_patch_layers(patch);
+    //10062025LML sort_patch_layers(patch);
 
 
 
