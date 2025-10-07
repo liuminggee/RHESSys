@@ -671,7 +671,6 @@ void compute_fire_effects(
             /*----------------------------------------------------------------------------------------*/
 
             if(command_line[0].f != 0 && command_line[0].output_flags.yearly ==1 ){
-
                 //canopy_target.fe.acc_year.canopy_target_height +=
                 canopy_target[0].fe.acc_year.canopy_target_height_u_prop += canopy_target[0].fe.canopy_target_height_u_prop;
                 canopy_target[0].fe.acc_year.canopy_target_prop_mort += canopy_target[0].fe.canopy_target_prop_mort;

@@ -185,7 +185,7 @@ void update_mortality(
 
         double tn = m_leafn_to_litr1n + m_leafn_to_litr2n
                         + m_leafn_to_litr3n + m_leafn_to_litr4n;
-        if (tn > ns->leafn) {
+        if (tn > ns->leafn && tn > 1e-12) {
             double f = ns->leafn / tn;
             m_leafn_to_litr1n *= f;
             m_leafn_to_litr2n *= f;
@@ -222,7 +222,7 @@ void update_mortality(
 
         double tn = m_frootn_to_litr1n + m_frootn_to_litr2n
                         + m_frootn_to_litr3n + m_frootn_to_litr4n;
-        if (tn > ns->frootn) {
+        if (tn > ns->frootn && tn > 1.e-12) {
             double f = ns->frootn / tn;
             m_frootn_to_litr1n *= f;
             m_frootn_to_litr2n *= f;

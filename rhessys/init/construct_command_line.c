@@ -154,10 +154,10 @@ struct	command_line_object	*construct_command_line(
     command_line[0].fire_sc_ko_mort1 = -9999.0;
     command_line[0].fire_sc_ko_mort2 = -9999.0;
 //#endif
-        command_line[0].fire_spin_flag = 0;
-        command_line[0].fire_spin_period = 0;
-        command_line[0].fire_spins = 0;
-        command_line[0].N_decayrate = -9999.0;
+    command_line[0].fire_spin_flag = 0;
+    command_line[0].fire_spin_period = 0;
+    command_line[0].fire_spins = 0;
+    command_line[0].N_decayrate = -9999.0;
 
 	/*-------------------------------------------------*/
 	/* Loop through each arguement in the command line.*/

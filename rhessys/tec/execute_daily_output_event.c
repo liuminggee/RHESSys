@@ -151,7 +151,7 @@ void	execute_daily_output_event(
 			/*--------------------------------------------------------------*/
 			/*	Construct the basin output files.							*/
 			/*--------------------------------------------------------------*/
-			if ( command_line[0].b != NULL ){
+            if ( command_line[0].b != 0){
 				basinID = command_line[0].b->basinID;
                 if (( world[0].basins[b][0].ID == basinID) || (basinID == -999))
 					output_basin(

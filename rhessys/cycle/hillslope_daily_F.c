@@ -95,12 +95,8 @@ void		hillslope_daily_F(
 	
     //#pragma omp parallel for
     for (int zone=0 ; zone<hillslope[0].num_zones; zone++ ){
-
-
         //printf("omp_in_parallel?:%d Total_processes:%d this process:%d\n",
         //       omp_in_parallel(),omp_get_num_threads(), omp_get_thread_num());
-
-
 		zone_daily_F(	day,
 			world,
 			basin,
@@ -130,7 +126,6 @@ void		hillslope_daily_F(
 	else{
         //hillslope[0].base_flow += 0.0;
 	}
-
 
 	/*--------------------------------------------------------------*/
 	/*  For routing option - route water between patches within     */
