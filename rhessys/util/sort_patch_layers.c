@@ -57,6 +57,7 @@ void sort_patch_layers( struct patch_object *patch)
     do { //total cover fraction of each layer cannot over 1.0
         for ( i=0 ; i<patch[0].num_canopy_strata; i++ ) {
             free(patch[0].layers[i].strata);
+            patch[0].layers[i].strata = 0;
         }
         do { //overstory tree need to be on the top, otherwise it may not grow under the shade. 10062025 LML
             need_height_adj_for_overstory_tree = false;
@@ -181,11 +182,13 @@ void sort_patch_layers( struct patch_object *patch)
                 printf( "\nWARNING: in sort_patch_layers cover fraction of layer height %f greater than 1.0! \nAdjustment...\n"
                         ,cover_fraction);
                 need_height_adj_for_overstory_tree = true;
-                //increase the height for trees
+                //increase the height
                 for (j = 0; j < patch[0].layers[i].count; j++) {
                     int strata_idx = patch[0].layers[i].strata[j];
                     if (patch[0].canopy_strata[strata_idx][0].defaults[0][0].epc.veg_type == TREE) {
                         patch[0].canopy_strata[strata_idx][0].epv.height += 0.0001 * (1 + j);
+                    } else if (patch[0].canopy_strata[strata_idx][0].defaults[0][0].epc.veg_type != NON_VEG) {//incase the grass or shrub is the overstory strata; the understory is NON_VEG.
+                        patch[0].canopy_strata[strata_idx][0].epv.height += 0.00001 * (1 + j);
                     }
                 }
             }
