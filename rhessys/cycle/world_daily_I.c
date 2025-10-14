@@ -104,6 +104,7 @@ void		world_daily_I(
 	/*--------------------------------------------------------------*/
 	/*	Simulate over all of the basins.							*/
 	/*--------------------------------------------------------------*/
+	//printf("%s %d\n",__FILE__,__LINE__);
 	for ( basin = 0; basin < world[0].num_basin_files; basin++ ){
 		basin_daily_I(	day,
 			world,
@@ -112,5 +113,6 @@ void		world_daily_I(
 			event,
 			current_date);
 	}
+	//printf("end %s %d\n",__FILE__,__LINE__);
 	return;
 } /*end world_daily_I.c*/

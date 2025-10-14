@@ -755,6 +755,10 @@ if (command_line[0].beetlespread_flag == 1) {
             num_world_base_stations,
             num_world_extra_base_stations,
             world_base_stations,defaults);
+            
+        //10142025LML incase the overstory strata is Noveg, set the understory canopy cover is zero.
+        if (i == 1 && patch[0].canopy_strata[0][0].defaults[0][0].epc.veg_type == NON_VEG)
+            patch[0].canopy_strata[1][0].cover_fraction = 0.;
 
         //06212023LML
         if (patch[0].canopy_strata[i][0].defaults[0][0].ID == STRATUM_WATER)

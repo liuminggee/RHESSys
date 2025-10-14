@@ -53,12 +53,13 @@ void sort_patch_layers( struct patch_object *patch)
 
     bool need_height_adj_for_total_cover_fraction = false;
     bool need_height_adj_for_overstory_tree = false;
-
+    int repeat = 0;
     do { //total cover fraction of each layer cannot over 1.0
         for ( i=0 ; i<patch[0].num_canopy_strata; i++ ) {
             free(patch[0].layers[i].strata);
             patch[0].layers[i].strata = 0;
         }
+    int inner_repeat = 0;
         do { //overstory tree need to be on the top, otherwise it may not grow under the shade. 10062025 LML
             need_height_adj_for_overstory_tree = false;
             for ( i=0 ; i<patch[0].num_canopy_strata; i++ ) {
@@ -125,6 +126,11 @@ void sort_patch_layers( struct patch_object *patch)
                     need_height_adj_for_overstory_tree = true;
                 }
             }
+        inner_repeat++;
+        if (inner_repeat > 10) {
+            printf("ERROR: DEAD LOOP!%s\n",__FILE__);
+            exit(0);
+        }
         } while (need_height_adj_for_overstory_tree);
 
         for ( i=0 ; i<patch[0].num_layers ; i++ ){
@@ -179,8 +185,8 @@ void sort_patch_layers( struct patch_object *patch)
         /*        this layer does not add to 1.0            */
         /*--------------------------------------------------------------*/
             if ( cover_fraction > 1.0 ){
-                printf( "\nWARNING: in sort_patch_layers cover fraction of layer height %f greater than 1.0! \nAdjustment...\n"
-                        ,cover_fraction);
+                //printf( "\nWARNING: in sort_patch_layers cover fraction of layer height %f greater than 1.0! \nAdjustment...\n"
+                //        ,cover_fraction);
                 need_height_adj_for_overstory_tree = true;
                 //increase the height
                 for (j = 0; j < patch[0].layers[i].count; j++) {
@@ -194,6 +200,11 @@ void sort_patch_layers( struct patch_object *patch)
             }
             patch[0].layers[i].null_cover = 1.0 - max_cover_fraction;
         } //layer i
+    repeat++;
+    if (repeat > 10) {
+        printf("ERROR: DEAD LOOP!%s\n",__FILE__);
+        exit(0);
+    }
     } while (need_height_adj_for_overstory_tree);
     return;
 }

@@ -191,6 +191,7 @@ void zone_daily_I(
     int num_world_base_stations;
    // struct base_station_object	**world_base_stations;
 
+    //printf("%s %d\n",__FILE__,__LINE__);
     season = 0;
     num_world_base_stations = world[0].num_base_stations;
   //  world_base_stations = (struct base_station_object **) alloc( *num_world_base_stations *
@@ -1103,11 +1104,12 @@ void zone_daily_I(
 			   trans_coeff1,
 			   trans_coeff2);
 	}
-
+        
 	/*--------------------------------------------------------------*/
 	/*	Cycle through the patches 									*/
 	/*--------------------------------------------------------------*/
 	for ( patch=0 ; patch<zone[0].num_patches; patch++ ){
+		//printf("%s %d patch_ID:%d\n",__FILE__,__LINE__,zone[0].patches[patch]->ID);
 		patch_daily_I(
 			world,
 			basin,
@@ -1117,6 +1119,8 @@ void zone_daily_I(
 			command_line,
 			event,
 			current_date );
+		//printf("end %s %d patch_ID:%d\n",__FILE__,__LINE__,zone[0].patches[patch]->ID);
 	}
+	//printf("end %s %d\n",__FILE__,__LINE__);
 
 } /*end zone_daily_I.c*/

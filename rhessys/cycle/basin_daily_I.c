@@ -103,6 +103,7 @@ void		basin_daily_I(
 	/*--------------------------------------------------------------*/
     #pragma omp parallel for
     for (int hillslope = 0 ; hillslope < basin[0].num_hillslopes; hillslope ++ ){
+	    //printf("%s %d hillslope:%d ID:%d\n",__FILE__,__LINE__,hillslope,basin[0].hillslopes[hillslope]->ID);
 		hillslope_daily_I(
 			day,
 			world,
@@ -111,6 +112,8 @@ void		basin_daily_I(
 			command_line,
 			event,
 			current_date );
-	}
-	return;
+        //printf("end %s %d hillslope:%d ID:%d\n",__FILE__,__LINE__,hillslope,basin[0].hillslopes[hillslope]->ID);
+    }
+    printf("end %s %d\n",__FILE__,__LINE__);
+    return;
 } /*end basin_daily_I.c*/

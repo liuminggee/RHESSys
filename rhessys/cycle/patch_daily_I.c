@@ -384,7 +384,7 @@ void        patch_daily_I(
         }
     }
 
-
+    //printf("end %s %d\n",__FILE__,__LINE__);
 
     /*-----------------------------------------------------*/
     /*     Check for any grazing activity from a land use default file            */
@@ -418,7 +418,7 @@ void        patch_daily_I(
     patch[0].preday_rain_stored = patch[0].litter.rain_stored;
     patch[0].preday_snow_stored = 0;
     patch[0].preday_detention_store = patch[0].detention_store;
-
+    //printf("end %s %d\n",__FILE__,__LINE__);
     for ( layer=0 ; layer<patch[0].num_layers; layer++ ){
         /*--------------------------------------------------------------*/
         /*    Cycle through the canopy strata                */
@@ -450,7 +450,7 @@ void        patch_daily_I(
                 current_date );
         }
     }
-
+    //printf("end %s %d\n",__FILE__,__LINE__);
     //if (patch[0].ID == 8066) {
     //  printf("patch[0].preday_rain_stored*1000:%lf litter.rain_stored:%lf\n",patch[0].preday_rain_stored*1000,patch[0].litter.rain_stored*1000);
     //}
@@ -489,12 +489,14 @@ void        patch_daily_I(
         patch[0].rootzone.depth = max(patch[0].rootzone.depth,
              patch[0].canopy_strata[stratum][0].rootzone.depth);
     }
+    //printf("end %s %d\n",__FILE__,__LINE__);
     patch[0].effective_lai = patch[0].effective_lai / patch[0].num_canopy_strata;
     /*--------------------------------------------------------------*/
     /*    re-sort patch layers to account for any changes in     */
     /*    height                            */
     /*------------------------------------------------------------------------*/
     sort_patch_layers(patch);
+    //printf("end %s %d\n",__FILE__,__LINE__);
 
 
     /*------------------------------------------------------------------------*/

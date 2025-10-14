@@ -323,7 +323,11 @@ void    execute_tec(
                     command_line,
                     event,
                     current_date);
-            } /*end if*/
+            } 
+	    
+	    //printf("%d\n",__LINE__);
+	    
+	    /*end if*/
             /*--------------------------------------------------------------*/
             /*          Do hourly stuff for the day.                        */
             /*--------------------------------------------------------------*/
@@ -331,7 +335,7 @@ void    execute_tec(
                 command_line,
                 event,
                 current_date);
-
+            //printf("%d\n",__LINE__);
             /*--------------------------------------------------------------*/
             /*            Perform any requested hourly output                    */
             /*--------------------------------------------------------------*/
@@ -342,6 +346,7 @@ void    execute_tec(
                               current_date,
                               outfile);
             }
+	    //printf("%d\n",__LINE__);
 
             if(command_line[0].output_flags.hourly_growth ==1 &&
                     (command_line[0].grow_flag > 0) ){
@@ -352,6 +357,7 @@ void    execute_tec(
                                   growth_outfile);
 
                 };
+	    //printf("%d\n",__LINE__);
             /*--------------------------------------------------------------*/
             /*            Increment to the next hour.                            */
             /*--------------------------------------------------------------*/
@@ -373,6 +379,7 @@ void    execute_tec(
                     command_line,
                     event,
                     current_date);
+		//printf("%d\n",__LINE__);
                 /*--------------------------------------------------------------*/
                 /*            Perform any requested daily output                    */
                 /*--------------------------------------------------------------*/
@@ -384,6 +391,7 @@ void    execute_tec(
                         current_date,
                         growth_outfile);
                 }
+		//printf("%d\n",__LINE__);
                 if (command_line[0].output_flags.daily == 1) {
                         execute_daily_output_event(
                         world,
@@ -391,6 +399,7 @@ void    execute_tec(
                         current_date,
                         outfile);
                                }
+		//printf("%d\n",__LINE__);
 #ifdef LIU_WMFIRE_OUTPUT
                 //05242022LML always print daily basin output
                 if ((command_line[0].output_flags.daily != 1) || (command_line[0].b == 0)) {
@@ -414,6 +423,7 @@ void    execute_tec(
                             }
                     }
                 }
+		//printf("%d\n",__LINE__);
 #endif
                 /*--------------------------------------------------------------*/
         /*  Output world state in spinup mode if targets met            */

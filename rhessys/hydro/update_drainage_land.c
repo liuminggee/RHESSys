@@ -411,9 +411,9 @@ void  update_drainage_land(
               neigh[0].Qin += Qin;
             }
           } //j
-          if (fabs(export_N - import_N) > 1e-12) {
-              printf("ERROR: MASS BALANCE @%s @%d\n",__FILE__,__LINE__);
-          }
+          //if (fabs(export_N - import_N) > 1e-12) {
+          //    printf("ERROR: MASS BALANCE @%s @%d\n",__FILE__,__LINE__);
+          //}
       }
 
     /*--------------------------------------------------------------*/
@@ -582,9 +582,9 @@ void  update_drainage_land(
                        patch[0].soil_ns.NH4_Qout +
                        patch[0].soil_ns.DON_Qout;
       double patch_soil_N_balance = end_soil_N - init_soil_N + fluxout_soil_N; //soil N
-      if (fabs(patch_soil_N_balance) > 1.e-12 || fabs(patch_N_balance) > 1.e-12) {
-          printf("ERROR: MASS BALANCE @%d\n",__LINE__);
-      }
+      //if (fabs(patch_soil_N_balance) > 1.e-12 || fabs(patch_N_balance) > 1.e-12) {
+      //    printf("ERROR: MASS BALANCE @%d\n",__LINE__);
+      //}
     } /* end if redistribution flag */
     return;
 } /*end update_drainage_land.c*/

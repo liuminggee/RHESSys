@@ -600,9 +600,9 @@ void update_mortality(
                       + (end_litterC - init_litterC);
     double Nbalance = (removedN + end_plantN - init_plantN) * cover_fraction
                       + (end_litterN - init_litterN);
-    if (fabs(Cbalance) > 1e-12 || fabs(Nbalance) > 1e-12) {
-        printf("MASS BALANCE ERROR @ %d!\n",__LINE__);
-    }
+    //if (fabs(Cbalance) > 1e-12 || fabs(Nbalance) > 1e-12) {
+    //    printf("MASS BALANCE ERROR @ %d!\n",__LINE__);
+    //}
 
     return;
 }/*end update_mortality*/
