@@ -114,6 +114,6 @@ void		basin_daily_I(
 			current_date );
         //printf("end %s %d hillslope:%d ID:%d\n",__FILE__,__LINE__,hillslope,basin[0].hillslopes[hillslope]->ID);
     }
-    printf("end %s %d\n",__FILE__,__LINE__);
+    //printf("end %s %d\n",__FILE__,__LINE__);
     return;
 } /*end basin_daily_I.c*/
