@@ -240,6 +240,11 @@ struct soil_default *construct_soil_defaults(
         defobj[0].interval_size = 		getDoubleParam(&paramCnt, &paramPtr, "interval_size", "%lf", INTERVAL_SIZE, 1);
         defobj[0].decom_model = getIntParam(&paramCnt, &paramPtr, "decom_model", "%d", 1, 1); // 1 is default, 2 is FireBGC 3 is LandClim
 
+		/* Ash deposition  parameters */
+		default_object_list[i].ash_transfer_pct = getDoubleParam(&paramCnt, &paramPtr, "ash_transfer_pct", "%lf", 0.01, 1);
+		default_object_list[i].ash_pct_soluble_DOC = getDoubleParam(&paramCnt, &paramPtr, "ash_pct_soluble_DOC", "%lf", 0.05, 1);
+		default_object_list[i].ash_pct_soluble_DON = getDoubleParam(&paramCnt, &paramPtr, "ash_pct_soluble_DON", "%lf", 0.05, 1);
+
 		/*--------------------------------------------------------------*/
 		/* sensitivity adjustment of vertical drainage  soil paramters	*/
 		/* an  scale Pore size index and psi air entry or other parameters	*/

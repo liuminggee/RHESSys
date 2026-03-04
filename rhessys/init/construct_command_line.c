@@ -1356,6 +1356,15 @@ struct	command_line_object	*construct_command_line(
 				//printf("\n Read in CO2 data when the climate data is netcdf file");
 				command_line[0].CO2_flag = 1;
 			}/* end if */
+
+			/*--------------------------------------------------------------*/
+			/*		Check for ash deposition flag next.						*/
+			/*--------------------------------------------------------------*/
+			else if (strcmp(main_argv[i],"-ash_deposition") == 0 ){
+				command_line[0].ash_deposition_flag = 1;
+				i++;
+			}
+
 			/*--------------------------------------------------------------*/
 			/*	NOTE:  ADD MORE OPTION PARSING HERE.						*/
 			/*--------------------------------------------------------------*/

@@ -1468,6 +1468,9 @@ struct	soil_default
     struct soil_class	soil_type;
     int decom_model; /* 1 is rhessys default, 2 is FireBGCv2 and 3 is LandClim*/
     int m_CO2_effect; // should include CO2
+    double  ash_transfer_pct;				/* % of ash C available to surface */
+    double  ash_pct_soluble_DOC;				/* % of available ash C pool that is soluble C*/
+    double  ash_pct_soluble_DON;				/* % of available ash N pool that is soluble N*/
 
     struct soil_loopup_table *soil_lookup;
     };
@@ -2105,6 +2108,9 @@ struct patch_object
         double  nitrogen_balance;               /* kgC/m2 */
         double  satzone_nitrate;                /* kgN/m2 saturated zone */
 
+        double  ash_C_pool;                     /* kgC/m2 lost in fire */
+        double  ash_N_pool;                     /* kgN/m2 lost in fire */
+
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;
         struct  litter_object   litter;
@@ -2385,6 +2391,7 @@ struct  command_line_object
         int             fire_spin_period;                                       //years per spin (weather start from first year)
         int             fire_spins;                                             //number of spins
         double          N_decayrate;                                            //N decay rate along soil profile
+        int             ash_deposition_flag; 
 
         char    *output_prefix;
         char    routing_filename[FILEPATH_LEN];
