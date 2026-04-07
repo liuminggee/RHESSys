@@ -440,6 +440,8 @@ void        patch_daily_F(
     double PAR_direct_covered, PAR_diffuse_covered, PAR_direct_exposed, PAR_diffuse_exposed;
     double snow_melt_covered, snow_melt_exposed;
     double     rz_drainage,unsat_drainage;
+  	double ash_c_transfer, ash_doc_to_surface;
+	double ash_n_transfer, ash_don_to_surface;
     struct    canopy_strata_object    *strata;
     struct    litter_object    *litter;
     struct  dated_sequence    clim_event;
@@ -2345,6 +2347,29 @@ void        patch_daily_F(
         patch[0].surface_DON += (patch[0].ndf.do_litr1n_loss + patch[0].ndf.do_litr2n_loss + patch[0].ndf.do_litr3n_loss +
                  patch[0].ndf.do_litr4n_loss);
         }
+
+		// Ash deposition and transfer to surface DOC/DON
+		if (command_line[0].ash_deposition_flag == 1){
+			// Ash C to Soluble C (DOC) - 0.1 t0 0.01
+			// Only transfer above ZERO
+			if (patch[0].ash_DOC > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0){
+				ash_c_transfer = patch[0].ash_DOC * patch[0].soil_defaults[0][0].ash_transfer_pct;
+				patch[0].ash_DOC -= ash_c_transfer;
+				patch[0].surface_DOC += ash_c_transfer;
+
+				// add transport to outlet stream DOC - LATER
+				// hillslope[0].streamflow_DOC
+			}
+			if (patch[0].ash_DON > ZERO && patch[0].soil_defaults[0][0].ash_transfer_pct > 0){
+				// Ash N to Soluble N (DON) - 0.01,as a percent of total ash N is hard to calculate 
+				ash_n_transfer = patch[0].ash_DON * patch[0].soil_defaults[0][0].ash_transfer_pct;
+				patch[0].ash_DON -= ash_n_transfer;
+				patch[0].surface_DON += ash_n_transfer;
+
+				// add transport to outlet stream DON - LATER
+				// hillslope[0].streamflow_DON
+			}
+		} // END ash_deposition_flag
 
         if ( update_nitrif(
             &(patch[0].soil_cs),
