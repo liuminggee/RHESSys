@@ -1469,8 +1469,8 @@ struct	soil_default
     int decom_model; /* 1 is rhessys default, 2 is FireBGCv2 and 3 is LandClim*/
     int m_CO2_effect; // should include CO2
     double  ash_transfer_pct;				/* % of ash C available to surface */
-    double  ash_pct_soluble_DOC;				/* % of available ash C pool that is soluble C*/
-    double  ash_pct_soluble_DON;				/* % of available ash N pool that is soluble N*/
+    double  ash_pct_soluble_DOC;				/* % of available ash C pool that is DOC*/
+    double  ash_pct_soluble_DON;				/* % of available ash N pool that is DON*/
 
     struct soil_loopup_table *soil_lookup;
     };
@@ -2108,8 +2108,8 @@ struct patch_object
         double  nitrogen_balance;               /* kgC/m2 */
         double  satzone_nitrate;                /* kgN/m2 saturated zone */
 
-        double  ash_C_pool;                     /* kgC/m2 lost in fire */
-        double  ash_N_pool;                     /* kgN/m2 lost in fire */
+        double  ash_DOC;                     /* kgC/m2 lost in fire */
+        double  ash_DON;                     /* kgN/m2 lost in fire */
 
         struct  soil_c_object   soil_cs;
         struct  soil_n_object   soil_ns;
