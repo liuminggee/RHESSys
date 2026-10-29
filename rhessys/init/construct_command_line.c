@@ -340,10 +340,10 @@ struct	command_line_object	*construct_command_line(
 				i++;
 				printf("\n Running with SURFACE ENERGY CALC turned on");
 				command_line[0].surface_energy_flag = 1;
-				if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
-					fprintf(stderr,"FATAL ERROR: Values for fire grid parameters not specified\n");
-					exit(EXIT_FAILURE);
-				} /*end if*/
+                //if ((i == main_argc-1) || (valid_option(main_argv[i])==1)){
+                //	fprintf(stderr,"FATAL ERROR: Values for fire grid parameters not specified\n");
+                //	exit(EXIT_FAILURE);
+                //} /*end if*/
 			}/* end if */
 
 			/*------------------------------------------*/
