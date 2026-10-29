@@ -646,7 +646,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 		/*	Read in the surface energy default files.			*/
 		/*--------------------------------------------------------------*/
 		world[0].surface_energy_default_files= construct_filename_list( header_file,
-			world[0].defaults[0].num_fire_default_files);
+            world[0].defaults[0].num_surface_energy_default_files);
 	}
 
 	/*--------------------------------------------------------------*/
