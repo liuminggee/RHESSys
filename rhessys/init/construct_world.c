@@ -363,7 +363,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	struct stratum_default *construct_stratum_defaults(int, char **, struct command_line_object *);
 	struct fire_default *construct_fire_defaults(int, char **, struct command_line_object *);
 	struct beetle_default *construct_beetle_defaults(int, char **, struct command_line_object *);
-	struct surface_energy_default *construct_surface_energy_defaults(int, char **, struct command_line_object *);
+    struct surface_energy_default *construct_surface_energy_defaults(int, char **, int, struct command_line_object *);
 	struct spinup_default *construct_spinup_defaults(int, char **, struct command_line_object *);
 	struct base_station_object *construct_base_station(char *,
 		struct date, struct date, int, int, int); //Add CO2 flag NREN 20181115 CO2 flag and beetle flag
@@ -776,7 +776,7 @@ struct world_object *construct_world(struct command_line_object *command_line){
 	if (command_line[0].surface_energy_flag == 1) {
 		world[0].defaults[0].surface_energy = construct_surface_energy_defaults(
 			world[0].defaults[0].num_surface_energy_default_files,
-			world[0].surface_energy_default_files, command_line);
+            world[0].surface_energy_default_files, command_line[0].grow_flag, command_line);
 	}
 
 	/*--------------------------------------------------------------*/

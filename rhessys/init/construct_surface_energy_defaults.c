@@ -137,7 +137,7 @@ struct surface_energy_default *construct_surface_energy_defaults(
 		/*--------------------------------------------------------------*/
 		/*		Close the ith default file.								*/
 		/*--------------------------------------------------------------*/
-		fclose(default_file);
+        //fclose(default_file);
 	} /*end for*/
 	return(default_object_list);
 } /*end construct_surface_energy_defaults*/
